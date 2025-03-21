@@ -8,23 +8,23 @@ export const register = async (req,res) => {
         
         if (!email || !name || !password || !userType) {
             return res.status(400).json({ message: 'Please provide all required fields: email, name, password, and userType.' });
-          }
+        }
       
-          if (userType !== 'student' && userType !== 'guardian') {
+        if (userType !== 'student' && userType !== 'guardian') {
             return res.status(400).json({ message: 'Invalid userType.' });
-          }
+        }
 
-          const existingUser = await User.findOne({email});
-          if(existingUser) {
+        const existingUser = await User.findOne({ email: { $eq: email } });    
+        if(existingUser) {
             return res.status(400).json({error: "Email already registered"});
-          }
+        }
 
-          const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
           
-          const newUser = new User({name,email,password: hashedPassword,userType});
-          await newUser.save();
+        const newUser = new User({name,email,password: hashedPassword,userType});
+        await newUser.save();
 
-          res.status(201).json({message: "User registered"});
+        res.status(201).json({message: "User registered"});
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
     }
@@ -38,7 +38,7 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: 'Email and password are required.' });
         }
 
-        const user = await User.findOne({ email});
+        const user = await User.findOne({ email: {$eq: email}});
 
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
