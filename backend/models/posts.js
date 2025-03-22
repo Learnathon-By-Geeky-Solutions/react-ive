@@ -12,5 +12,5 @@ const postSchema = new mongoose.Schema({
     applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Apply' }]
 }, { timestamps: true });
 
-const post = mongoose.model('Post', postSchema);
-export default post;
+const Post = mongoose.model('Post', postSchema);
+export default Post;
