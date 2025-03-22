@@ -7,7 +7,6 @@ const postSchema = new mongoose.Schema({
     experience: { type: Number, required: true },
     location: { type: String, required: true },
     deadline: { type: Date, default: null },
-    createdAt: { type: Date, default: Date.now },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     skills: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Skill' }], // References the Skill collection
     applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Apply' }]
