@@ -9,11 +9,10 @@ import ResetPassword from './pages/ResetPassword';
 import "react-toastify/dist/ReactToastify.css"; 
 import ApplyPage from './pages/Apply';
 import Applications from './pages/Applications';
-import Profile from './pages/Profile';
+import Profile from './pages/StudentProfile';
 import Chat from './pages/Chat';
-import RecommendedPosts from './pages/Recommend';
 import JobOffers from './pages/Offer';
-import CompanyProfile from './pages/CompanyProfile';
+import CompanyProfile from './pages/GuardianProfile';
 import HiresPage from './pages/Hires';
 
 const App = () => {
