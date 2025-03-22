@@ -100,13 +100,6 @@ export const sendMail = async (req, res) => {
             { expiresIn: '10m' }
         );
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
 
         const mailOptions = {
             from: `"TutionMedia" <${process.env.EMAIL_USER}>`,
