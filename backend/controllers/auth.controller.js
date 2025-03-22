@@ -160,3 +160,27 @@ export const resetPassword = async (req, res) => {
         res.status(500).json({ message: 'Server error, please try again later.' });
     }
 };
+
+
+export const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+            return res.status(400).json({ msg: 'Invalid user ID format.' });
+        }
+
+        const user = await User.findById(id)
+            .populate('student')
+            .populate('guardian');
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found.' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ msg: 'Server error.' });
+    }
+};
