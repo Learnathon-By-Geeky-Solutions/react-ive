@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import Post from '../models/posts.js';
 import Skill from '../models/skills.js';
+import mongoose from 'mongoose';
 
 const verifyToken = (token) => {
   if (!token) {
@@ -74,3 +75,59 @@ export const getAllPosts = async (req,res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export const getPostByUserId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid user ID format" });
+    }
+
+    const jobPosts = await Post.find({ userId: id })
+      .populate("userId", "name email") 
+      .populate("skills", "name"); 
+
+    if (!jobPosts || jobPosts.length === 0) {
+      return res.status(404).json({ error: 'Job posts not found' });
+    }
+
+    res.status(200).json(jobPosts);
+  } catch (error) {
+    console.error("Error fetching job posts:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const deletePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Post ID format" });
+    }
+
+    const post = await Post.findById(id);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    await Post.deleteOne({ _id: id });
+
+    res.status(200).json({ message: "Post deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting post:", error.message);
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
+};
+
+export const getSkills = async (req, res) => {
+  try {
+    const skills = await Skill.find(); 
+    res.status(200).json(skills);
+  } catch (error) {
+    console.error('Error fetching skills:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
