@@ -64,3 +64,13 @@ export const createPost = async (req, res) => {
     res.status(500).json({ error: error.message || 'Internal server error' });
   }
 };
+
+export const getAllPosts = async (req,res) => {
+  try {
+    const posts = await Post.find().populate("userId").sort({createdAt:-1});
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error in getAllPosts:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
