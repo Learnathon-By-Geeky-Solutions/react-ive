@@ -39,3 +39,73 @@ export const applyToPost = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const getApplicationsById = async (req, res) => {
+  const { userId } = req.params; 
+
+  try {
+    const applications = await Application.find({ userId })
+      .populate({
+        path: 'postId',
+        populate: {
+          path: 'userId', 
+          model: 'User' // Assuming 'User' is the correct model name
+        }
+      });
+
+    if (!applications.length) {
+      return res.status(404).json({ message: "No applications found for this user" });
+    }
+
+    res.status(200).json({ applications });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+export const applicationExists = async (req, res) => {
+  const { postId, userId } = req.body;
+
+  try {
+    const exists = await Application.findOne({ postId, userId });
+
+    if (exists) {
+      return res.status(200).json({ message: "exists" });
+    }
+    res.status(400).json({ message: "does not exist" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updateApplicationStatus = async (req, res) => {
+  const { applicationId } = req.params;
+  const { status } = req.body;
+
+  try {
+    // Validate if the status is allowed
+    const allowedStatuses = ['PENDING', 'ACCEPTED', 'REJECTED', 'UNDER_REVIEW'];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    // Find and update application
+    const updatedApplication = await Application.findByIdAndUpdate(
+      applicationId,
+      { status, statusUpdatedAt: Date.now() },
+      { new: true }
+    );
+
+    if (!updatedApplication) {
+      return res.status(404).json({ message: "Application not found" });
+    }
+
+    res.status(200).json(updatedApplication);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong", error: error.message });
+  }
+};
