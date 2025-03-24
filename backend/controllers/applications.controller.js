@@ -1,15 +1,12 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
-import Application from '../models/applications.js';
+import Application from '../models/applications.js'; // Import Mongoose model
 
-/**
- * Apply to a Job Post
- */
 export const applyToPost = async (req, res) => {
   try {
     const { userId, status, name } = req.body;
-    const { id: PostId } = req.params;
-    const cvPath = req.file?.filename; // Correctly retrieve uploaded file name
+    const { id: postId } = req.params;
+    const cvPath = req.file?.filename; // Get file name (since GridFS stores files separately)
 
     // Verify JWT manually (No auth middleware used)
     if (!req.headers.authorization) {
@@ -30,7 +27,7 @@ export const applyToPost = async (req, res) => {
     const application = new Application({
       userName: name,
       userId: new mongoose.Types.ObjectId(userId),
-      jobPostId: new mongoose.Types.ObjectId(PostId),
+      postId: new mongoose.Types.ObjectId(postId),
       cvPath,
       status,
     });
