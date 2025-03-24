@@ -36,4 +36,6 @@ const ApplicationSchema = new mongoose.Schema(
 // Ensure a user can apply only once per job post
 ApplicationSchema.index({ userId: 1, postId: 1 }, { unique: true });
 
-export default mongoose.model('Application', ApplicationSchema);
+const Application = mongoose.model('Application', ApplicationSchema);
+
+export default Application;
