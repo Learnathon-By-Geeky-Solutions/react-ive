@@ -6,6 +6,7 @@ import authRouter from './routes/auth.routes.js';
 import postRouter from './routes/posts.routes.js';
 import applicationRouter from './routes/application.routes.js';
 import {connectDB} from './db/connectDB.js'
+import messageRouter from './routes/message.routes.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(cors({
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
 app.use("/apply", applicationRouter);
+app.use("/message", messageRouter);
 
 server.listen(PORT, () => {
     console.log(`Server listening on PORT ${PORT}`);
