@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import Application from '../models/applications.js'; // Import Mongoose model
 
+
 export const applyToPost = async (req, res) => {
   try {
     const { userId, status, name } = req.body;
@@ -109,3 +110,14 @@ export const updateApplicationStatus = async (req, res) => {
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 };
+export const downloadCV = async (req,res) => {
+  const {filename} = req.params;
+  const filePath = path.join(__dirname, "..", "middleware/uploads", filename);
+
+  res.download(filePath, filename, (err)=> {
+    if(err) {
+      console.error(err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  })
+}
