@@ -31,13 +31,13 @@ const Posts = () => {
   const fetchAllPosts = async () => {
     try {
       setLoading(true);
-      if(user?.userType === 'JobSeeker') {
+      if(user?.userType === 'student') {
         const res = await fetch("http://localhost:3500/post/getAllPosts");
         const data = await res.json();
         setAllPosts(data);
         setFilteredPosts(data); // Initialize filtered posts with all posts
       }
-      else {
+      else if(user?.userType==='guardian'){
         const res = await fetch(`http://localhost:3500/post/getPostById/${userId}`);
         const data = await res.json();
         setAllPosts(data);
@@ -289,16 +289,16 @@ const Posts = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPosts.map((post) => (
                 <PostCard
-                  key={post.id}
+                  key={post._id}
                   title={post.name}
                   location={post.location}
-                  companyName={post.user.name}
+                  companyName={post.userId.name}
                   position={post.position}
                   salaryRange={`${post.salary}`}
                   experience={`${post.experience} years`}
                   skills={
-                    post.requiredSkills && post.requiredSkills.length > 0
-                      ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
+                    post.skills && post.skills.length > 0
+                      ? post.skills.map((reqSkill) => reqSkill.skill.name).join(", ")
                       : "No skills listed"
                   }
                   deadline={post.deadline}
