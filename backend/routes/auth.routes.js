@@ -16,12 +16,16 @@ const loginLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, 
   max: 5, 
   message: "Too many login attempts. Try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 const resetLimiter = rateLimit({
   windowMs: 30 * 60 * 1000, 
   max: 3,
   message: "Too many password reset requests. Try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 authRouter.post("/register", generalLimiter, register);
