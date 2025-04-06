@@ -121,3 +121,40 @@ export const downloadCV = async (req,res) => {
     }
   })
 }
+
+import Post from '../models/posts.js';
+
+export const getApplicationsForGuardian = async (req, res) => {
+  const { userId } = req.params; // Guardian ID
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ error: 'Invalid guardian userId' });
+  }
+
+  try {
+    // Step 1: Find all posts created by this guardian
+    const posts = await Post.find({ userId }).select('_id');
+
+    const postIds = posts.map(post => post._id);
+
+    if (postIds.length === 0) {
+      return res.status(404).json({ message: 'No posts found for this guardian' });
+    }
+
+    // Step 2: Find all applications submitted to those posts
+    const applications = await Application.find({ postId: { $in: postIds } })
+    .populate({
+      path: 'postId',
+      populate: {
+        path: 'userId', 
+        model: 'User' // Assuming 'User' is the correct model name
+      }
+    })
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({applications: applications});
+  } catch (error) {
+    console.error('Error fetching applications for guardian:', error);
+    return res.status(500).json({ error: 'Server error while fetching applications' });
+  }
+};

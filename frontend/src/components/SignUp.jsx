@@ -15,7 +15,7 @@ const SignUp = () => {
     email: '',
     name: '',
     password: '',
-    userType: 'JobSeeker',
+    userType: 'student',
   });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +55,7 @@ const SignUp = () => {
         email: '',
         name: '',
         password: '',
-        userType: 'JobSeeker',
+        userType: 'student',
       });
       setError(null);
     } catch (error) {
@@ -131,8 +131,8 @@ const SignUp = () => {
               onChange={handleChange}
               label="User Type"
             >
-              <MenuItem value="JobSeeker">Job Seeker</MenuItem>
-              <MenuItem value="Company">Company</MenuItem>
+              <MenuItem value="student">Student</MenuItem>
+              <MenuItem value="guardian">Guardian</MenuItem>
             </Select>
           </FormControl>
 
