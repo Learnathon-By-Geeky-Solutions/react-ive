@@ -3,9 +3,9 @@ import { applicationExists, applyToPost, downloadCV, getApplicationsById, update
 import {upload }from '../middleware/multer.js';
 const applicationRouter = express.Router();
 
-applicationRouter.post("/applyPost/:id",upload.single('cv'),applyToPost);
+applicationRouter.post("/applyToPost/:id",upload.single('cv'),applyToPost);
 applicationRouter.get("/getApplicationsById/:userId", getApplicationsById);
-applicationRouter.post("/applicationExists", applicationExists);
+applicationRouter.post("/exists", applicationExists);
 applicationRouter.put("/updateStatus/:applicationId", updateApplicationStatus);
 applicationRouter.get("/downloadCV/:filename", downloadCV);
 export default applicationRouter;

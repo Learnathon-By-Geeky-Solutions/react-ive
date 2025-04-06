@@ -137,7 +137,7 @@ const Posts = () => {
     setSkills("");
     setFilteredPosts(allPosts); // Reset to show all posts
   };
-
+  console.log(filteredPosts)
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
@@ -302,7 +302,7 @@ const Posts = () => {
                       : "No skills listed"
                   }
                   deadline={post.deadline}
-                  jobPostId={post.id}
+                  jobPostId={post._id}
                 />
               ))}
             </div>

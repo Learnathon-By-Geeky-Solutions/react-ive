@@ -62,8 +62,8 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              jobPostId: jobPostId,
-              jobSeekerId: user.userId,
+              postId: jobPostId,
+              userId: user.userId,
             }),
           });
 
@@ -96,7 +96,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
     formData.append("cv", cv);
     formData.append("name", user.name);
     formData.append("userId", user.userId);
-    formData.append("status", "Pending");
+    formData.append("status", "PENDING");
     formData.append("deadline", deadline); // Include deadline in the formData
 
     try {
