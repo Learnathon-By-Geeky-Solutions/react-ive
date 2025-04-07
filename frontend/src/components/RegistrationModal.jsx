@@ -23,7 +23,7 @@ const ColorButton = styled(Button)(() => ({
 const RegistrationSuccessModal = ({ 
   open, 
   onClose, 
-  userType = 'JobSeeker' // Default value in case it's not provided
+  userType = 'student' // Default value in case it's not provided
 }) => {
   return (
     <Dialog 
@@ -78,7 +78,7 @@ const RegistrationSuccessModal = ({
               marginTop: '8px'
             }}
           >
-            {userType === 'JobSeeker' 
+            {userType === 'student' 
               ? "You're now ready to find your dream job!" 
               : "You're now ready to find talented candidates!"}
           </DialogContentText>

@@ -92,8 +92,8 @@ const ApplicationCard = ({ app, onStatusChange }) => {
             body: JSON.stringify({
               jobSeekerId: app.userId,
               companyId: user.userId,
-              status: "Pending",
-              applicationId: app.applicationId,
+              status: "PENDING",
+              applicationId: app._id,
             }),
           });
           const offerData = await offerRes.json();
@@ -269,7 +269,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className={`flex ${user.userType === 'JobSeeker' ? "justify-center" : "justify-between"} space-x-2`}>
+          <div className={`flex ${user.userType === 'student' ? "justify-center" : "justify-between"} space-x-2`}>
             <a 
               href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
               download 

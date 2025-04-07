@@ -1,6 +1,6 @@
 export const deleteConversationApi = async (conversationId) => {
     try {
-      const response = await fetch(`http://localhost:3500/conversations/delete/${conversationId}`, {
+      const response = await fetch(`http://localhost:3500/conversation/delete/${conversationId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

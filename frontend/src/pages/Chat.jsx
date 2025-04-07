@@ -182,7 +182,7 @@ const Chat = () => {
                 <div 
                   key={conv._id} 
                   className="relative group"
-                  ref={openMenuConversationId === conv.id ? menuRef : null}
+                  ref={openMenuConversationId === conv._id ? menuRef : null}
                 >
                   <div
                     className={`

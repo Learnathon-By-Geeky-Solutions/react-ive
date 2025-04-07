@@ -186,7 +186,7 @@ const Navbar = () => {
               >
                 CHATS
               </Button>
-              {userType === 'JobSeeker' && 
+              {userType === 'student' && 
               <Button 
                 color="inherit" 
                 component={Link} 
@@ -212,7 +212,7 @@ const Navbar = () => {
     RECOMMENDATIONS
   </Button>
 }
-              {userType === 'JobSeeker' &&
+              {userType === 'student' &&
                 <Button 
                   color="inherit" 
                   component={Link} 
@@ -237,7 +237,7 @@ const Navbar = () => {
                   OFFERS
                 </Button> 
               }
-              {userType === 'Company' &&
+              {userType === 'guardian' &&
                 <Button 
                   color="inherit" 
                   component={Link} 
@@ -354,7 +354,7 @@ const Navbar = () => {
 
                   <MenuItem 
                     onClick={() => {
-                      if(userType==='JobSeeker')
+                      if(userType==='student')
                       navigate("/profile");
                       else navigate("/companyprofile")
                       handleMenuClose();
