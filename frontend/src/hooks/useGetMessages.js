@@ -10,7 +10,7 @@ const useGetMessages = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`http://localhost:3500/message/getMessages/${selectedConversation.id}`, {
+        const res = await fetch(`http://localhost:3500/message/getMessage/${selectedConversation._id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -27,8 +27,8 @@ const useGetMessages = () => {
         setLoading(false);
       }
     };
-    if(selectedConversation?.id) getMessages();
-  }, [selectedConversation?.id, setMessages]);
+    if(selectedConversation?._id) getMessages();
+  }, [selectedConversation?._id, setMessages]);
 
   return { messages, loading };
 };

@@ -180,7 +180,7 @@ const Chat = () => {
             ) : filteredConversations.length > 0 ? (
               filteredConversations.map((conv) => (
                 <div 
-                  key={conv.id} 
+                  key={conv._id} 
                   className="relative group"
                   ref={openMenuConversationId === conv.id ? menuRef : null}
                 >
