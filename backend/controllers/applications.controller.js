@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import Application from '../models/applications.js'; // Import Mongoose model
+import path from 'path';
+import { fileURLToPath } from 'url';
 
+const __filename  = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const applyToPost = async (req, res) => {
   try {
