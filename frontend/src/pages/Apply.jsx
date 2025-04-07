@@ -23,7 +23,7 @@ const ApplyPage = () => {
     formData.append("cv", cv);
     formData.append("name", user.name);
     formData.append("userId", user.userId); 
-    formData.append("status", "Pending");
+    formData.append("status", "PENDING");
 
     try {
       const token = localStorage.getItem("token");

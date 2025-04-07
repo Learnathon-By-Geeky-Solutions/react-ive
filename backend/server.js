@@ -24,7 +24,7 @@ app.use("/auth", authRouter);
 app.use("/post", postRouter);
 app.use("/apply", applicationRouter);
 app.use("/message", messageRouter);
-app.use("/conversations", conversationRouter);
+app.use("/conversation", conversationRouter);
 app.use("/offer", offerRouter);
 app.use("/hires", hireRouter);
 

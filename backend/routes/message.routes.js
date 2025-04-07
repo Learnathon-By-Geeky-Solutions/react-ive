@@ -3,7 +3,7 @@ import { deleteMessage, getMessages, sendMessage } from '../controllers/messages
 
 const messageRouter = express.Router();
 
-messageRouter.post("/sendMessage/:id", sendMessage);
+messageRouter.post("/send/:id", sendMessage);
 messageRouter.get("/getMessage/:id", getMessages);
 messageRouter.delete("/deleteMessage/:messageId", deleteMessage);
 export default messageRouter;

@@ -69,7 +69,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
 
   const handleStatusChange = async (newStatus) => {
     try {
-      const res = await fetch(`http://localhost:3500/apply/updateStatus/${app.applicationId}`, {
+      const res = await fetch(`http://localhost:3500/apply/updateStatus/${app._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -85,15 +85,15 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           selectedStatus: null
         });
 
-        if (newStatus === "Accepted") {
+        if (newStatus === "ACCEPTED") {
           const offerRes = await fetch(`http://localhost:3500/offer/sendOffer`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               jobSeekerId: app.userId,
               companyId: user.userId,
-              status: "Pending",
-              applicationId: app.applicationId,
+              status: "PENDING",
+              applicationId: app._id,
             }),
           });
           const offerData = await offerRes.json();
@@ -151,7 +151,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           <div className="flex flex-col space-y-4">
             <button 
               onClick={() => {
-                handleStatusChange('Interview');
+                handleStatusChange('UNDER-REVIEW');
               }}
               className="w-full px-6 py-3 rounded-lg bg-amber-500 text-white hover:bg-amber-600 transition-all duration-300 flex items-center justify-center"
             >
@@ -161,7 +161,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               onClick={() => setModalState({
                 statusChangeModal: false,
                 confirmationModal: true,
-                selectedStatus: 'Accepted'
+                selectedStatus: 'ACCEPTED'
               })}
               className="w-full px-6 py-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-300 flex items-center justify-center"
             >
@@ -171,7 +171,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               onClick={() => setModalState({
                 statusChangeModal: false,
                 confirmationModal: true,
-                selectedStatus: 'Rejected'
+                selectedStatus: 'REJECTED'
               })}
               className="w-full px-6 py-3 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-all duration-300 flex items-center justify-center"
             >
@@ -223,7 +223,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               onClick={() => handleStatusChange(modalState.selectedStatus)}
               className={`
                 px-6 py-2 rounded-full text-white transition-all duration-300
-                ${modalState.selectedStatus === 'Accepted' 
+                ${modalState.selectedStatus === 'ACCEPTED' 
                   ? 'bg-green-500 hover:bg-green-600' 
                   : 'bg-red-500 hover:bg-red-600'}
               `}
@@ -269,9 +269,9 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className={`flex ${user.userType === 'JobSeeker' ? "justify-center" : "justify-between"} space-x-2`}>
+          <div className={`flex ${user.userType === 'student' ? "justify-center" : "justify-between"} space-x-2`}>
             <a 
-              href={`http://localhost:3500/apply/download/${cvPath}`} 
+              href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
               download 
               className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
             >
