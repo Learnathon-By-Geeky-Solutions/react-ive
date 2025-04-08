@@ -29,7 +29,7 @@ const LatestJobPosts = () => {
         let filteredData = data;
         
         // If current user is a Company, filter to show only their own job posts
-        if (userType === 'Company') {
+        if (userType === 'guardian') {
           filteredData = data.filter(job => job.user.name === user.name);
         }
         const latest = filteredData.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,6);
@@ -44,7 +44,7 @@ const LatestJobPosts = () => {
     };
 
     fetchLatestJobs();
-  }, [user]);
+  }, [user, userType]);
 
   return (
     <section className="container mx-auto py-12">
@@ -78,14 +78,14 @@ const LatestJobPosts = () => {
               variants={itemVariants}
             >
               <PostCard
-                title={job.title}
+                title={job.name}
                 location={job.location}
                 position={job.position}
-                companyName={job.user.name}
+                companyName={job.userId.name}
                 salaryRange={job.salary}
                 experience={job.experience}
-                skills={job.requiredSkills.map((skill) => skill.skill.name).join(', ')}
-                jobPostId={job.id}
+                skills={job.skills.map((skill) => skill.skill.name).join(', ')||""}
+                jobPostId={job._id}
                 deadline={job.deadline}
               />
             </motion.div>

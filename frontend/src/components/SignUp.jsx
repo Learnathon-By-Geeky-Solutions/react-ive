@@ -15,7 +15,7 @@ const SignUp = () => {
     email: '',
     name: '',
     password: '',
-    userType: 'JobSeeker',
+    userType: 'student',
   });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +55,7 @@ const SignUp = () => {
         email: '',
         name: '',
         password: '',
-        userType: 'JobSeeker',
+        userType: 'student',
       });
       setError(null);
     } catch (error) {
@@ -83,9 +83,9 @@ const SignUp = () => {
     <div className='flex flex-col justify-center items-center min-h-screen bg-gray-100'>
       <div className='mb-8 text-center'>
         <h1 className='text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8D538D] to-[#514ACD]'>
-          Join JobNode Today!
+          Join DU Tutors Today!
         </h1>
-        <p className='text-xl text-gray-700 mt-2'>Start your professional journey with us</p>
+        <p className='text-xl text-gray-700 mt-2'>Your Trusted Platform to Find DU Tutors & Tuitions</p>
       </div>
       
       <div className='flex items-center bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
@@ -121,7 +121,7 @@ const SignUp = () => {
             name='password'
             value={formData.password}
           />
-          <FormControl fullWidth>
+          {/* <FormControl fullWidth>
             <InputLabel id="user-type-label">User Type</InputLabel>
             <Select
               labelId="user-type-label"
@@ -131,10 +131,10 @@ const SignUp = () => {
               onChange={handleChange}
               label="User Type"
             >
-              <MenuItem value="JobSeeker">Job Seeker</MenuItem>
-              <MenuItem value="Company">Company</MenuItem>
+              <MenuItem value="student">Student</MenuItem>
+              <MenuItem value="guardian">Guardian</MenuItem>
             </Select>
-          </FormControl>
+          </FormControl> */}
 
           {error && <p className='text-red-500 text-center'>{error}</p>}
           <ColorButton

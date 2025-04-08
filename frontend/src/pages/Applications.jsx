@@ -29,16 +29,16 @@ const JobApplications = () => {
         if (!userId) throw new Error("User ID is not available");
 
         let response;
-        if (user.userType === "JobSeeker") {
+        if (user.userType === "student") {
           response = await fetch(`http://localhost:3500/apply/getApplicationsById/${userId}`);
-        } else if (user.userType === "Company") {
-          response = await fetch(`http://localhost:3500/apply/getApplicationsByCompany/${userId}`);
+        } else if (user.userType === "guardian") {
+          response = await fetch(`http://localhost:3500/apply/getApplicationsForGuardian/${userId}`);
         } else {
           throw new Error("User type is not valid");
         }
 
         const data = await response.json();
-        const apps = data.applications || data || [];
+        const apps = data.applications||[];
         setApplications(apps);
         setFilteredApplications(apps);
       } catch (err) {
@@ -62,12 +62,12 @@ const JobApplications = () => {
       }
   
       if (searchQuery.trim() !== "") {
-        if (user.userType === "Company") {
+        if (user.userType === "guardian") {
           // Companies search by job seeker name
           filtered = filtered.filter((app) =>
             app.userName.toLowerCase().includes(searchQuery.toLowerCase())
           );
-        } else if (user.userType === "JobSeeker") {
+        } else if (user.userType === "student") {
           // Job seekers search by company name
           filtered = filtered.filter((app) =>
             app.jobPost?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -129,7 +129,7 @@ const JobApplications = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Status Filters */}
             <div className="flex space-x-4 overflow-x-auto w-full md:w-auto">
-              {["All", "Pending", "Accepted", "Rejected", "Interview"].map((status) => (
+              {["All", "PENDING", "ACCEPTED", "REJECTED", "UNDER-REVIEW"].map((status) => (
                 <button
                   key={status}
                   onClick={() => setFilterStatus(status)}
@@ -179,7 +179,7 @@ const JobApplications = () => {
             {filteredApplications.length > 0 ? (
               filteredApplications.map((app) => (
                 <ApplicationCard
-                  key={app.applicationId}
+                  key={app._id}
                   app={app}
                   onStatusChange={updateApplicationStatus}
                 />

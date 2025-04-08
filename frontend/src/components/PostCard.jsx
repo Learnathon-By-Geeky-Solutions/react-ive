@@ -54,7 +54,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
 
   useEffect(() => {
     const checkApplication = async () => {
-      if (user?.userType === "JobSeeker") {
+      if (user?.userType === "student") {
         try {
           const response = await fetch("http://localhost:3500/apply/exists", {
             method: "POST",
@@ -62,8 +62,8 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              jobPostId: jobPostId,
-              jobSeekerId: user.userId,
+              postId: jobPostId,
+              userId: user.userId,
             }),
           });
 
@@ -96,7 +96,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
     formData.append("cv", cv);
     formData.append("name", user.name);
     formData.append("userId", user.userId);
-    formData.append("status", "Pending");
+    formData.append("status", "PENDING");
     formData.append("deadline", deadline); // Include deadline in the formData
 
     try {
@@ -264,7 +264,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
         </div>
 
         <div className="mt-auto">
-          {user && user.userType === "JobSeeker" && (
+          {user && user.userType === "student" && (
             <>
               {isDeadlineExpired ? (
                 <div className="w-full flex items-center justify-center bg-gray-300 text-gray-600 py-3 rounded-lg">
@@ -289,7 +289,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
           )}
 
           {/* Updated Delete Button with custom modal trigger */}
-          {user && user.userType === "Company" && (
+          {user && user.userType === "guardian" && (
             <button
               onClick={() => setShowDeleteModal(true)}
               className="w-full flex items-center justify-center bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors border border-gray-300"

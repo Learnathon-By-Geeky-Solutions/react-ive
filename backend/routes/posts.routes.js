@@ -5,7 +5,7 @@ const postRouter = express.Router();
 
 postRouter.post("/createPost", createPost);
 postRouter.get("/getAllPosts", getAllPosts);
-postRouter.get("/getPostByUserId/:id", getPostByUserId);
+postRouter.get("/getPostById/:id", getPostByUserId);
 postRouter.delete("/deletePost/:id", deletePost);
 postRouter.get("/getSkills", getSkills);
 

@@ -31,13 +31,13 @@ const Posts = () => {
   const fetchAllPosts = async () => {
     try {
       setLoading(true);
-      if(user?.userType === 'JobSeeker') {
+      if(user?.userType === 'student') {
         const res = await fetch("http://localhost:3500/post/getAllPosts");
         const data = await res.json();
         setAllPosts(data);
         setFilteredPosts(data); // Initialize filtered posts with all posts
       }
-      else {
+      else if(user?.userType==='guardian'){
         const res = await fetch(`http://localhost:3500/post/getPostById/${userId}`);
         const data = await res.json();
         setAllPosts(data);
@@ -137,7 +137,7 @@ const Posts = () => {
     setSkills("");
     setFilteredPosts(allPosts); // Reset to show all posts
   };
-
+  console.log(filteredPosts)
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
@@ -147,7 +147,7 @@ const Posts = () => {
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold tracking-wide">Job Posts</h1>
-            {user && user.userType === "Company" && (
+            {user && user.userType === "guardian" && (
               <button
                 className="bg-white text-purple-600 rounded-full px-6 py-3 shadow-md transition-all hover:bg-gray-100"
                 onClick={() => navigate("/create-post")}
@@ -289,20 +289,20 @@ const Posts = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPosts.map((post) => (
                 <PostCard
-                  key={post.id}
+                  key={post._id}
                   title={post.name}
                   location={post.location}
-                  companyName={post.user.name}
+                  companyName={post.userId.name}
                   position={post.position}
                   salaryRange={`${post.salary}`}
                   experience={`${post.experience} years`}
                   skills={
-                    post.requiredSkills && post.requiredSkills.length > 0
-                      ? post.requiredSkills.map((reqSkill) => reqSkill.skill.name).join(", ")
+                    post.skills && post.skills.length > 0
+                      ? post.skills.map((reqSkill) => reqSkill.skill.name).join(", ")
                       : "No skills listed"
                   }
                   deadline={post.deadline}
-                  jobPostId={post.id}
+                  jobPostId={post._id}
                 />
               ))}
             </div>

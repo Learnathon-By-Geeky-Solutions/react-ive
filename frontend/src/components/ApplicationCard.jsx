@@ -69,7 +69,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
 
   const handleStatusChange = async (newStatus) => {
     try {
-      const res = await fetch(`http://localhost:3500/apply/updateStatus/${app.applicationId}`, {
+      const res = await fetch(`http://localhost:3500/apply/updateStatus/${app._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -85,15 +85,15 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           selectedStatus: null
         });
 
-        if (newStatus === "Accepted") {
+        if (newStatus === "ACCEPTED") {
           const offerRes = await fetch(`http://localhost:3500/offer/sendOffer`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               jobSeekerId: app.userId,
               companyId: user.userId,
-              status: "Pending",
-              applicationId: app.applicationId,
+              status: "PENDING",
+              applicationId: app._id,
             }),
           });
           const offerData = await offerRes.json();
@@ -111,22 +111,22 @@ const ApplicationCard = ({ app, onStatusChange }) => {
 
   const getStatusStyle = (currentStatus) => {
     const statusStyles = {
-      'Pending': {
+      'PENDING': {
         icon: <Clock className="inline-block mr-2 text-sky-500" />,
         bgColor: 'bg-sky-50',
         textColor: 'text-sky-800'
       },
-      'Accepted': {
+      'ACCEPTED': {
         icon: <CheckCircle className="inline-block mr-2 text-emerald-500" />,
         bgColor: 'bg-emerald-50',
         textColor: 'text-emerald-800'
       },
-      'Interview': {
+      'UNDER-REVIEW': {
         icon: <Calendar className="inline-block mr-2 text-amber-500" />,
         bgColor: 'bg-amber-50',
         textColor: 'text-amber-800'
       },
-      'Rejected': {
+      'REJECTED': {
         icon: <XCircle className="inline-block mr-2 text-rose-500" />,
         bgColor: 'bg-rose-50',
         textColor: 'text-rose-800'
@@ -151,7 +151,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           <div className="flex flex-col space-y-4">
             <button 
               onClick={() => {
-                handleStatusChange('Interview');
+                handleStatusChange('UNDER-REVIEW');
               }}
               className="w-full px-6 py-3 rounded-lg bg-amber-500 text-white hover:bg-amber-600 transition-all duration-300 flex items-center justify-center"
             >
@@ -161,7 +161,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               onClick={() => setModalState({
                 statusChangeModal: false,
                 confirmationModal: true,
-                selectedStatus: 'Accepted'
+                selectedStatus: 'ACCEPTED'
               })}
               className="w-full px-6 py-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-all duration-300 flex items-center justify-center"
             >
@@ -171,7 +171,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               onClick={() => setModalState({
                 statusChangeModal: false,
                 confirmationModal: true,
-                selectedStatus: 'Rejected'
+                selectedStatus: 'REJECTED'
               })}
               className="w-full px-6 py-3 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-all duration-300 flex items-center justify-center"
             >
@@ -223,7 +223,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               onClick={() => handleStatusChange(modalState.selectedStatus)}
               className={`
                 px-6 py-2 rounded-full text-white transition-all duration-300
-                ${modalState.selectedStatus === 'Accepted' 
+                ${modalState.selectedStatus === 'ACCEPTED' 
                   ? 'bg-green-500 hover:bg-green-600' 
                   : 'bg-red-500 hover:bg-red-600'}
               `}
@@ -248,9 +248,9 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               <User className="mr-3 text-indigo-500" size={24} />
               <div>
                 <h4 className="text-xl font-semibold text-gray-800 tracking-wide">
-                  {user?.userType==='JobSeeker' ? app.jobPost.user.name : app.userName}
+                  {app.postId.userId.name}
                   </h4>
-                <p className="text-sm text-gray-600">{app.jobPost.position}</p>
+                <p className="text-sm text-gray-600">{app.postId.position}</p>
               </div>
             </div>
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle.bgColor} ${statusStyle.textColor}`}>
@@ -265,13 +265,13 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           {/* Location */}
           <div className="flex items-center mb-4 text-gray-600">
             <MapPin className="mr-2 text-violet-500" size={20} />
-            <span className="text-sm">{app.jobPost.location}</span>
+            <span className="text-sm">{app.postId.location}</span>
           </div>
 
           {/* Action Buttons */}
-          <div className={`flex ${user.userType === 'JobSeeker' ? "justify-center" : "justify-between"} space-x-2`}>
+          <div className={`flex ${user.userType === 'student' ? "justify-center" : "justify-between"} space-x-2`}>
             <a 
-              href={`http://localhost:3500/apply/download/${cvPath}`} 
+              href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
               download 
               className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
             >
@@ -279,7 +279,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               View CV
             </a>
 
-            {user.userType === 'Company' && (status === 'Pending' || status === 'Interview') && (
+            {user.userType === 'guardian' && (status === 'PENDING' || status === 'UNDER-REVIEW') && (
               <button
                 onClick={() => setModalState({
                   statusChangeModal: true,
@@ -292,7 +292,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               </button>
             )}
 
-            {user.userType === 'Company' && (
+            {user.userType === 'guardian' && (
               <button
                 onClick={() => handleChat(app.userId)}
                 className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
