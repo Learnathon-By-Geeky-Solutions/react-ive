@@ -96,7 +96,7 @@ const About = () => {
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Whether you're looking for the right tutor or a meaningful teaching opportunity, DU TuitionLink makes the 
+              Whether you're looking for the right tutor or a meaningful teaching opportunity, DU Tutors makes the 
               process smooth, efficient, and student-focused.
             </p>
 
