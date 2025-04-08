@@ -60,9 +60,9 @@ const Login = () => {
     <div className='flex flex-col justify-center items-center min-h-screen bg-gray-100'>
       <div className='mb-8 text-center'>
         <h1 className='text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8D538D] to-[#514ACD]'>
-          Welcome to JobNode!
+          Welcome to DU Tutors
         </h1>
-        <p className='text-xl text-gray-700 mt-2'>Your gateway to career opportunities</p>
+        <p className='text-xl text-gray-700 mt-2'>Your Trusted Platform to Find DU Tutors & Tuitions</p>
       </div>
       
       <div className='flex items-center bg-white shadow-lg rounded-lg overflow-hidden w-[40em]'>
