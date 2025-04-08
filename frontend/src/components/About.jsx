@@ -90,23 +90,20 @@ const About = () => {
             viewport={{ once: true }}
           >
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              At JobNode, we believe in simplifying the way people find jobs and
-              companies hire talent. Our platform is built to connect job
-              seekers and employers in a seamless, efficient, and transparent
-              way.
+              At MRO, we believe in simplifying the way tuition opportunities are shared and accessed within 
+              the Dhaka University community. Our platform connects students in need of tuition with capable DU tutors 
+              in a seamless and reliable way.
             </p>
 
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              Whether you're looking for your next career opportunity or the
-              perfect addition to your team, JobNode is here to make the process
-              simple and stress-free.
+              Whether you're looking for the right tutor or a meaningful teaching opportunity, DU TuitionLink makes the 
+              process smooth, efficient, and student-focused.
             </p>
 
             <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-lg border-l-4 border-purple-600">
               <p className="text-lg font-medium text-gray-800">
-                We are committed to creating a network where talent and
-                opportunity meet, driving growth and success for everyone
-                involved. At JobNode, your future is our priority.
+              We are committed to creating a trusted space where learning and teaching go hand in hand, helping DU students 
+              grow—both academically and professionally.
               </p>
             </div>
           </motion.div>
