@@ -15,7 +15,7 @@ const ApplyPage = () => {
     e.preventDefault();
 
     if (!cv) {
-      toast.error("Please upload your CV.");
+      toast.error("Please upload your DU ID Card Image.");
       return;
     }
 
@@ -52,7 +52,7 @@ const ApplyPage = () => {
         throw new Error(errorData.error || "Failed to submit application.");
       }
     } catch (error) {
-      console.error("Error applying to job:", error);
+      console.error("Error applying to tuition:", error);
       toast.error(error.message || "An error occurred while submitting the application.");
     }
   };
@@ -76,12 +76,12 @@ const ApplyPage = () => {
           <form onSubmit={handleSubmit}>
             <Box sx={{ marginBottom: "20px" }}>
               <Typography variant="body1" gutterBottom>
-                Upload your CV
+                Upload your DU ID Card image
               </Typography>
               <TextField
                 type="file"
                 fullWidth
-                inputProps={{ accept: ".pdf,.doc,.docx" }}
+                inputProps={{ accept: ".jpg,.jpeg,.png" }}
                 onChange={(e) => setCv(e.target.files[0])}
                 required
                 sx={{
@@ -103,7 +103,7 @@ const ApplyPage = () => {
         </>
       ) : (
         <Typography variant="h6" color="error">
-          Job details not found.
+          Tuition details not found.
         </Typography>
       )}
     </Box>
