@@ -31,18 +31,11 @@ const Posts = () => {
   const fetchAllPosts = async () => {
     try {
       setLoading(true);
-      if(user?.userType === 'student') {
         const res = await fetch("http://localhost:3500/post/getAllPosts");
         const data = await res.json();
         setAllPosts(data);
         setFilteredPosts(data); // Initialize filtered posts with all posts
-      }
-      else if(user?.userType==='guardian'){
-        const res = await fetch(`http://localhost:3500/post/getPostById/${userId}`);
-        const data = await res.json();
-        setAllPosts(data);
-        setFilteredPosts(data); // Initialize filtered posts with all posts
-      }
+      
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -290,6 +283,7 @@ const Posts = () => {
               {filteredPosts.map((post) => (
                 <PostCard
                   key={post._id}
+                  userId={post.userId._id}
                   title={post.name}
                   location={post.location}
                   companyName={post.userId.name}

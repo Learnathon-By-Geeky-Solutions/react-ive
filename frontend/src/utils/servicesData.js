@@ -18,23 +18,10 @@ export const servicesData = [
       link: "/chats",
     },
     {
-      title: "Recommendations",
-      description: "Get your personalized recommendations.",
-      icon: "⭐",
-      link: "/recommend",
-    },
-    {
-      title: "Offers",
-      description: "Discover special deals tailored just for you. Don't miss out!",
-      icon: "📜",
-      link: "/offer"
-    },
-    {
       title: "Profile",
       description: "Manage your account details and preferences with ease.",
       icon: "💁",
       link: "/profile"
     },
-    
   ];
   
