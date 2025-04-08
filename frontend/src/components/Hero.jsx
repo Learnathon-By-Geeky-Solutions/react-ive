@@ -21,16 +21,16 @@ const Hero = () => {
         animate="visible"
       >
         <h2 className="text-4xl font-bold mb-4">
-          Your Career, Just a <strong className="text-customm">Node</strong> Away
+        Your Trusted Platform to Find DU Tutors & Tuitions
         </h2>
         <p className="mb-6 text-gray-600">
-          JobNode connects job seekers with employers quickly and easily. It’s a platform designed to make finding jobs or hiring talent simple and straightforward. Whether you're looking for work or hiring, JobNode helps you get it done.
+          DUTutors connects Tutor seekers (Guardians / Students) with DU Students quickly and easily. It’s a platform designed to make finding tuition or hiring tutors simple and straightforward. Whether you're looking for tutoring or hiring, DUTutors helps you get it done.
         </p>
         <Link
           to="/posts"
           className="bg-customm text-white py-3 px-6 rounded-md hover:bg-[rgba(62,7,181,1)]"
         >
-          Explore Posts
+          Explore Tuition Posts
         </Link>
       </motion.div>
       <motion.div
@@ -41,7 +41,7 @@ const Hero = () => {
       >
         <img
           src="./imageHome.jpg"
-          alt="Innovative Technology"
+          alt="Tuition Post"
           className="rounded-md shadow-md"
         />
       </motion.div>
