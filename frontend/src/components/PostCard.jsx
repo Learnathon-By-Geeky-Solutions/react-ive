@@ -18,7 +18,7 @@ import {
   UserCircle
 } from 'lucide-react';
 
-const PostCard = ({ title, location, companyName, position, salaryRange, experience, skills, jobPostId, deadline, onDelete }) => {
+const PostCard = ({ title, location, companyName, position, salaryRange, experience, skills, jobPostId, deadline, onDelete, userId }) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -264,7 +264,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
         </div>
 
         <div className="mt-auto">
-          {user && user.userType === "student" && (
+          {user && user.userId!==userId && (
             <>
               {isDeadlineExpired ? (
                 <div className="w-full flex items-center justify-center bg-gray-300 text-gray-600 py-3 rounded-lg">
@@ -289,7 +289,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
           )}
 
           {/* Updated Delete Button with custom modal trigger */}
-          {user && user.userType === "guardian" && (
+          {user && user.userId===userId && (
             <button
               onClick={() => setShowDeleteModal(true)}
               className="w-full flex items-center justify-center bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors border border-gray-300"
