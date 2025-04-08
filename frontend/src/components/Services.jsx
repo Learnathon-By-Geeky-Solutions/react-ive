@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { servicesData } from '../utils/servicesData.js';
 import { motion } from 'framer-motion';
 
 const Services = () => {
+  const navigate = useNavigate();
+
   const containerVariants = {
     hidden: {},
     visible: {
@@ -48,6 +50,7 @@ const Services = () => {
             key={index}
             className="bg-white p-6 rounded-md shadow-md border border-gray-200 flex flex-col items-center text-center relative group"
             variants={itemVariants}
+            onClick={()=>navigate(service.link)}
           >
             <div className="text-4xl mb-4">{service.icon}</div>
             <h3 className="text-lg font-semibold mb-2">{service.title}</h3>

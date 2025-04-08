@@ -54,7 +54,7 @@ const LatestJobPosts = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        Latest Job Posts
+        Latest Tution Posts
       </motion.h2>
 
       {/* Stunning HR line */}
@@ -79,6 +79,7 @@ const LatestJobPosts = () => {
             >
               <PostCard
                 title={job.name}
+                userId={job.userId._id}
                 location={job.location}
                 position={job.position}
                 companyName={job.userId.name}
