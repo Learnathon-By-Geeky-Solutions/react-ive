@@ -90,7 +90,7 @@ const About = () => {
             viewport={{ once: true }}
           >
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
-              At MRO, we believe in simplifying the way tuition opportunities are shared and accessed within 
+              At DU Tutors, we believe in simplifying the way tuition opportunities are shared and accessed within 
               the Dhaka University community. Our platform connects students in need of tuition with capable DU tutors 
               in a seamless and reliable way.
             </p>
