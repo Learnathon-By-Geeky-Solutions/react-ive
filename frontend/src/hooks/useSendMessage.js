@@ -6,15 +6,21 @@ const useSendMessage = () => {
   const [loading, setLoading] = useState(false);
   const { messages, setMessages, selectedConversation } = useConversation();
   const token = localStorage.getItem('token');
-  const sendMessage = async (message) => {
+  const sendMessage = async (message, file=null) => {
     setLoading(true);
     try {
+      const formData = new FormData();
+      formData.append("message", message);
+      if(file) {
+        formData.append("file", file);
+
+      }
       const res = await fetch(`http://localhost:3500/message/send/${selectedConversation._id}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json',
+        headers: { 
           Authorization: `Bearer ${token}`
          },
-        body: JSON.stringify({ message }),
+        body: formData,
       });
 
       const data = await res.json();
