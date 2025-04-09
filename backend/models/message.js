@@ -16,6 +16,14 @@ const MessageSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
+      fileUrl: {
+        type: String,
+        default: null,
+      },
+      fileType: {
+        type: String,
+        default: null,
+      },
       conversationId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Conversation',
