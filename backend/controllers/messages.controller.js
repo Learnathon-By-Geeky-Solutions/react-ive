@@ -17,7 +17,7 @@ export const sendMessage = async (req, res) => {
 
         const file = req.file;
 
-        if (!message || !senderId || !receiverId || !file) {
+        if (!message || !senderId || !receiverId) {
             return res.status(400).json({ error: "Sender ID, Receiver ID, file , and message content are required" });
         }
 

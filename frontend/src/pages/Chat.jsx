@@ -46,7 +46,7 @@ const Chat = () => {
 
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
-    sendMessage(newMessage);
+    sendMessage(newMessage,file);
     setNewMessage("");
   };
 
