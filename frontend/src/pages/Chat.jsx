@@ -7,9 +7,12 @@ import useSendMessage from "../hooks/useSendMessage";
 import useListenMessages from "../hooks/useListenMessages";
 import { FaEllipsisV, FaTrashAlt, FaPaperPlane, FaComment, FaSearch, FaUser } from "react-icons/fa";
 import Navbar from "../components/Navbar";
+import {Paperclip, X} from 'lucide-react';
 
 const Chat = () => {
   const { user } = useAuth();
+  const inputRef = useRef();
+  const [file,setFile] = useState(null);
   const { loading, conversations } = useGetConversations();
   const { selectedConversation, setSelectedConversation } = useConversation();
   const { messages, loading: messagesLoading } = useGetMessages();
@@ -374,6 +377,26 @@ const Chat = () => {
 
               {/* Message Input */}
               <div className="p-4 bg-white border-t border-gray-100 flex items-center">
+                <input type="file"
+                ref={inputRef}
+                className="hidden"
+                onChange={(e)=> setFile(e.target.files[0])}
+                />
+                <button onClick={()=>inputRef.current.click()} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200" title="Attach File">
+                  <Paperclip className="size-5 text-gray-700" />
+                </button>
+                {file && (
+        <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-md">
+          <span className="text-sm text-gray-700">{file.name}</span>
+          <button
+            onClick={()=> {setFile(null); inputRef.current.value=null}}
+            className="text-gray-500 hover:text-red-500"
+            title="Remove file"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
                 <input
                   type="text"
                   value={newMessage}
