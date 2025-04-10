@@ -10,7 +10,9 @@ const useSendMessage = () => {
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("message", message);
+      if(message) {
+        formData.append("message", message);
+      }
       if(file) {
         formData.append("file", file);
 
