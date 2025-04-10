@@ -373,7 +373,7 @@ const Chat = () => {
                                     <Paperclip className="size-4" />
                                   </div>
                                   <a 
-                                    href={msg.fileUrl} 
+                                    href={`http://localhost:3500/apply/downloadCV/${msg.fileUrl}`} 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="flex items-center hover:underline"
