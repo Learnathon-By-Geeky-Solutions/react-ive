@@ -45,9 +45,13 @@ const Chat = () => {
   }, [openMenuConversationId]);
 
   const handleSendMessage = () => {
-    if (newMessage.trim() === "") return;
+    // if (newMessage.trim() === "") return;
     sendMessage(newMessage,file);
     setNewMessage("");
+    setFile(null);
+    if (inputRef.current) {
+      inputRef.current.value = null;
+    }
   };
 
   const handleKeySendMessage = (e) => {
@@ -277,7 +281,7 @@ const Chat = () => {
                 </div>
               </div>
 
-              {/* Messages Container */}
+              {/* Messages Container - MODIFIED */}
               <div className="flex-1 p-6 overflow-y-auto bg-gray-50 space-y-4">
                 {messagesLoading ? (
                   <div className="flex items-center justify-center h-full">
@@ -301,6 +305,16 @@ const Chat = () => {
                     
                     // Is this the user's message
                     const isUserMessage = msg.senderId === user.userId;
+                    
+                    // Determine message type (file-only, text-only, or both)
+                    const hasContent = msg.content && msg.content !== "null" && msg.content !== null;
+                    const hasFile = msg.fileUrl || (msg.fileType && msg.fileUrl);
+                    const messageType = hasContent && hasFile ? 'combined' : hasFile ? 'file-only' : 'text-only';
+                    
+                    // Get file name from fileUrl or use default
+                    const fileName = hasFile ? 
+                      (msg.fileUrl?.split('/').pop() || 'File') : 
+                      '';
                       
                     return (
                       <div
@@ -339,7 +353,7 @@ const Chat = () => {
                             </div>
                           )}
                           
-                          {/* Message content */}
+                          {/* Message content - MODIFIED TO HANDLE DIFFERENT MESSAGE TYPES */}
                           <div
                             className={`
                               py-2 px-4 rounded-2xl max-w-md w-fit break-words cursor-pointer shadow-sm
@@ -352,7 +366,47 @@ const Chat = () => {
                             )}
                           >
                             <div className="w-full" ref={index === messages.length - 1 ? messagesEndRef : null}>
-                              {msg.content}
+                              {/* Show different content based on message type */}
+                              {messageType === 'file-only' && (
+                                <div className="flex items-center gap-2">
+                                  <div className="p-2 bg-white bg-opacity-20 rounded-full">
+                                    <Paperclip className="size-4" />
+                                  </div>
+                                  <a 
+                                    href={`http://localhost:3500/apply/downloadCV/${msg.fileUrl}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="flex items-center hover:underline"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <span>{fileName}</span>
+                                  </a>
+                                </div>
+                              )}
+
+                              {messageType === 'text-only' && (
+                                <div>{msg.content}</div>
+                              )}
+
+                              {messageType === 'combined' && (
+                                <>
+                                  <div className="mb-2">{msg.content}</div>
+                                  <div className="flex items-center gap-2 pt-2 border-t border-white/20">
+                                    <div className="p-1 bg-white bg-opacity-20 rounded-full">
+                                      <Paperclip className="size-3" />
+                                    </div>
+                                    <a 
+                                      href={msg.fileUrl} 
+                                      target="_blank" 
+                                      rel="noopener noreferrer"
+                                      className="text-sm hover:underline"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <span>{fileName}</span>
+                                    </a>
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -386,17 +440,17 @@ const Chat = () => {
                   <Paperclip className="size-5 text-gray-700" />
                 </button>
                 {file && (
-        <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-md">
-          <span className="text-sm text-gray-700">{file.name}</span>
-          <button
-            onClick={()=> {setFile(null); inputRef.current.value=null}}
-            className="text-gray-500 hover:text-red-500"
-            title="Remove file"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      )}
+                  <div className="flex items-center gap-1 px-2 py-1 bg-gray-100 rounded-md">
+                    <span className="text-sm text-gray-700">{file.name}</span>
+                    <button
+                      onClick={()=> {setFile(null); inputRef.current.value=null}}
+                      className="text-gray-500 hover:text-red-500"
+                      title="Remove file"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
                 <input
                   type="text"
                   value={newMessage}

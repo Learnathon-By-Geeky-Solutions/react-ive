@@ -17,7 +17,7 @@ export const sendMessage = async (req, res) => {
 
         const file = req.file;
 
-        if (!message || !senderId || !receiverId) {
+        if (!senderId || !receiverId) {
             return res.status(400).json({ error: "Sender ID, Receiver ID, file , and message content are required" });
         }
 
@@ -45,7 +45,7 @@ export const sendMessage = async (req, res) => {
         const newMessage = await Message.create({
             senderId,
             receiverId,
-            content: message || null,
+            content: message ? message : null,
             fileUrl: file ? file.filename : null,
             fileType: file ? file.mimetype : null,
             conversationId: conversation._id

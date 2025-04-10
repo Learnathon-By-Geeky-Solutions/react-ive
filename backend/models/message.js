@@ -14,7 +14,7 @@ const MessageSchema = new mongoose.Schema(
       },
       content: {
         type: String,
-        required: true,
+        default: null,
       },
       fileUrl: {
         type: String,
