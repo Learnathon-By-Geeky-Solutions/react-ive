@@ -14,8 +14,10 @@ const Chat = () => {
   const inputRef = useRef();
   const [file,setFile] = useState(null);
   const { loading, conversations } = useGetConversations();
-  const { selectedConversation, setSelectedConversation } = useConversation();
-  const { messages, loading: messagesLoading } = useGetMessages();
+  const { selectedConversation, setSelectedConversation, deleteMessage } = useConversation();
+  const { messages: fetchedMessages, loading: messagesLoading } = useGetMessages();
+  // Local state for messages to ensure only message bubbles are re-rendered
+  const [localMessages, setLocalMessages] = useState([]);
   const { sendMessage, loading: sending } = useSendMessage();
   useListenMessages(); // Real-time message listening
   const [newMessage, setNewMessage] = useState("");
@@ -24,6 +26,13 @@ const Chat = () => {
   const [timestampMessageId, setTimestampMessageId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const menuRef = useRef(null);
+
+  // Sync local messages state with fetched messages
+  useEffect(() => {
+    if (fetchedMessages) {
+      setLocalMessages(fetchedMessages);
+    }
+  }, [fetchedMessages]);
 
   // Add event listener to handle clicks outside the menu
   useEffect(() => {
@@ -46,7 +55,7 @@ const Chat = () => {
 
   const handleSendMessage = () => {
     // if (newMessage.trim() === "") return;
-    sendMessage(newMessage,file);
+    sendMessage(newMessage, file);
     setNewMessage("");
     setFile(null);
     if (inputRef.current) {
@@ -81,25 +90,20 @@ const Chat = () => {
   
       const data = await response.json();
   
-      // After deletion, update the conversations state
-      const updatedConversations = conversations.filter(conv => conv.id !== conversationId);
-      // Assuming you have a function or state for updating the list of conversations
-      setConversations(updatedConversations);
-  
       // If the current conversation was deleted, reset the selected conversation
-      if (selectedConversation?.id === conversationId) {
+      if (selectedConversation?._id === conversationId) {
         setSelectedConversation(null);
       }
   
     } catch (error) {
       console.error('Error deleting conversation:', error);
-      throw new Error('Error deleting conversation');
+      alert('Error deleting conversation');
     }
   };
   
   const handleDeleteMessage = async (messageId) => {
     try {
-      const response = await fetch(`http://localhost:3500/message/delete/${messageId}`, {
+      const response = await fetch(`http://localhost:3500/message/deleteMessage/${messageId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -110,11 +114,12 @@ const Chat = () => {
         throw new Error('Failed to delete message');
       }
   
-      // If the message was successfully deleted, update the UI by removing it from the messages state
-      setMessages((prevMessages) => prevMessages.filter(msg => msg.id !== messageId));
+      deleteMessage(messageId);
+      // Update only the local messages state to re-render just the message bubbles
+      setLocalMessages(prevMessages => prevMessages.filter(msg => msg._id !== messageId));
     } catch (error) {
       console.error('Error deleting message:', error);
-      throw new Error('Error deleting message');
+      alert('Error deleting message');
     }
   };
   
@@ -129,7 +134,7 @@ const Chat = () => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100)
-  }, [messages]);
+  }, [localMessages]); // Changed from messages to localMessages
 
   // Filter conversations based on search query
   const filteredConversations = conversations.filter(conv => 
@@ -194,7 +199,7 @@ const Chat = () => {
                   <div
                     className={`
                       p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center
-                      ${selectedConversation?.id === conv.id 
+                      ${selectedConversation?._id === conv._id 
                         ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-md" 
                         : "bg-white text-gray-800 hover:bg-gray-50"}
                     `}
@@ -203,7 +208,7 @@ const Chat = () => {
                     {/* Avatar circle */}
                     <div className={`
                       w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0
-                      ${selectedConversation?.id === conv.id 
+                      ${selectedConversation?._id === conv._id 
                         ? "bg-white/20 text-white" 
                         : "bg-indigo-100 text-indigo-700"}
                     `}>
@@ -219,7 +224,7 @@ const Chat = () => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation(); // Prevent selecting conversation
-                              setOpenMenuConversationId(openMenuConversationId === conv.id ? null : conv.id);
+                              setOpenMenuConversationId(openMenuConversationId === conv._id ? null : conv._id);
                             }}
                             className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
@@ -230,11 +235,11 @@ const Chat = () => {
                     </div>
                   </div>
 
-                  {openMenuConversationId === conv.id && user?.userType === 'Company' && (
+                  {openMenuConversationId === conv._id && user?.userType === 'Company' && (
                     <div className="absolute right-0 top-full mt-1 z-10">
                       <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
                         <button
-                          onClick={() => handleDeleteConversation(conv.id)}
+                          onClick={() => handleDeleteConversation(conv._id)}
                           className="flex items-center w-full text-left px-4 py-2 text-red-500 hover:bg-red-50"
                         >
                           <FaTrashAlt className="mr-2" size={14} /> 
@@ -281,7 +286,7 @@ const Chat = () => {
                 </div>
               </div>
 
-              {/* Messages Container - MODIFIED */}
+              {/* Messages Container - Using localMessages instead of messages */}
               <div className="flex-1 p-6 overflow-y-auto bg-gray-50 space-y-4">
                 {messagesLoading ? (
                   <div className="flex items-center justify-center h-full">
@@ -291,17 +296,17 @@ const Chat = () => {
                       <div className="h-2 w-2 bg-indigo-600 rounded-full"></div>
                     </div>
                   </div>
-                ) : messages.length > 0 ? (
-                  messages.map((msg, index) => {
+                ) : localMessages.length > 0 ? (
+                  localMessages.map((msg, index) => {
                     // Check if this is the first message or the sender has changed
                     const showSenderName = 
                       index === 0 || 
-                      messages[index - 1].senderId !== msg.senderId;
+                      localMessages[index - 1].senderId !== msg.senderId;
                       
                     // Check if this is the last message for this sender
                     const isLastMessageForSender = 
-                      index === messages.length - 1 || 
-                      messages[index + 1].senderId !== msg.senderId;
+                      index === localMessages.length - 1 || 
+                      localMessages[index + 1].senderId !== msg.senderId;
                     
                     // Is this the user's message
                     const isUserMessage = msg.senderId === user.userId;
@@ -330,11 +335,11 @@ const Chat = () => {
                         {/* Message bubble with extended click area for trash */}
                         <div 
                           className="relative group"
-                          onMouseEnter={() => setHoveredMessageId(msg.id)}
+                          onMouseEnter={() => setHoveredMessageId(msg._id)}
                           onMouseLeave={() => setHoveredMessageId(null)}
                         >
                           {/* Trash can button with extended clickable area */}
-                          {isUserMessage && hoveredMessageId === msg.id && (
+                          {isUserMessage && hoveredMessageId === msg._id && (
                             <div 
                               className={`
                                 absolute top-0 z-10 h-full flex items-center
@@ -344,7 +349,7 @@ const Chat = () => {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation(); // Prevent timestamp toggle
-                                  handleDeleteMessage(msg.id);
+                                  handleDeleteMessage(msg._id);
                                 }}
                                 className="p-2 text-red-500 hover:text-red-700 bg-white bg-opacity-90 rounded-full shadow-sm"
                               >
@@ -362,10 +367,10 @@ const Chat = () => {
                                 : "bg-white text-gray-800"}
                             `}
                             onClick={() => setTimestampMessageId(
-                              timestampMessageId === msg.id ? null : msg.id
+                              timestampMessageId === msg._id ? null : msg._id
                             )}
                           >
-                            <div className="w-full" ref={index === messages.length - 1 ? messagesEndRef : null}>
+                            <div className="w-full" ref={index === localMessages.length - 1 ? messagesEndRef : null}>
                               {/* Show different content based on message type */}
                               {messageType === 'file-only' && (
                                 <div className="flex items-center gap-2">
@@ -411,7 +416,7 @@ const Chat = () => {
                           </div>
                         </div>
                         
-                        {(isLastMessageForSender || timestampMessageId === msg.id) && (
+                        {(isLastMessageForSender || timestampMessageId === msg._id) && (
                           <div className="text-xs text-gray-500 mt-1 px-2">
                             {formatTimestamp(msg.createdAt)}
                           </div>
