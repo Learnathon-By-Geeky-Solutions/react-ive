@@ -1,12 +1,21 @@
 import express from 'express';
 import { createPost, deletePost, getAllPosts, getPostByUserId, getSkills } from '../controllers/posts.controller.js';
+import rateLimit from "express-rate-limit";
 
 const postRouter = express.Router();
 
-postRouter.post("/createPost", createPost);
-postRouter.get("/getAllPosts", getAllPosts);
-postRouter.get("/getPostById/:id", getPostByUserId);
-postRouter.delete("/deletePost/:id", deletePost);
-postRouter.get("/getSkills", getSkills);
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  message: "Too many requests, please try again later.",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+postRouter.post("/createPost", generalLimiter, createPost);
+postRouter.get("/getAllPosts", generalLimiter,getAllPosts);
+postRouter.get("/getPostById/:id", generalLimiter,getPostByUserId);
+postRouter.delete("/deletePost/:id", generalLimiter, deletePost);
+postRouter.get("/getSkills", generalLimiter, getSkills);
 
 export default postRouter;
