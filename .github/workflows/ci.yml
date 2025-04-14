@@ -1,0 +1,28 @@
+name: CI - Backend Tests with Coverage for SonarCloud
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend-tests:
+    name: Backend Test Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run backend tests with coverage
+        working-directory: ./backend
+        run: npm test -- --coverage --watchAll=false
