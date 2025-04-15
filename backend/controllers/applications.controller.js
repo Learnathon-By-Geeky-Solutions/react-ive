@@ -1,19 +1,20 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import Application from '../models/applications.js'; // Import Mongoose model
+import Post from '../models/posts.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename  = fileURLToPath(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Apply to a post
 export const applyToPost = async (req, res) => {
   try {
     const { userId, status, name } = req.body;
     const { id: postId } = req.params;
-    const cvPath = req.file?.filename; // Get file name (since GridFS stores files separately)
+    const cvPath = req.file?.filename;
 
-    // Verify JWT manually (No auth middleware used)
     if (!req.headers.authorization) {
       return res.status(401).json({ error: 'Authorization token required' });
     }
@@ -45,16 +46,17 @@ export const applyToPost = async (req, res) => {
   }
 };
 
+// Get applications for a user
 export const getApplicationsById = async (req, res) => {
-  const { userId } = req.params; 
+  const { userId } = req.params;
 
   try {
     const applications = await Application.find({ userId })
       .populate({
         path: 'postId',
         populate: {
-          path: 'userId', 
-          model: 'User' // Assuming 'User' is the correct model name
+          path: 'userId',
+          model: 'User'
         }
       });
 
@@ -69,12 +71,22 @@ export const getApplicationsById = async (req, res) => {
   }
 };
 
-
+// ✅ Secure and validated application existence check
 export const applicationExists = async (req, res) => {
   const { postId, userId } = req.body;
 
+  if (
+    !mongoose.Types.ObjectId.isValid(postId) ||
+    !mongoose.Types.ObjectId.isValid(userId)
+  ) {
+    return res.status(400).json({ message: 'Invalid postId or userId' });
+  }
+
   try {
-    const exists = await Application.findOne({ postId, userId });
+    const exists = await Application.findOne({
+      postId: new mongoose.Types.ObjectId(postId),
+      userId: new mongoose.Types.ObjectId(userId),
+    });
 
     if (exists) {
       return res.status(200).json({ message: "exists" });
@@ -86,18 +98,17 @@ export const applicationExists = async (req, res) => {
   }
 };
 
+// Update application status
 export const updateApplicationStatus = async (req, res) => {
   const { applicationId } = req.params;
   const { status } = req.body;
 
   try {
-    // Validate if the status is allowed
     const allowedStatuses = ['PENDING', 'ACCEPTED', 'REJECTED', 'UNDER_REVIEW'];
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
 
-    // Find and update application
     const updatedApplication = await Application.findByIdAndUpdate(
       applicationId,
       { status, statusUpdatedAt: Date.now() },
@@ -114,49 +125,47 @@ export const updateApplicationStatus = async (req, res) => {
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }
 };
-export const downloadCV = async (req,res) => {
-  const {filename} = req.params;
+
+// Download CV file
+export const downloadCV = async (req, res) => {
+  const { filename } = req.params;
   const filePath = path.join(__dirname, "..", "middleware/uploads", filename);
 
-  res.download(filePath, filename, (err)=> {
-    if(err) {
+  res.download(filePath, filename, (err) => {
+    if (err) {
       console.error(err);
       return res.status(500).json({ error: "Internal server error" });
     }
-  })
-}
+  });
+};
 
-import Post from '../models/posts.js';
-
+// Get all applications for a guardian's posts
 export const getApplicationsForGuardian = async (req, res) => {
-  const { userId } = req.params; // Guardian ID
+  const { userId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     return res.status(400).json({ error: 'Invalid guardian userId' });
   }
 
   try {
-    // Step 1: Find all posts created by this guardian
     const posts = await Post.find({ userId }).select('_id');
-
     const postIds = posts.map(post => post._id);
 
     if (postIds.length === 0) {
       return res.status(404).json({ message: 'No posts found for this guardian' });
     }
 
-    // Step 2: Find all applications submitted to those posts
     const applications = await Application.find({ postId: { $in: postIds } })
-    .populate({
-      path: 'postId',
-      populate: {
-        path: 'userId', 
-        model: 'User' // Assuming 'User' is the correct model name
-      }
-    })
+      .populate({
+        path: 'postId',
+        populate: {
+          path: 'userId',
+          model: 'User'
+        }
+      })
       .sort({ createdAt: -1 });
 
-    return res.status(200).json({applications: applications});
+    return res.status(200).json({ applications });
   } catch (error) {
     console.error('Error fetching applications for guardian:', error);
     return res.status(500).json({ error: 'Server error while fetching applications' });
