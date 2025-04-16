@@ -23,6 +23,6 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
-      - name: Run backend tests with coverage
+      - name: Run backend tests with coverage (ESM support)
         working-directory: ./backend
-        run: npm test -- --coverage --watchAll=false
+        run: node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --watchAll=false
