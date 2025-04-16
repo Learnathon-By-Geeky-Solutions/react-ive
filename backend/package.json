@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "type": "module",
   "keywords": [],
