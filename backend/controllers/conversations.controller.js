@@ -1,6 +1,7 @@
 import Conversation from "../models/conversation.js";
 import User from "../models/users.js";
 import Message from "../models/message.js";
+import mongoose from "mongoose";
 
 export const getConversations = async (req, res) => {
   try {
@@ -40,8 +41,8 @@ export const createConversation = async (req, res) => {
     // Check if a conversation already exists
     const existingConversation = await Conversation.findOne({
       $or: [
-        { user1: senderId, user2: receiverId },
-        { user1: receiverId, user2: senderId },
+        { user1: mongoose.Types.ObjectId(senderId), user2:  mongoose.Types.ObjectId(receiverId) },
+        { user1:  mongoose.Types.ObjectId(receiverId), user2: mongoose.Types.ObjectId(senderId)},
       ],
     });
 
@@ -51,8 +52,8 @@ export const createConversation = async (req, res) => {
 
     // Create a new conversation
     const conversation = await Conversation.create({
-      user1: senderId,
-      user2: receiverId,
+      user1: mongoose.Types.ObjectId(senderId),
+      user2:  mongoose.Types.ObjectId(receiverId),
     });
 
     res.status(201).json(conversation);
