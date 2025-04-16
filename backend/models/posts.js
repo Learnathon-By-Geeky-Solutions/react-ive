@@ -9,6 +9,10 @@ const postSchema = new mongoose.Schema({
     deadline: { type: Date, default: null },
     class: {type: String, required: true},
     days: {type: Number, required: true},
+    time: {type: Date, default: null },
+    duration: {type: Number, required: true},
+    studentNum: {type: Number, required: true},
+    gender: {type: String, enum: ['MALE','FEMALE','OTHERS'], required: true},
     subject: [{type: mongoose.Schema.Types.ObjectId, ref: 'Subjects' }],
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Apply' }]
