@@ -8,7 +8,6 @@ import applicationRouter from './routes/application.routes.js';
 import {connectDB} from './db/connectDB.js'
 import messageRouter from './routes/message.routes.js';
 import conversationRouter from './routes/conversation.routes.js';
-import offerRouter from './routes/offer.routes.js';
 import hireRouter from './routes/hire.routes.js';
 
 dotenv.config();
@@ -25,7 +24,6 @@ app.use("/post", postRouter);
 app.use("/apply", applicationRouter);
 app.use("/message", messageRouter);
 app.use("/conversation", conversationRouter);
-app.use("/offer", offerRouter);
 app.use("/hires", hireRouter);
 
 server.listen(PORT, () => {
