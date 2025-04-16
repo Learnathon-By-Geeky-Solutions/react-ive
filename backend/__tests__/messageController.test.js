@@ -4,6 +4,7 @@ import Conversation from '../models/conversation.js';
 import { getReceiverSocketId, io } from '../socket/socket.js';
 import jwt from 'jsonwebtoken';
 import httpMocks from 'node-mocks-http';
+import mongoose from 'mongoose';
 
 jest.mock('../models/message.js');
 jest.mock('../models/conversation.js');
@@ -26,19 +27,22 @@ describe('Message Controller', () => {
     });
 
     it('should create a new message and emit socket if receiver is online', async () => {
+
+      const receiverId = new mongoose.Types.ObjectId();
+      const senderId = new mongoose.Types.ObjectId();
       const req = httpMocks.createRequest({
         headers: { authorization: 'Bearer testtoken' },
-        params: { id: 'receiver123' },
+        params: { id: receiverId },
         body: { message: 'Hello' },
         file: null,
       });
       const res = httpMocks.createResponse();
 
-      jwt.verify.mockReturnValue({ userId: 'sender123' });
+      jwt.verify.mockReturnValue({ userId: senderId });
 
       Conversation.findOne.mockResolvedValue(null);
-      Conversation.create.mockResolvedValue({ _id: 'conv123', user1: 'sender123', user2: 'receiver123' });
-      Message.create.mockResolvedValue({ _id: 'msg123', senderId: 'sender123', receiverId: 'receiver123', content: 'Hello' });
+      Conversation.create.mockResolvedValue({ _id: new mongoose.Types.ObjectId(), user1: senderId, user2: receiverId });
+      Message.create.mockResolvedValue({ _id: 'msg123', senderId: senderId, receiverId: senderId, content: 'Hello' });
       Conversation.findByIdAndUpdate.mockResolvedValue({});
       getReceiverSocketId.mockReturnValue('socket123');
       io.to.mockReturnValue({ emit: jest.fn() });
@@ -62,11 +66,11 @@ describe('Message Controller', () => {
     });
 
     it('should return 404 if conversation not found', async () => {
-      jwt.verify.mockReturnValue({ userId: 'sender123' });
+      jwt.verify.mockReturnValue({ userId: new mongoose.Types.ObjectId() });
 
       const req = httpMocks.createRequest({
         headers: { authorization: 'Bearer validtoken' },
-        params: { id: 'receiver123' },
+        params: { id: new mongoose.Types.ObjectId() },
       });
       const res = httpMocks.createResponse();
 
@@ -78,15 +82,18 @@ describe('Message Controller', () => {
     });
 
     it('should return messages if conversation exists', async () => {
-      jwt.verify.mockReturnValue({ userId: 'sender123' });
+      const senderId = new mongoose.Types.ObjectId();
+      const receiverId = new mongoose.Types.ObjectId();
+
+      jwt.verify.mockReturnValue({ userId: senderId.toString() });
 
       const req = httpMocks.createRequest({
         headers: { authorization: 'Bearer validtoken' },
-        params: { id: 'receiver123' },
+        params: { id: receiverId.toString() },
       });
       const res = httpMocks.createResponse();
 
-      Conversation.findOne.mockResolvedValue({ _id: 'conv123' });
+      Conversation.findOne.mockResolvedValue({ _id: new mongoose.Types.ObjectId() });
       Message.find.mockReturnValue({
         sort: jest.fn().mockReturnValue([{ content: 'Hi' }, { content: 'Hello' }]),
       });

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import Message from '../models/message.js';
 import Conversation from '../models/conversation.js';
 import { getReceiverSocketId, io } from '../socket/socket.js';
@@ -17,10 +18,12 @@ export const sendMessage = async (req, res) => {
 
         const file = req.file;
 
-        if (!senderId || !receiverId) {
-            return res.status(400).json({ error: "Sender ID, Receiver ID, file , and message content are required" });
+        // Check if senderId and receiverId are valid ObjectIds
+        if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
+            return res.status(400).json({ error: "Invalid sender or receiver ID" });
         }
 
+        // Validate senderId and receiverId cannot be the same
         if (senderId === receiverId) {
             return res.status(400).json({ error: "Sender and Receiver cannot be the same" });
         }
@@ -45,7 +48,7 @@ export const sendMessage = async (req, res) => {
         const newMessage = await Message.create({
             senderId,
             receiverId,
-            content: message ? message : null,
+            content: message? message: null,
             fileUrl: file ? file.filename : null,
             fileType: file ? file.mimetype : null,
             conversationId: conversation._id
@@ -79,6 +82,11 @@ export const getMessages = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const senderId = decoded.userId;
         const { id: receiverId } = req.params;
+
+        // Check if senderId and receiverId are valid ObjectIds
+        if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
+            return res.status(400).json({ error: "Invalid sender or receiver ID" });
+        }
 
         // Find the conversation
         const conversation = await Conversation.findOne({
