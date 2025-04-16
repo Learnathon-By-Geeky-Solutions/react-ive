@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import validator from 'validator';
 
-const baseUrl = process.env.FRONTEND_URL.replace(/^http:\/\//, 'https://');
+const baseUrl = process.env.FRONTEND_URL;
 
 
 const transporter = nodemailer.createTransport({
