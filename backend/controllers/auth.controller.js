@@ -8,13 +8,15 @@ const baseUrl = process.env.FRONTEND_URL;
 
 
 const transporter = nodemailer.createTransport({
-    service: 'Gmail',
+    host: 'smtp.gmail.com',
+    port: 465, 
+    secure: true, 
     auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
-});
-
+  });
+  
 export const register = async (req, res) => {
     try {
         const { name, email, password, userType } = req.body;
