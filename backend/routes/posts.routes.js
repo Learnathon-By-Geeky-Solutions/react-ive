@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPost, deletePost, getAllPosts, getPostByUserId, getSkills } from '../controllers/posts.controller.js';
+import { createPost, deletePost, getAllPosts, getPostByUserId, getSubjects } from '../controllers/posts.controller.js';
 import rateLimit from "express-rate-limit";
 
 const postRouter = express.Router();
@@ -16,6 +16,6 @@ postRouter.post("/createPost", generalLimiter, createPost);
 postRouter.get("/getAllPosts", generalLimiter,getAllPosts);
 postRouter.get("/getPostById/:id", generalLimiter,getPostByUserId);
 postRouter.delete("/deletePost/:id", generalLimiter, deletePost);
-postRouter.get("/getSkills", generalLimiter, getSkills);
+postRouter.get("/getSkills", generalLimiter, getSubjects);
 
 export default postRouter;
