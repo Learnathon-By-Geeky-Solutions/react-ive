@@ -1,34 +1,32 @@
 import jwt from 'jsonwebtoken';
 import Post from '../models/posts.js';
-import Skill from '../models/skills.js';
+import Subject from '../models/subjects.js'; // renamed from Skill
 import mongoose from 'mongoose';
 
 const verifyToken = (token) => {
-  if (!token) {
-    throw new Error('Authorization token missing');
-  }
+  if (!token) throw new Error('Authorization token missing');
   return jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
 };
 
-const validateJobPostData = ({ name, position, salary, experience, location, skills }) => {
-  if (!name || !position || !salary || !experience || !location) {
+const validateJobPostData = ({ name, salary, experience, location, subject, medium, class: className, days }) => {
+  if (!name || !salary || !experience || !location || !medium || !className || !days) {
     throw new Error('All fields are required');
   }
-  if (!Array.isArray(skills) || skills.length === 0) {
-    throw new Error('At least one skill is required');
+  if (!Array.isArray(subject) || subject.length === 0) {
+    throw new Error('At least one subject is required');
   }
 };
 
-// Function to upsert skills and return their IDs
-const upsertSkills = async (skills) => {
+// Upsert subjects and return their IDs
+const upsertSubjects = async (subjectNames) => {
   return Promise.all(
-    skills.map(async (skillName) => {
-      const skill = await Skill.findOneAndUpdate(
-        { name: skillName },   // Search by skill name
-        { name: skillName },   // If found, update (no actual change)
+    subjectNames.map(async (subjectName) => {
+      const subject = await Subject.findOneAndUpdate(
+        { name: subjectName },
+        { name: subjectName },
         { upsert: true, new: true, setDefaultsOnInsert: true }
       );
-      return skill._id;  // Return skill ID
+      return subject._id;
     })
   );
 };
@@ -42,39 +40,44 @@ export const createPost = async (req, res) => {
       return res.status(403).json({ error: 'Permission denied' });
     }
 
-    const { name, position, salary, experience, location, skills, deadline } = req.body;
-    validateJobPostData({ name, position, salary, experience, location, skills });
+    const { name, salary, experience, location, subject, medium, class: className, days, deadline } = req.body;
+    validateJobPostData({ name, salary, experience, location, subject, medium, class: className, days });
 
-    const skillIds = await upsertSkills(skills);
+    const subjectIds = await upsertSubjects(subject);
 
     const post = new Post({
       name,
-      position,
       salary: parseFloat(salary),
       experience: parseInt(experience),
       location,
-      userId: decoded.userId,  
+      medium,
+      class: className,
+      days: parseInt(days),
       deadline: deadline ? new Date(deadline) : null,
-      requiredSkills: skillIds
+      userId: decoded.userId,
+      subject: subjectIds,
     });
 
     await post.save();
     res.status(201).json(post);
   } catch (error) {
-    console.error(error);
+    console.error("Error creating post:", error.message);
     res.status(500).json({ error: error.message || 'Internal server error' });
   }
 };
 
-export const getAllPosts = async (req,res) => {
+export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().populate("userId").sort({createdAt:-1});
+    const posts = await Post.find()
+      .populate("userId", "name email")
+      .populate("subject", "name")
+      .sort({ createdAt: -1 });
     res.status(200).json(posts);
   } catch (error) {
     console.error("Error in getAllPosts:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
-}
+};
 
 export const getPostByUserId = async (req, res) => {
   try {
@@ -85,8 +88,8 @@ export const getPostByUserId = async (req, res) => {
     }
 
     const jobPosts = await Post.find({ userId: id })
-      .populate("userId", "name email") 
-      .populate("skills", "name"); 
+      .populate("userId", "name email")
+      .populate("subject", "name");
 
     if (!jobPosts || jobPosts.length === 0) {
       return res.status(404).json({ error: 'Job posts not found' });
@@ -104,17 +107,15 @@ export const deletePost = async (req, res) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "Post ID format" });
+      return res.status(400).json({ error: "Invalid Post ID format" });
     }
 
     const post = await Post.findById(id);
-
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
     }
 
     await Post.deleteOne({ _id: id });
-
     res.status(200).json({ message: "Post deleted successfully" });
   } catch (error) {
     console.error("Error deleting post:", error.message);
@@ -122,12 +123,12 @@ export const deletePost = async (req, res) => {
   }
 };
 
-export const getSkills = async (req, res) => {
+export const getSubjects = async (req, res) => {
   try {
-    const skills = await Skill.find(); 
-    res.status(200).json(skills);
+    const subjects = await Subject.find();
+    res.status(200).json(subjects);
   } catch (error) {
-    console.error('Error fetching skills:', error.message);
+    console.error('Error fetching subjects:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
