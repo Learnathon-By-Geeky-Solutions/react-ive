@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import validator from 'validator';
 import Message from '../models/message.js';
 import Conversation from '../models/conversation.js';
 import { getReceiverSocketId, io } from '../socket/socket.js';
@@ -15,20 +16,31 @@ export const sendMessage = async (req, res) => {
         const senderId = decoded.userId;
         const { message } = req.body;
         const { id: receiverId } = req.params;
-
         const file = req.file;
 
-        // Check if senderId and receiverId are valid ObjectIds
+        // Validate IDs
         if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
-            return res.status(400).json({ error: "Invalid sender or receiver ID" });
+            return res.status(400).json({ error: "Invalid user ID(s)" });
         }
 
-        // Validate senderId and receiverId cannot be the same
         if (senderId === receiverId) {
             return res.status(400).json({ error: "Sender and Receiver cannot be the same" });
         }
 
-        // Check if a conversation exists
+        // Validate message content
+        if (message && !validator.isLength(message, { min: 1, max: 5000 })) {
+            return res.status(400).json({ error: "Message must be between 1 and 5000 characters" });
+        }
+
+        // Validate file type (optional)
+        if (file) {
+            const allowedMimeTypes = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
+            if (!allowedMimeTypes.includes(file.mimetype)) {
+                return res.status(400).json({ error: "Invalid file type" });
+            }
+        }
+
+        // Check or create conversation
         let conversation = await Conversation.findOne({
             $or: [
                 { user1: senderId, user2: receiverId },
@@ -36,7 +48,6 @@ export const sendMessage = async (req, res) => {
             ]
         });
 
-        // If conversation doesn't exist, create one
         if (!conversation) {
             conversation = await Conversation.create({
                 user1: senderId,
@@ -44,22 +55,20 @@ export const sendMessage = async (req, res) => {
             });
         }
 
-        // Create and save the message
+        // Create message securely
         const newMessage = await Message.create({
-            senderId,
-            receiverId,
-            content: message? message: null,
-            fileUrl: file ? file.filename : null,
+            senderId: new mongoose.Types.ObjectId(senderId),
+            receiverId: new mongoose.Types.ObjectId(receiverId),
+            content: validator.escape(message),
+            fileUrl: file ? validator.escape(file.filename) : null,
             fileType: file ? file.mimetype : null,
             conversationId: conversation._id
         });
 
-        // Push the message into conversation
         await Conversation.findByIdAndUpdate(conversation._id, {
             $push: { messages: newMessage._id }
         });
 
-        // Emit message to receiver if online
         const receiverSocketId = getReceiverSocketId(receiverId);
         if (receiverSocketId) {
             io.to(receiverSocketId).emit("newMessage", newMessage);
@@ -83,12 +92,10 @@ export const getMessages = async (req, res) => {
         const senderId = decoded.userId;
         const { id: receiverId } = req.params;
 
-        // Check if senderId and receiverId are valid ObjectIds
         if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
-            return res.status(400).json({ error: "Invalid sender or receiver ID" });
+            return res.status(400).json({ error: "Invalid user ID(s)" });
         }
 
-        // Find the conversation
         const conversation = await Conversation.findOne({
             $or: [
                 { user1: senderId, user2: receiverId },
@@ -100,9 +107,7 @@ export const getMessages = async (req, res) => {
             return res.status(404).json({ error: "Conversation not found" });
         }
 
-        // Retrieve messages for the conversation
         const messages = await Message.find({ conversationId: conversation._id }).sort({ createdAt: "asc" });
-
         res.status(200).json(messages);
     } catch (error) {
         console.error("Error fetching messages:", error);
@@ -114,13 +119,15 @@ export const deleteMessage = async (req, res) => {
     try {
         const { messageId } = req.params;
 
-        // Check if the message exists
+        if (!mongoose.Types.ObjectId.isValid(messageId)) {
+            return res.status(400).json({ error: "Invalid message ID" });
+        }
+
         const message = await Message.findById(messageId);
         if (!message) {
             return res.status(404).json({ error: 'Message not found' });
         }
 
-        // Delete the message
         await Message.findByIdAndDelete(messageId);
 
         res.status(200).json({ message: 'Message deleted successfully' });

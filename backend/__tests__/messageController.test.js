@@ -4,7 +4,7 @@ import Conversation from '../models/conversation.js';
 import { getReceiverSocketId, io } from '../socket/socket.js';
 import jwt from 'jsonwebtoken';
 import httpMocks from 'node-mocks-http';
-import mongoose from 'mongoose';
+import mongoose, { mongo } from 'mongoose';
 
 jest.mock('../models/message.js');
 jest.mock('../models/conversation.js');
@@ -107,7 +107,7 @@ describe('Message Controller', () => {
 
   describe('deleteMessage', () => {
     it('should return 404 if message not found', async () => {
-      const req = httpMocks.createRequest({ params: { messageId: 'msg123' } });
+      const req = httpMocks.createRequest({ params: { messageId: new mongoose.Types.ObjectId() } });
       const res = httpMocks.createResponse();
 
       Message.findById.mockResolvedValue(null);
@@ -118,10 +118,10 @@ describe('Message Controller', () => {
     });
 
     it('should delete message successfully', async () => {
-      const req = httpMocks.createRequest({ params: { messageId: 'msg123' } });
+      const req = httpMocks.createRequest({ params: { messageId: new mongoose.Types.ObjectId() } });
       const res = httpMocks.createResponse();
 
-      Message.findById.mockResolvedValue({ _id: 'msg123' });
+      Message.findById.mockResolvedValue({ _id: new mongoose.Types.ObjectId()  });
       Message.findByIdAndDelete.mockResolvedValue();
 
       await deleteMessage(req, res);
