@@ -14,11 +14,32 @@ import {
   AlertTriangle,
   Clock,
   XCircle,
-  Building,
+  BookOpen,
   UserCircle,
+  Calendar,
+  Users,
+  Clock3,
 } from "lucide-react";
 
-const PostCard = ({ title, location, companyName, position, salaryRange, experience, skills, jobPostId, deadline, onDelete, userId }) => {
+const PostCard = ({ 
+  name, 
+  location, 
+  medium, 
+  studentClass, 
+  studentGender, 
+  preferredTutor, 
+  days, 
+  tutoringTime, 
+  tutoringDuration,
+  numberOfStudents,
+  subjects, 
+  salary, 
+  deadline, 
+  otherRequirements,
+  jobPostId, 
+  onDelete, 
+  userId 
+}) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -54,7 +75,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
 
   useEffect(() => {
     const checkApplication = async () => {
-      if (user?.userType === "student") {
+      if (user?.userType === "tutor") {
         try {
           const response = await fetch("http://localhost:3500/apply/exists", {
             method: "POST",
@@ -88,7 +109,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
     }
 
     if (!cv) {
-      toast.error("Please upload your CV.");
+      toast.error("Please upload your ID card image.");
       return;
     }
 
@@ -97,7 +118,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
     formData.append("name", user.name);
     formData.append("userId", user.userId);
     formData.append("status", "PENDING");
-    formData.append("deadline", deadline); // Include deadline in the formData
+    formData.append("deadline", deadline);
 
     try {
       setLoading(true);
@@ -133,7 +154,6 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
     setCv(file);
   };
 
-  // Updated delete function to prevent page refresh
   const handleDelete = async () => {
     try {
       setDeleteLoading(true);
@@ -148,9 +168,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
       const data = await response.json();
       if (response.ok) {
         toast.success(data.message || "Tuition post deleted successfully");
-        // Instead of refreshing, set this card as deleted
         setIsDeleted(true);
-        // If parent component provided an onDelete callback, call it
         if (typeof onDelete === "function") {
           onDelete(jobPostId);
         }
@@ -171,8 +189,8 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
     return null;
   }
 
-  // Split and trim skills
-  const skillsList = skills.split(",").map((skill) => skill.trim());
+  // Convert subjects array to list
+  const subjectsList = Array.isArray(subjects) ? subjects : (typeof subjects === 'string' ? subjects.split(',').map(subject => subject.trim()) : []);
 
   // Determine border color based on deadline
   const getBorderClass = () => {
@@ -197,13 +215,13 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
         <div className="flex justify-between items-center mb-4">
           <div className="flex-grow">
             <h3 className="text-2xl font-bold text-gray-800 truncate">
-              {title}
+              {name}
             </h3>
             <div className="flex flex-col gap-1 mt-1">
               <div className="flex items-center text-gray-600">
-                <Building className="w-4 h-4 mr-2 flex-shrink-0" />
+                <BookOpen className="w-4 h-4 mr-2 flex-shrink-0" />
                 <span className="text-sm font-medium truncate">
-                  {companyName}
+                  {medium} • {studentClass}
                 </span>
               </div>
               <div className="flex items-center text-gray-500">
@@ -212,7 +230,9 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
               </div>
               <div className="flex items-center text-gray-500">
                 <UserCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-                <span className="text-sm truncate">{position}</span>
+                <span className="text-sm truncate">
+                  Student: {studentGender} • Preferred: {preferredTutor}
+                </span>
               </div>
             </div>
           </div>
@@ -238,41 +258,66 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
               </span>
             </div>
             <div className="font-bold text-green-900 truncate">
-              {salaryRange}
+              {salary} Tk/month
             </div>
           </div>
 
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="flex items-center mb-1">
-              <Briefcase className="w-4 h-4 text-blue-600 mr-2" />
+              <Calendar className="w-4 h-4 text-blue-600 mr-2" />
               <span className="text-xs font-semibold text-blue-800">
-                EXPERIENCE
+                SCHEDULE
               </span>
             </div>
-            <div className="font-bold text-blue-900">{experience}</div>
+            <div className="font-bold text-blue-900 text-sm">
+              {days} days/week
+              <div className="text-xs text-blue-700 font-normal mt-1">{tutoringTime}</div>
+            </div>
           </div>
 
           <div className="bg-orange-50 p-3 rounded-lg">
             <div className="flex items-center mb-1">
-              <Code className="w-4 h-4 text-orange-600 mr-2" />
+              <Clock3 className="w-4 h-4 text-orange-600 mr-2" />
               <span className="text-xs font-semibold text-orange-800">
-                SKILLS
+                DETAILS
               </span>
             </div>
-            <div className="h-[52px] overflow-y-auto">
-              <div className="flex flex-wrap gap-1 items-center">
-                {skillsList.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="bg-orange-100 text-orange-900 text-[10px] px-2 py-0.5 rounded-full truncate"
-                  >
-                    {skill}
-                  </span>
-                ))}
+            <div className="font-bold text-orange-900 text-sm">
+              {tutoringDuration}
+              <div className="text-xs text-orange-700 font-normal mt-1">
+                {numberOfStudents} student{numberOfStudents > 1 ? 's' : ''}
               </div>
             </div>
           </div>
         </div>
+        
+        {/* Subjects section */}
+        <div className="mb-4">
+          <div className="flex items-center mb-2">
+            <Code className="w-4 h-4 text-indigo-600 mr-2" />
+            <span className="text-xs font-semibold text-indigo-800">
+              SUBJECTS
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {subjectsList.map((subject, index) => (
+              <span
+                key={index}
+                className="bg-indigo-100 text-indigo-900 text-xs px-2 py-1 rounded-full"
+              >
+                {subject}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Other requirements - only show if present */}
+        {otherRequirements && (
+          <div className="mb-4 bg-gray-50 p-3 rounded-lg">
+            <div className="text-xs font-semibold text-gray-700 mb-1">OTHER REQUIREMENTS</div>
+            <div className="text-sm text-gray-600 line-clamp-3">{otherRequirements}</div>
+          </div>
+        )}
 
         <div className="mb-4">
           {isDeadlineExpired ? (
@@ -312,7 +357,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
         </div>
 
         <div className="mt-auto">
-          {user && user.userId!==userId && (
+          {user && user.userId !== userId && user?.userType === "tutor" && (
             <>
               {isDeadlineExpired ? (
                 <div className="w-full flex items-center justify-center bg-gray-300 text-gray-600 py-3 rounded-lg">
@@ -340,8 +385,8 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
             </>
           )}
 
-          {/* Updated Delete Button with custom modal trigger */}
-          {user && user.userId===userId && (
+          {/* Delete Button for post creator */}
+          {user && user.userId === userId && (
             <button
               onClick={() => setShowDeleteModal(true)}
               className="w-full flex items-center justify-center bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors border border-gray-300"
@@ -358,8 +403,8 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
           <div className="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl relative">
             <div className="p-6 border-b flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-bold">Apply for {title}</h2>
-                <p className="text-gray-600 text-sm mt-1">at {companyName}</p>
+                <h2 className="text-2xl font-bold">Apply for {name}</h2>
+                <p className="text-gray-600 text-sm mt-1">{medium} • {studentClass}</p>
               </div>
               <button
                 onClick={() => setOpen(false)}
@@ -386,7 +431,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
                     <p className="text-gray-600 mb-2">
                       {cv
                         ? `${cv.name} (${Math.round(cv.size / 1024)}KB)`
-                        : "Upload your DU ID Card Image"}
+                        : "Upload your ID Card Image"}
                     </p>
                     <span className="text-xs text-gray-500">
                     JPG / JPEG / PNG
@@ -410,7 +455,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
         </div>
       )}
 
-      {/* Custom Delete Confirmation Modal - similar to the one in the image */}
+      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl relative">
@@ -420,7 +465,7 @@ const PostCard = ({ title, location, companyName, position, salaryRange, experie
                   <AlertTriangle className="h-10 w-10 text-red-400" />
                 </div>
                 <h3 className="text-xl font-medium text-red-500">
-                  Delete Post
+                  Delete Tuition Post
                 </h3>
               </div>
 
