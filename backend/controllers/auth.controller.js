@@ -2,6 +2,7 @@ import User from '../models/users.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
+import validator from 'validator';
 
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
@@ -11,33 +12,47 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-export const register = async (req,res) => {
+export const register = async (req, res) => {
     try {
-        const {name,email,password,userType} = req.body;
-        
+        const { name, email, password, userType } = req.body;
+
         if (!email || !name || !password || !userType) {
             return res.status(400).json({ message: 'Please provide all required fields: email, name, password, and userType.' });
         }
-      
+
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email address.' });
+        }
+
+        const normalizedEmail = validator.normalizeEmail(email);
+
         if (userType !== 'student' && userType !== 'guardian') {
             return res.status(400).json({ message: 'Invalid userType.' });
         }
 
-        const existingUser = await User.findOne({ email: { $eq: email } });    
-        if(existingUser) {
-            return res.status(400).json({error: "Email already registered"});
+        const existingUser = await User.findOne({ email: normalizedEmail });
+
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email already registered' });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-          
-        const newUser = new User({name,email,password: hashedPassword,userType});
+
+        const newUser = new User({
+            name,
+            email: normalizedEmail,
+            password: hashedPassword,
+            userType,
+        });
+
         await newUser.save();
 
-        res.status(201).json({message: "User registered"});
+        res.status(201).json({ message: 'User registered' });
     } catch (error) {
-        res.status(500).json({ error: "Internal Server Error" });
+        console.error(error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
-}
+};
 
 export const login = async (req, res) => {
     try {
@@ -47,19 +62,31 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: 'Email and password are required.' });
         }
 
-        const user = await User.findOne({ email: {$eq: email}});
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email format.' });
+        }
+
+        const normalizedEmail = validator.normalizeEmail(email);
+
+        const user = await User.findOne({ email: normalizedEmail });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
+
         if (!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
 
         const token = jwt.sign(
-            { userId: user._id, name: user.name,email: user.email, userType: user.userType },
+            {
+                userId: user._id,
+                name: user.name,
+                email: user.email,
+                userType: user.userType,
+            },
             process.env.JWT_SECRET,
             { expiresIn: '3d' }
         );
@@ -68,7 +95,7 @@ export const login = async (req, res) => {
             message: 'Login successful.',
             token,
             user: {
-                id: user.id,
+                id: user._id,
                 email: user.email,
                 name: user.name,
                 userType: user.userType,
@@ -88,7 +115,13 @@ export const sendMail = async (req, res) => {
             return res.status(400).json({ message: 'Please provide your email address.' });
         }
 
-        const user = await User.findOne({ email: {$eq: email} });
+        if (!validator.isEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email format.' });
+        }
+
+        const normalizedEmail = validator.normalizeEmail(email);
+
+        const user = await User.findOne({ email: normalizedEmail });
 
         if (!user) {
             return res.status(404).json({ message: 'User not found.' });
@@ -100,10 +133,9 @@ export const sendMail = async (req, res) => {
             { expiresIn: '10m' }
         );
 
-
         const mailOptions = {
             from: `"TutionMedia" <${process.env.EMAIL_USER}>`,
-            to: email,
+            to: normalizedEmail,
             subject: 'Reset Password',
             html: `
                 <p>Hello ${user.name},</p>
@@ -153,7 +185,6 @@ export const resetPassword = async (req, res) => {
         res.status(500).json({ message: 'Server error, please try again later.' });
     }
 };
-
 
 export const getUserById = async (req, res) => {
     try {
