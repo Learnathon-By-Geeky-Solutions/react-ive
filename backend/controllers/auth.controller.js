@@ -4,6 +4,9 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import validator from 'validator';
 
+const baseUrl = process.env.FRONTEND_URL.replace(/^http:\/\//, 'https://');
+
+
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
@@ -140,7 +143,7 @@ export const sendMail = async (req, res) => {
             html: `
                 <p>Hello ${user.name},</p>
                 <p>You requested a password reset. Click the link below to reset your password:</p>
-                <a href="${process.env.FRONTEND_URL}/reset-password?token=${resetToken}">Reset Password</a>
+                <a href="${baseUrl}/reset-password?token=${resetToken}">Reset Password</a>
                 <p>This link is valid for 10 minutes.</p>
             `,
         };
