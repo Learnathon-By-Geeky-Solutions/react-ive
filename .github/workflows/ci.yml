@@ -25,4 +25,10 @@ jobs:
 
       - name: Run backend tests with coverage (ESM support)
         working-directory: ./backend
-        run: node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --watchAll=false
+        run: npm test
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          organization: Learnathon-By-Geeky-Solutions  # Your SonarCloud organization
+          token: ${{ secrets.SONAR_TOKEN }}
