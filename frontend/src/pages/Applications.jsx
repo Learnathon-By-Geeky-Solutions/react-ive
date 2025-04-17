@@ -28,14 +28,7 @@ const JobApplications = () => {
 
         if (!userId) throw new Error("User ID is not available");
 
-        let response;
-        if (user.userType === "student") {
-          response = await fetch(`http://localhost:3500/apply/getApplicationsById/${userId}`);
-        } else if (user.userType === "guardian") {
-          response = await fetch(`http://localhost:3500/apply/getApplicationsForGuardian/${userId}`);
-        } else {
-          throw new Error("User type is not valid");
-        }
+        const response = await fetch(`http://localhost:3500/apply/getApplicationsById/${userId}`)
 
         const data = await response.json();
         const apps = data.applications||[];

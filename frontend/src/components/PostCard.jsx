@@ -75,7 +75,6 @@ const PostCard = ({
 
   useEffect(() => {
     const checkApplication = async () => {
-      if (user?.userType === "tutor") {
         try {
           const response = await fetch("http://localhost:3500/apply/exists", {
             method: "POST",
@@ -93,7 +92,6 @@ const PostCard = ({
         } catch (error) {
           console.error(error);
         }
-      }
     };
     checkApplication();
   }, [user, jobPostId]);

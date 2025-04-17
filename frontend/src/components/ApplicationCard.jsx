@@ -268,40 +268,39 @@ const ApplicationCard = ({ app, onStatusChange }) => {
             <span className="text-sm">{app.postId.location}</span>
           </div>
 
-          {/* Action Buttons */}
-          <div className={`flex ${user.userType === 'student' ? "justify-center" : "justify-between"} space-x-2`}>
-            <a 
-              href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
-              download 
+        {/* Action Buttons */}
+        <div className="flex justify-between space-x-2">
+          <a 
+            href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
+            download 
+            className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+          >
+            <Download className="mr-2" />
+            View CV
+          </a>
+
+          {(status === 'PENDING' || status === 'UNDER-REVIEW') && 
+          app.postId.userId._id === user.userId && (
+            <button
+              onClick={() => setModalState({
+                statusChangeModal: true,
+                confirmationModal: false,
+                selectedStatus: null
+              })}
               className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
             >
-              <Download className="mr-2" />
-              View CV
-            </a>
+              Change Status
+            </button>
+          )}
 
-            {user.userType === 'guardian' && (status === 'PENDING' || status === 'UNDER-REVIEW') && (
-              <button
-                onClick={() => setModalState({
-                  statusChangeModal: true,
-                  confirmationModal: false,
-                  selectedStatus: null
-                })}
-                className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
-              >
-                Change Status
-              </button>
-            )}
-
-            {user.userType === 'guardian' && (
-              <button
-                onClick={() => handleChat(app.userId)}
-                className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
-              >
-                <MessageCircle className="mr-2" />
-                Chat
-              </button>
-            )}
-          </div>
+          <button
+            onClick={() => handleChat(app.userId)}
+            className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+          >
+            <MessageCircle className="mr-2" />
+            Chat
+          </button>
+        </div>
         </div>
       </div>
     </>
