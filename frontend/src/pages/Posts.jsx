@@ -167,7 +167,7 @@ const Posts = () => {
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold tracking-wide">Tuition Posts</h1>
-            {user && user.userType === "guardian" && (
+            {user && (
               <button
                 className="bg-white text-purple-600 rounded-full px-6 py-3 shadow-md transition-all hover:bg-gray-100"
                 onClick={() => navigate("/create-post")}

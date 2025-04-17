@@ -22,9 +22,9 @@ export const applyToPost = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (decoded.userType !== 'student') {
-      return res.status(403).json({ error: 'Permission denied' });
-    }
+    // if (decoded.userType !== 'student') {
+    //   return res.status(403).json({ error: 'Permission denied' });
+    // }
 
     if (!cvPath) {
       return res.status(400).json({ error: 'CV file is required' });
@@ -51,19 +51,27 @@ export const getApplicationsById = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    const applications = await Application.find({ userId })
-      .populate({
-        path: 'postId',
-        populate: {
-          path: 'userId',
-          model: 'User'
-        }
-      });
+    // First, find all posts created by this user
+    const userPosts = await Post.find({ userId });
+    const userPostIds = userPosts.map(post => post._id);
+    
+    // Find applications where userId matches OR the application is for a post created by the user
+    const applications = await Application.find({
+      $or: [
+        { userId },                   // Applications made by the user
+        { postId: { $in: userPostIds } } // Applications to posts created by the user
+      ]
+    }).populate({
+      path: 'postId',
+      populate: {
+        path: 'userId',
+        model: 'User'
+      }
+    });
 
     if (!applications.length) {
       return res.status(404).json({ message: "No applications found for this user" });
     }
-
     res.status(200).json({ applications });
   } catch (error) {
     console.error(error.message);
