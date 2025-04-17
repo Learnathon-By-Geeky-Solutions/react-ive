@@ -23,6 +23,21 @@ jobs:
         working-directory: ./backend
         run: npm ci
 
-      - name: Run backend tests with coverage (ESM support)
+      - name: Run backend tests with coverage
         working-directory: ./backend
-        run: node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --watchAll=false
+        run: npm test
+
+      - name: Set up Java 17 for SonarScanner
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Verify java version
+        run: java --version
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  
+          SONAR_HOST_URL: https://sonarcloud.io

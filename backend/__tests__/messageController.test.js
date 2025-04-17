@@ -4,7 +4,7 @@ import Conversation from '../models/conversation.js';
 import { getReceiverSocketId, io } from '../socket/socket.js';
 import jwt from 'jsonwebtoken';
 import httpMocks from 'node-mocks-http';
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 
 jest.mock('../models/message.js');
 jest.mock('../models/conversation.js');
