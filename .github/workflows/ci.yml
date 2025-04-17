@@ -25,10 +25,16 @@ jobs:
 
       - name: Run backend tests with coverage
         working-directory: ./backend
-        run: npm test -- --coverage
+        run: npm test
+
+      - name: Set up Java 17 for SonarScanner
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 17
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v1
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  
           SONAR_HOST_URL: https://sonarcloud.io
