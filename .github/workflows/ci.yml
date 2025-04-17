@@ -33,8 +33,13 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
+      - name: Verify java version
+        run: java --version
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v1
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}  
           SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          args: -X
