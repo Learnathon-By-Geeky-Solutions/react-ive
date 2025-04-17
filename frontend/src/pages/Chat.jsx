@@ -204,6 +204,12 @@ const Chat = () => {
                         : "bg-white text-gray-800 hover:bg-gray-50"}
                     `}
                     onClick={() => setSelectedConversation(conv)}
+                    onKeyDown={(e) => {
+                      if(e.key==='Enter' || e.key===" ") {
+                        setSelectedConversation(conv);
+                      }
+                    }}
+                    role="button"
                   >
                     {/* Avatar circle */}
                     <div className={`
@@ -360,16 +366,25 @@ const Chat = () => {
                           
                           {/* Message content - MODIFIED TO HANDLE DIFFERENT MESSAGE TYPES */}
                           <div
-                            className={`
-                              py-2 px-4 rounded-2xl max-w-md w-fit break-words cursor-pointer shadow-sm
-                              ${isUserMessage
-                                ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white" 
-                                : "bg-white text-gray-800"}
-                            `}
-                            onClick={() => setTimestampMessageId(
-                              timestampMessageId === msg._id ? null : msg._id
-                            )}
-                          >
+                              className={`
+                                py-2 px-4 rounded-2xl max-w-md w-fit break-words cursor-pointer shadow-sm
+                                ${isUserMessage
+                                  ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white" 
+                                  : "bg-white text-gray-800"}
+                              `}
+                              onClick={() => setTimestampMessageId(
+                                timestampMessageId === msg._id ? null : msg._id
+                              )}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  setTimestampMessageId(
+                                    timestampMessageId === msg._id ? null : msg._id
+                                  );
+                                }
+                              }}
+                              tabIndex={0} // Makes the div focusable
+                              role="button" // Indicates the element is a button for screen readers
+                            >
                             <div className="w-full" ref={index === localMessages.length - 1 ? messagesEndRef : null}>
                               {/* Show different content based on message type */}
                               {messageType === 'file-only' && (
