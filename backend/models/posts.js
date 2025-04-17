@@ -7,7 +7,7 @@ const postSchema = new mongoose.Schema({
     experience: { type: Number, required: true },
     location: { type: String, required: true },
     deadline: { type: Date, default: null },
-    class: {type: String, required: true},
+    classtype: {type: String, required: true},
     days: {type: Number, required: true},
     time: {type: Date, default: null },
     duration: {type: Number, required: true},

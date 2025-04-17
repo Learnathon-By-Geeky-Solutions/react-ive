@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { 
@@ -55,41 +55,60 @@ const SuccessModal = ({ isOpen, onClose, onConfirm }) => {
 // Main CreatePost Component
 const CreatePost = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    medium: "",
-    class: "",
-    studentGender: "",
-    preferredTutor: "",
-    days: "",
-    tutoringTime: "",
-    tutoringDuration: "",
-    numberOfStudents: 1,
-    subjects: [],
-    salary: "",
-    location: "",
-    otherRequirements: "",
-    deadline: "",
+    name: "",           // Matches backend
+    salary: "",         // Matches backend
+    experience: "0",    // Added to match backend 
+    location: "",       // Matches backend
+    subject: [],        // Changed from subjects to subject to match backend
+    medium: "",         // Matches backend, but enum is BANGLA or ENGLISH
+    classtype: "",      // This is the correct field name
+    days: "",           // Matches backend
+    deadline: "",       // Matches backend
+    time: "",           // Time field for backend
+    duration: "",       // Duration field for backend
+    studentNum: "1",    // Student number field for backend
+    gender: "",         // Gender field for backend - MALE, FEMALE, OTHERS
+    otherRequirements: "", // Not used in backend
   });
 
-  const mediumOptions = ["Bangla Medium", "English Medium", "English Version"];
-  const genderOptions = ["Male", "Female", "Other"];
+  const [subjectInput, setSubjectInput] = useState("");
+  const [subjects, setSubjects] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
+  // Updated to match schema enums
+  const mediumOptions = ["BANGLA", "ENGLISH"];
+  const genderOptions = ["MALE", "FEMALE", "OTHERS"];
   
   const getClassOptions = (medium) => {
     const baseOptions = ["Pre-School", "KG"];
     const commonClasses = ["Class 1", "Class 2", "Class 3", "Class 4", "Class 5", "Class 6", "Class 7", "Class 8", "Class 9", "Class 10"];
     
-    if (medium === "English Medium") {
+    if (medium === "ENGLISH") {
       return [...baseOptions, ...commonClasses, "O Level", "A Level"];
     } else {
-      // For Bangla Medium and English Version
+      // For BANGLA
       return [...baseOptions, ...commonClasses, "SSC", "HSC"];
     }
   };
 
-  const [subjectInput, setSubjectInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
+  // Fetch subjects from backend
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const response = await fetch("http://localhost:3500/post/subjects");
+        if (response.ok) {
+          const data = await response.json();
+          setSubjects(data);
+        }
+      } catch (error) {
+        console.error("Error fetching subjects:", error);
+      }
+    };
+
+    fetchSubjects();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -97,18 +116,28 @@ const CreatePost = () => {
     setFormData(prevData => {
       // If medium changes, reset class selection
       if (name === "medium" && prevData.medium !== value) {
-        return { ...prevData, [name]: value, class: "" };
+        return { ...prevData, [name]: value, classtype: "" };
       }
       return { ...prevData, [name]: value };
     });
   };
 
   const handleSubjectAdd = () => {
-    if (subjectInput.trim() && !formData.subjects.includes(subjectInput.trim())) {
-      setFormData((prevData) => ({
-        ...prevData,
-        subjects: [...prevData.subjects, subjectInput.trim()],
-      }));
+    if (subjectInput.trim()) {
+      // Check if the subject already exists in the formData
+      if (!formData.subject.some(s => s.name === subjectInput.trim())) {
+        // Find matching subject from fetched subjects or create a new one
+        const existingSubject = subjects.find(s => 
+          s.name.toLowerCase() === subjectInput.trim().toLowerCase()
+        );
+        
+        const newSubject = existingSubject || { _id: null, name: subjectInput.trim() };
+        
+        setFormData((prevData) => ({
+          ...prevData,
+          subject: [...prevData.subject, newSubject],
+        }));
+      }
       setSubjectInput("");
     }
   };
@@ -116,7 +145,7 @@ const CreatePost = () => {
   const handleSubjectDelete = (subjectToDelete) => {
     setFormData((prevData) => ({
       ...prevData,
-      subjects: prevData.subjects.filter((subject) => subject !== subjectToDelete),
+      subject: prevData.subject.filter((subject) => subject.name !== subjectToDelete.name),
     }));
   };
 
@@ -125,6 +154,29 @@ const CreatePost = () => {
       e.preventDefault();
       handleSubjectAdd();
     }
+  };
+
+  const prepareDataForSubmission = () => {
+    // Extract just the subject names for the API request
+    const subjectNames = formData.subject.map(s => s.name);
+    
+    // Prepare data for the backend
+    return {
+      name: formData.name,
+      salary: formData.salary,
+      experience: formData.experience,
+      location: formData.location,
+      subject: subjectNames, // Send subject names, backend will upsert them
+      medium: formData.medium,
+      classtype: formData.classtype,
+      days: formData.days,
+      deadline: formData.deadline ? formData.deadline : null,
+      // Format time to match backend expectation
+      time: formData.time ? `2000-01-01T${formData.time}:00.000Z` : null,
+      duration: formData.duration,
+      studentNum: formData.studentNum,
+      gender: formData.gender,
+    };
   };
 
   const handleSubmit = async (e) => {
@@ -138,22 +190,26 @@ const CreatePost = () => {
         return;
       }
       
+      const dataToSubmit = prepareDataForSubmission();
+      
       const response = await fetch("http://localhost:3500/post/createPost", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSubmit),
       });
 
       if (response.ok) {
         setShowModal(true);
       } else {
-        alert("Error creating post!");
+        const errorData = await response.json();
+        alert(`Error creating post: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error("Error:", error);
+      alert("Error creating post. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -203,7 +259,7 @@ const CreatePost = () => {
               />
             </div>
             
-            {/* Medium */}
+            {/* Medium - Updated to match enum values */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <BookOpen className="w-5 h-5 text-gray-400" />
@@ -217,19 +273,21 @@ const CreatePost = () => {
               >
                 <option value="" disabled>Select Medium *</option>
                 {mediumOptions.map((option) => (
-                  <option key={option} value={option}>{option}</option>
+                  <option key={option} value={option}>
+                    {option === "BANGLA" ? "Bangla Medium" : "English Medium"}
+                  </option>
                 ))}
               </select>
             </div>
             
-            {/* Class */}
+            {/* Class Type */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <BookOpen className="w-5 h-5 text-gray-400" />
               </div>
               <select
-                name="class"
-                value={formData.class}
+                name="classtype"
+                value={formData.classtype}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 appearance-none bg-white"
                 required
@@ -242,42 +300,42 @@ const CreatePost = () => {
               </select>
             </div>
             
-            {/* Student Gender */}
+            {/* Preferred Tutor Gender - Updated to match enum values */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <User className="w-5 h-5 text-gray-400" />
               </div>
               <select
-                name="studentGender"
-                value={formData.studentGender}
-                onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 appearance-none bg-white"
-                required
-              >
-                <option value="" disabled>Student Gender *</option>
-                {genderOptions.map((option) => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-              </select>
-            </div>
-            
-            {/* Preferred Tutor */}
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <User className="w-5 h-5 text-gray-400" />
-              </div>
-              <select
-                name="preferredTutor"
-                value={formData.preferredTutor}
+                name="gender"
+                value={formData.gender}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 appearance-none bg-white"
                 required
               >
                 <option value="" disabled>Preferred Tutor Gender *</option>
                 {genderOptions.map((option) => (
-                  <option key={option} value={option}>{option}</option>
+                  <option key={option} value={option}>
+                    {option === "MALE" ? "Male" : option === "FEMALE" ? "Female" : "Other"}
+                  </option>
                 ))}
               </select>
+            </div>
+            
+            {/* Experience - Added to match backend */}
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <CalendarIcon className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="number"
+                name="experience"
+                placeholder="Experience Required (in years) *"
+                min="0"
+                value={formData.experience}
+                onChange={handleChange}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                required
+              />
             </div>
             
             {/* Tutoring Days */}
@@ -304,10 +362,10 @@ const CreatePost = () => {
                 <Clock className="w-5 h-5 text-gray-400" />
               </div>
               <input
-                type="text"
-                name="tutoringTime"
-                placeholder="Tutoring Time (e.g. '5:00 PM' or 'Negotiable') *"
-                value={formData.tutoringTime}
+                type="time"
+                name="time"
+                placeholder="Tutoring Time *"
+                value={formData.time}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 required
@@ -320,10 +378,11 @@ const CreatePost = () => {
                 <Clock3 className="w-5 h-5 text-gray-400" />
               </div>
               <input
-                type="text"
-                name="tutoringDuration"
-                placeholder="Tutoring Duration (e.g. '1.5 hours' or '2 hours') *"
-                value={formData.tutoringDuration}
+                type="number"
+                name="duration"
+                placeholder="Tutoring Duration (in minutes) *"
+                min="15"
+                value={formData.duration}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 required
@@ -337,10 +396,10 @@ const CreatePost = () => {
               </div>
               <input
                 type="number"
-                name="numberOfStudents"
+                name="studentNum"
                 placeholder="Number of Students *"
                 min="1"
-                value={formData.numberOfStudents}
+                value={formData.studentNum}
                 onChange={handleChange}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
                 required
@@ -438,12 +497,12 @@ const CreatePost = () => {
               </button>
               
               <div className="flex flex-wrap gap-2 mt-2">
-                {formData.subjects.map((subject, index) => (
+                {formData.subject.map((subject, index) => (
                   <div 
                     key={index} 
                     className="bg-gradient-to-r from-indigo-400 to-purple-500 text-white px-3 py-1 rounded-full flex items-center gap-1"
                   >
-                    <span>{subject}</span>
+                    <span>{subject.name}</span>
                     <button
                       type="button"
                       onClick={() => handleSubjectDelete(subject)}
@@ -454,6 +513,9 @@ const CreatePost = () => {
                   </div>
                 ))}
               </div>
+              {formData.subject.length === 0 && (
+                <p className="text-red-500 text-sm">At least one subject is required</p>
+              )}
             </div>
           </div>
           
@@ -461,7 +523,7 @@ const CreatePost = () => {
           <div className="mt-8">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || formData.subject.length === 0}
               className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full py-3 font-semibold text-lg shadow-md hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 disabled:opacity-70"
             >
               {loading ? "Creating..." : "Create Tuition Post"}
