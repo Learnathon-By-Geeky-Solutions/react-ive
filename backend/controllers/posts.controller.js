@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import Post from '../models/posts.js';
-import Subject from '../models/subjects.js'; // renamed from Skill
+import Subject from '../models/subjects.js';
 import mongoose from 'mongoose';
 
 const verifyToken = (token) => {
@@ -8,8 +8,8 @@ const verifyToken = (token) => {
   return jwt.verify(token.split(' ')[1], process.env.JWT_SECRET);
 };
 
-const validateJobPostData = ({ name, salary, experience, location, subject, medium, class: className, days }) => {
-  if (!name || !salary || !experience || !location || !medium || !className || !days) {
+const validateJobPostData = ({ name, salary, experience, location, subject, medium, classtype, days }) => {
+  if (!name || !salary || !experience || !location || !medium || !classtype || !days) {
     throw new Error('All fields are required');
   }
   if (!Array.isArray(subject) || subject.length === 0) {
@@ -36,12 +36,9 @@ export const createPost = async (req, res) => {
     const token = req.headers.authorization;
     const decoded = verifyToken(token);
 
-    if (decoded.userType !== 'guardian') {
-      return res.status(403).json({ error: 'Permission denied' });
-    }
 
-    const { name, salary, experience, location, subject, medium, class: className, days, deadline } = req.body;
-    validateJobPostData({ name, salary, experience, location, subject, medium, class: className, days });
+    const { name, salary, experience, location, subject, medium, classtype, days, deadline, time, duration, studentNum, gender } = req.body;
+    validateJobPostData({ name, salary, experience, location, subject, medium, classtype, days });
 
     const subjectIds = await upsertSubjects(subject);
 
@@ -51,9 +48,13 @@ export const createPost = async (req, res) => {
       experience: parseInt(experience),
       location,
       medium,
-      class: className,
+      classtype,
       days: parseInt(days),
       deadline: deadline ? new Date(deadline) : null,
+      time: time ? new Date(time) : null,
+      duration: parseInt(duration),
+      studentNum: parseInt(studentNum),
+      gender,
       userId: decoded.userId,
       subject: subjectIds,
     });
