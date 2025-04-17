@@ -22,20 +22,20 @@ import {
 } from "lucide-react";
 
 const PostCard = ({ 
-  name, 
+  title, 
   location, 
+  guardianName,
   medium, 
-  studentClass, 
-  studentGender, 
-  preferredTutor, 
+  salaryRange, 
+  experience,
+  classType,
   days, 
-  tutoringTime, 
-  tutoringDuration,
-  numberOfStudents,
+  time,
+  duration,
+  studentNum,
   subjects, 
-  salary, 
+  gender,
   deadline, 
-  otherRequirements,
   jobPostId, 
   onDelete, 
   userId 
@@ -189,8 +189,33 @@ const PostCard = ({
     return null;
   }
 
-  // Convert subjects array to list
-  const subjectsList = Array.isArray(subjects) ? subjects : (typeof subjects === 'string' ? subjects.split(',').map(subject => subject.trim()) : []);
+  // Process subjects string to array - fixed to handle string passed from Posts component
+  const getSubjectsList = () => {
+    // If subjects is a string (which it should be from the Posts page)
+    if (typeof subjects === 'string') {
+      // Check if it's the default "No subjects listed" message
+      if (subjects === "No subjects listed") {
+        return [];
+      }
+      // Otherwise split by comma and trim
+      return subjects.split(',').map(subject => subject.trim());
+    }
+    // Handle edge cases
+    return Array.isArray(subjects) ? subjects : [];
+  };
+
+  const subjectsList = getSubjectsList();
+
+  // Format time if available
+  const formatTime = (timeString) => {
+    if (!timeString) return "Flexible";
+    try {
+      const timeObj = new Date(timeString);
+      return timeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      return timeString;
+    }
+  };
 
   // Determine border color based on deadline
   const getBorderClass = () => {
@@ -215,13 +240,13 @@ const PostCard = ({
         <div className="flex justify-between items-center mb-4">
           <div className="flex-grow">
             <h3 className="text-2xl font-bold text-gray-800 truncate">
-              {name}
+              {title}
             </h3>
             <div className="flex flex-col gap-1 mt-1">
               <div className="flex items-center text-gray-600">
                 <BookOpen className="w-4 h-4 mr-2 flex-shrink-0" />
                 <span className="text-sm font-medium truncate">
-                  {medium} • {studentClass}
+                  {medium} • Class: {classType}
                 </span>
               </div>
               <div className="flex items-center text-gray-500">
@@ -231,7 +256,7 @@ const PostCard = ({
               <div className="flex items-center text-gray-500">
                 <UserCircle className="w-4 h-4 mr-2 flex-shrink-0" />
                 <span className="text-sm truncate">
-                  Student: {studentGender} • Preferred: {preferredTutor}
+                  Posted by: {guardianName} • Preferred: {gender}
                 </span>
               </div>
             </div>
@@ -258,7 +283,7 @@ const PostCard = ({
               </span>
             </div>
             <div className="font-bold text-green-900 truncate">
-              {salary} Tk/month
+              {salaryRange} Tk/month
             </div>
           </div>
 
@@ -271,7 +296,7 @@ const PostCard = ({
             </div>
             <div className="font-bold text-blue-900 text-sm">
               {days} days/week
-              <div className="text-xs text-blue-700 font-normal mt-1">{tutoringTime}</div>
+              <div className="text-xs text-blue-700 font-normal mt-1">{formatTime(time)}</div>
             </div>
           </div>
 
@@ -283,9 +308,9 @@ const PostCard = ({
               </span>
             </div>
             <div className="font-bold text-orange-900 text-sm">
-              {tutoringDuration}
+              {duration}
               <div className="text-xs text-orange-700 font-normal mt-1">
-                {numberOfStudents} student{numberOfStudents > 1 ? 's' : ''}
+                {studentNum} student{studentNum > 1 ? 's' : ''}
               </div>
             </div>
           </div>
@@ -300,24 +325,26 @@ const PostCard = ({
             </span>
           </div>
           <div className="flex flex-wrap gap-2">
-            {subjectsList.map((subject, index) => (
-              <span
-                key={index}
-                className="bg-indigo-100 text-indigo-900 text-xs px-2 py-1 rounded-full"
-              >
-                {subject}
-              </span>
-            ))}
+            {subjectsList.length > 0 ? (
+              subjectsList.map((subject, index) => (
+                <span
+                  key={index}
+                  className="bg-indigo-100 text-indigo-900 text-xs px-2 py-1 rounded-full"
+                >
+                  {subject}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-500 text-sm">No subjects listed</span>
+            )}
           </div>
         </div>
 
-        {/* Other requirements - only show if present */}
-        {otherRequirements && (
-          <div className="mb-4 bg-gray-50 p-3 rounded-lg">
-            <div className="text-xs font-semibold text-gray-700 mb-1">OTHER REQUIREMENTS</div>
-            <div className="text-sm text-gray-600 line-clamp-3">{otherRequirements}</div>
-          </div>
-        )}
+        {/* Experience requirement */}
+        <div className="mb-4 bg-gray-50 p-3 rounded-lg">
+          <div className="text-xs font-semibold text-gray-700 mb-1">EXPERIENCE REQUIRED</div>
+          <div className="text-sm text-gray-600">{experience}</div>
+        </div>
 
         <div className="mb-4">
           {isDeadlineExpired ? (
@@ -357,7 +384,7 @@ const PostCard = ({
         </div>
 
         <div className="mt-auto">
-          {user && user.userId !== userId && user?.userType === "tutor" && (
+          {user && user.userId !== userId && (
             <>
               {isDeadlineExpired ? (
                 <div className="w-full flex items-center justify-center bg-gray-300 text-gray-600 py-3 rounded-lg">
@@ -403,8 +430,8 @@ const PostCard = ({
           <div className="bg-white rounded-lg w-full max-w-md mx-auto shadow-xl relative">
             <div className="p-6 border-b flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-bold">Apply for {name}</h2>
-                <p className="text-gray-600 text-sm mt-1">{medium} • {studentClass}</p>
+                <h2 className="text-2xl font-bold">Apply for {title}</h2>
+                <p className="text-gray-600 text-sm mt-1">{medium} • {classType}</p>
               </div>
               <button
                 onClick={() => setOpen(false)}
