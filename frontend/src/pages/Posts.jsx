@@ -9,7 +9,10 @@ import {
   MapPin,
   DollarSign,
   Clock,
-  Code,
+  CalendarDays,
+  Pencil,
+  BookOpen,
+  Users,
   X
 } from 'lucide-react';
 
@@ -20,7 +23,10 @@ const Posts = () => {
   const [salary, setSalary] = useState("");
   const [location, setLocation] = useState("");
   const [experience, setExperience] = useState("");
-  const [skills, setSkills] = useState("");
+  const [medium, setMedium] = useState("");
+  const [subject, setSubject] = useState("");
+  const [classType, setClassType] = useState("");
+  const [gender, setGender] = useState("");
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -46,7 +52,7 @@ const Posts = () => {
   // Apply filters whenever filter values change
   useEffect(() => {
     applyFilters();
-  }, [search, salary, location, experience, skills]);
+  }, [search, salary, location, experience, medium, subject, classType, gender]);
 
   // Initial fetch of all posts
   useEffect(() => {
@@ -58,12 +64,11 @@ const Posts = () => {
   const applyFilters = () => {
     let filtered = [...allPosts];
 
-    // Filter by search term (job title, company name, position)
+    // Filter by search term (tuition title, position)
     if (search.trim() !== "") {
       const searchLower = search.toLowerCase();
       filtered = filtered.filter(post => 
         post.name?.toLowerCase().includes(searchLower) ||
-        post.position?.toLowerCase().includes(searchLower) ||
         post.user?.name?.toLowerCase().includes(searchLower)
       );
     }
@@ -96,21 +101,40 @@ const Posts = () => {
       }
     }
 
-    // Filter by skills
-    if (skills.trim() !== "") {
-      const skillsArray = skills.toLowerCase().split(',').map(s => s.trim());
+    // Filter by medium
+    if (medium.trim() !== "") {
+      const mediumUpper = medium.toUpperCase();
+      filtered = filtered.filter(post => 
+        post.medium === mediumUpper
+      );
+    }
+
+    // Filter by subject
+    if (subject.trim() !== "") {
+      const subjectLower = subject.toLowerCase();
       filtered = filtered.filter(post => {
-        if (!post.requiredSkills || post.requiredSkills.length === 0) return false;
+        if (!post.subject || post.subject.length === 0) return false;
         
-        const postSkills = post.requiredSkills.map(reqSkill => 
-          reqSkill.skill.name.toLowerCase()
-        );
-        
-        // Check if any of the required skills match any of the filter skills
-        return skillsArray.some(skill => 
-          postSkills.some(postSkill => postSkill.includes(skill))
+        return post.subject.some(sub => 
+          sub.name?.toLowerCase().includes(subjectLower)
         );
       });
+    }
+
+    // Filter by class type
+    if (classType.trim() !== "") {
+      const classTypeLower = classType.toLowerCase();
+      filtered = filtered.filter(post => 
+        post.classtype?.toLowerCase().includes(classTypeLower)
+      );
+    }
+
+    // Filter by gender
+    if (gender.trim() !== "") {
+      const genderUpper = gender.toUpperCase();
+      filtered = filtered.filter(post => 
+        post.gender === genderUpper
+      );
     }
 
     setFilteredPosts(filtered);
@@ -127,10 +151,13 @@ const Posts = () => {
     setSalary("");
     setExperience("");
     setLocation("");
-    setSkills("");
+    setMedium("");
+    setSubject("");
+    setClassType("");
+    setGender("");
     setFilteredPosts(allPosts); // Reset to show all posts
   };
-  console.log(filteredPosts)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
@@ -166,7 +193,7 @@ const Posts = () => {
               </div>
               <input
                 type="text"
-                placeholder="Search for job title, skills..."
+                placeholder="Search for tuition title..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
@@ -247,18 +274,86 @@ const Posts = () => {
             
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <Code className="w-5 h-5 text-gray-400" />
+                <BookOpen className="w-5 h-5 text-gray-400" />
+              </div>
+              <select
+                value={medium}
+                onChange={(e) => setMedium(e.target.value)}
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+              >
+                <option value="">Select Medium</option>
+                <option value="BANGLA">Bangla</option>
+                <option value="ENGLISH">English</option>
+              </select>
+              {medium && (
+                <button 
+                  onClick={() => setMedium("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
+            </div>
+            
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <Pencil className="w-5 h-5 text-gray-400" />
               </div>
               <input
                 type="text"
-                placeholder="Skills (comma separated)"
-                value={skills}
-                onChange={(e) => setSkills(e.target.value)}
+                placeholder="Subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
-              {skills && (
+              {subject && (
                 <button 
-                  onClick={() => setSkills("")}
+                  onClick={() => setSubject("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
+            </div>
+            
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <CalendarDays className="w-5 h-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Class Type (Online/Offline)"
+                value={classType}
+                onChange={(e) => setClassType(e.target.value)}
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+              />
+              {classType && (
+                <button 
+                  onClick={() => setClassType("")}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                </button>
+              )}
+            </div>
+            
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <Users className="w-5 h-5 text-gray-400" />
+              </div>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+              >
+                <option value="">Select Gender Preference</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHERS">Others</option>
+              </select>
+              {gender && (
+                <button 
+                  onClick={() => setGender("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
                   <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
@@ -268,10 +363,10 @@ const Posts = () => {
           </div>
         </div>
 
-        {/* Latest Job Openings */}
+        {/* Tuition Posts */}
         <div className="p-6 pt-0">
           <h2 className="text-2xl font-semibold mb-4">
-            {loading ? "Loading job openings..." : "Latest Job Openings"}
+            {loading ? "Loading tuition posts..." : "Latest Tuition Posts"}
           </h2>
 
           {loading ? (
@@ -286,28 +381,34 @@ const Posts = () => {
                   userId={post.userId._id}
                   title={post.name}
                   location={post.location}
-                  companyName={post.userId.name}
-                  position={post.position}
+                  guardianName={post.userId.name}
+                  medium={post.medium}
                   salaryRange={`${post.salary}`}
                   experience={`${post.experience} years`}
-                  skills={
-                    post.skills && post.skills.length > 0
-                      ? post.skills.map((reqSkill) => reqSkill.skill.name).join(", ")
-                      : "No skills listed"
+                  subjects={
+                    post.subject && post.subject.length > 0
+                      ? post.subject.map((sub) => sub.name).join(", ")
+                      : "No subjects listed"
                   }
+                  classType={post.classtype}
+                  days={post.days}
+                  duration={`${post.duration} hour(s)`}
+                  studentNum={post.studentNum}
+                  gender={post.gender}
                   deadline={post.deadline}
+                  time={post.time}
                   jobPostId={post._id}
                 />
               ))}
             </div>
           ) : (
             <div className="text-center py-10 text-gray-500">
-              <p className="text-xl">No job postings found matching your criteria.</p>
+              <p className="text-xl">No tuition postings found matching your criteria.</p>
               <button
                 onClick={resetFilters}
                 className="mt-4 bg-indigo-500 text-white px-6 py-2 rounded-full hover:bg-indigo-600 transition-all duration-300"
               >
-                View All Jobs
+                View All Tuitions
               </button>
             </div>
           )}

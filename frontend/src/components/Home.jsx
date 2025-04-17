@@ -22,7 +22,7 @@ const Home = () => {
     <div className="bg-gray-100 text-gray-800">
       <Navbar toggleDrawer={toggleDrawer} />
       <Hero />
-      {/* <LatestJobPosts /> */}
+      <LatestJobPosts />
       <About />
       <Services />
       <Footer />
