@@ -9,7 +9,7 @@
 - naimjeem
 
 ## Project Description
-Add your project description here.
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_react-ive&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Learnathon-By-Geeky-Solutions_react-ive)
 
 ## Getting Started
 1. Clone the repository
