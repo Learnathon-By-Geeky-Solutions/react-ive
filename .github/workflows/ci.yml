@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
 
       - name: fetch main branch
-        run:  git fetch origin main:main
+        run: git fetch origin main:main
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
