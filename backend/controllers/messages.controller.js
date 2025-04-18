@@ -57,8 +57,8 @@ export const sendMessage = async (req, res) => {
 
         // Create message securely
         const newMessage = await Message.create({
-            senderId: new mongoose.Types.ObjectId(senderId),
-            receiverId: new mongoose.Types.ObjectId(receiverId),
+            senderId,
+            receiverId,
             content: validator.escape(message),
             fileUrl: file ? validator.escape(file.filename) : null,
             fileType: file ? file.mimetype : null,
