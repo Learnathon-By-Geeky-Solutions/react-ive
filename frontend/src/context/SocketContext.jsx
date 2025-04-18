@@ -1,10 +1,13 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import io from "socket.io-client";
 import { useAuth } from "./AuthContext";
+import PropTypes from "prop-types";
 
 const SocketContext = createContext({ socket: null, onlineUsers: [] });
 
-export const useSocketContext = () => {return useContext(SocketContext)};
+export const useSocketContext = () => {
+  return useContext(SocketContext);
+};
 
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
@@ -12,8 +15,10 @@ export const SocketContextProvider = ({ children }) => {
   const { user } = useAuth();
 
   useEffect(() => {
+    let newSocket;
+
     if (user) {
-      const newSocket = io("http://localhost:3500", {
+      newSocket = io("http://localhost:3500", {
         query: { userId: user.userId },
       });
       setSocket(newSocket);
@@ -21,17 +26,25 @@ export const SocketContextProvider = ({ children }) => {
       newSocket.on("getOnlineUsers", (users) => {
         setOnlineUsers(users);
       });
-
-      return () => newSocket.disconnect();
-    } else {
-      if (socket) {
-        socket.disconnect();
-        setSocket(null);
-      }
     }
-  }, [user]);
 
-  return <SocketContext.Provider value={{ socket, onlineUsers }}>{children}</SocketContext.Provider>;
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+      setSocket(null);
+    };
+  }, [user]); 
+
+  const contextValue = useMemo(() => ({ socket, onlineUsers }), [socket, onlineUsers]);
+
+  return (
+    <SocketContext.Provider value={contextValue}>
+      {children}
+    </SocketContext.Provider>
+  );
 };
 
-
+SocketContextProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};
