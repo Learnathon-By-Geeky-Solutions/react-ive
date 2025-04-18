@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const AuthContext = createContext();
 
@@ -43,11 +44,22 @@ export const AuthProvider = ({ children }) => {
     navigate('/login'); 
   };
 
+  const contextValue = useMemo(() => ({
+    user,
+    isLoading,
+    login,
+    logout
+  }), [user, isLoading, login, logout]);
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired
 };
 
 export const useAuth = () => useContext(AuthContext);
