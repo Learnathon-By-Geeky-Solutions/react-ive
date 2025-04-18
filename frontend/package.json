@@ -20,6 +20,7 @@
     "@tailwindcss/vite": "^4.0.9",
     "framer-motion": "^12.4.10",
     "lucide-react": "^0.474.0",
+    "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.5.2",
