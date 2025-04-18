@@ -22,9 +22,13 @@ export const applyToPost = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // if (decoded.userType !== 'student') {
-    //   return res.status(403).json({ error: 'Permission denied' });
-    // }
+    if(!decoded) {
+      return res.status(401).json({error: "No token found"});
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(postId)) {
+      return res.status(400).json({ error: "Invalid user ID(s)" });
+    }
 
     if (!cvPath) {
       return res.status(400).json({ error: 'CV file is required' });
@@ -32,8 +36,8 @@ export const applyToPost = async (req, res) => {
 
     const application = new Application({
       userName: name,
-      userId: new mongoose.Types.ObjectId(userId),
-      postId: new mongoose.Types.ObjectId(postId),
+      userId,
+      postId,
       cvPath,
       status,
     });
@@ -92,8 +96,8 @@ export const applicationExists = async (req, res) => {
 
   try {
     const exists = await Application.findOne({
-      postId: new mongoose.Types.ObjectId(postId),
-      userId: new mongoose.Types.ObjectId(userId),
+      postId,
+      userId,
     });
 
     if (exists) {
