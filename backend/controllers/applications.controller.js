@@ -96,10 +96,13 @@ export const applicationExists = async (req, res) => {
 
   try {
     const exists = await Application.findOne({
-      postId,
-      userId,
+      $or: [{
+        postId,
+        userId
+      }]
     });
 
+    
     if (exists) {
       return res.status(200).json({ message: "exists" });
     }

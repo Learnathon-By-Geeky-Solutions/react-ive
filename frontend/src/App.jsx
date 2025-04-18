@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as  Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import Home from './components/Home';
@@ -17,7 +17,6 @@ import HiresPage from './pages/Hires';
 
 const App = () => {
   return (
-    // <Router>
       <div>
         <Routes>
           <Route path='/' element={<Home />}/>
@@ -36,7 +35,6 @@ const App = () => {
           <Route path='/hires' element={<HiresPage />}/>
         </Routes>
       </div>
-    // </Router>
   );
 };
 
