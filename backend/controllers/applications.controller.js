@@ -97,8 +97,8 @@ export const applicationExists = async (req, res) => {
   try {
     const exists = await Application.findOne({
       $or: [{
-        postId: mongoose.Types.ObjectId(postId),
-        userId: mongoose.Types.ObjectId(userId)
+        postId: new mongoose.Types.ObjectId(postId),
+        userId: new mongoose.Types.ObjectId(userId)
       }]
     });
 
