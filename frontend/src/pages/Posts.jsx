@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
 import Navbar from "../components/Navbar";
-import { 
-  Search, 
+import {
+  Search,
   RefreshCw,
   MapPin,
   DollarSign,
@@ -13,12 +13,67 @@ import {
   Pencil,
   BookOpen,
   Users,
-  X
-} from 'lucide-react';
+  X,
+} from "lucide-react";
+
+// Separate component for rendering posts
+const PostList = ({ loading, filteredPosts, resetFilters }) => {
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (filteredPosts.length === 0) {
+    return (
+      <div className="text-center py-10 text-gray-500">
+        <p className="text-xl">No tuition postings found matching your criteria.</p>
+        <button
+          onClick={resetFilters}
+          className="mt-4 bg-indigo-500 text-white px-6 py-2 rounded-full hover:bg-indigo-600 transition-all duration-300"
+        >
+          View All Tuitions
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {filteredPosts.map((post) => (
+        <PostCard
+          key={post._id}
+          userId={post.userId._id}
+          title={post.name}
+          location={post.location}
+          guardianName={post.userId.name}
+          medium={post.medium}
+          salaryRange={`${post.salary}`}
+          experience={`${post.experience} years`}
+          subjects={
+            post.subject && post.subject.length > 0
+              ? post.subject.map((sub) => sub.name).join(", ")
+              : "No subjects listed"
+          }
+          classType={post.classtype}
+          days={post.days}
+          duration={`${post.duration} hour(s)`}
+          studentNum={post.studentNum}
+          gender={post.gender}
+          deadline={post.deadline}
+          time={post.time}
+          jobPostId={post._id}
+        />
+      ))}
+    </div>
+  );
+};
 
 const Posts = () => {
-  const [allPosts, setAllPosts] = useState([]); // Store all posts
-  const [filteredPosts, setFilteredPosts] = useState([]); // Store filtered posts
+  const [allPosts, setAllPosts] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const [search, setSearch] = useState("");
   const [salary, setSalary] = useState("");
   const [location, setLocation] = useState("");
@@ -31,17 +86,14 @@ const Posts = () => {
 
   const navigate = useNavigate();
   const { user } = useAuth();
-  const userId = user?.userId;
 
-  // Fetch all posts only once
   const fetchAllPosts = async () => {
     try {
       setLoading(true);
-        const res = await fetch("http://localhost:3500/post/getAllPosts");
-        const data = await res.json();
-        setAllPosts(data);
-        setFilteredPosts(data); // Initialize filtered posts with all posts
-      
+      const res = await fetch("http://localhost:3500/post/getAllPosts");
+      const data = await res.json();
+      setAllPosts(data);
+      setFilteredPosts(data);
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -49,12 +101,10 @@ const Posts = () => {
     }
   };
 
-  // Apply filters whenever filter values change
   useEffect(() => {
     applyFilters();
   }, [search, salary, location, experience, medium, subject, classType, gender]);
 
-  // Initial fetch of all posts
   useEffect(() => {
     if (user?.userId) {
       fetchAllPosts();
@@ -64,77 +114,65 @@ const Posts = () => {
   const applyFilters = () => {
     let filtered = [...allPosts];
 
-    // Filter by search term (tuition title, position)
     if (search.trim() !== "") {
       const searchLower = search.toLowerCase();
-      filtered = filtered.filter(post => 
-        post.name?.toLowerCase().includes(searchLower) ||
-        post.user?.name?.toLowerCase().includes(searchLower)
+      filtered = filtered.filter(
+        (post) =>
+          post.name?.toLowerCase().includes(searchLower) ||
+          post.user?.name?.toLowerCase().includes(searchLower)
       );
     }
 
-    // Filter by salary range
     if (salary.trim() !== "") {
       const salaryValue = parseFloat(salary);
       if (!isNaN(salaryValue)) {
-        filtered = filtered.filter(post => 
-          post.salary && parseFloat(post.salary) >= salaryValue
+        filtered = filtered.filter(
+          (post) => post.salary && parseFloat(post.salary) >= salaryValue
         );
       }
     }
 
-    // Filter by location
     if (location.trim() !== "") {
       const locationLower = location.toLowerCase();
-      filtered = filtered.filter(post => 
+      filtered = filtered.filter((post) =>
         post.location?.toLowerCase().includes(locationLower)
       );
     }
 
-    // Filter by experience
     if (experience.trim() !== "") {
       const expValue = parseFloat(experience);
       if (!isNaN(expValue)) {
-        filtered = filtered.filter(post => 
-          post.experience && parseFloat(post.experience) <= expValue
+        filtered = filtered.filter(
+          (post) => post.experience && parseFloat(post.experience) <= expValue
         );
       }
     }
 
-    // Filter by medium
     if (medium.trim() !== "") {
       const mediumUpper = medium.toUpperCase();
-      filtered = filtered.filter(post => 
-        post.medium === mediumUpper
-      );
+      filtered = filtered.filter((post) => post.medium === mediumUpper);
     }
 
-    // Filter by subject
     if (subject.trim() !== "") {
       const subjectLower = subject.toLowerCase();
-      filtered = filtered.filter(post => {
+      filtered = filtered.filter((post) => {
         if (!post.subject || post.subject.length === 0) return false;
-        
-        return post.subject.some(sub => 
+        return post.subject.some((sub) =>
           sub.name?.toLowerCase().includes(subjectLower)
         );
       });
     }
 
-    // Filter by class type
     if (classType.trim() !== "") {
       const classTypeLower = classType.toLowerCase();
-      filtered = filtered.filter(post => 
+      filtered = filtered.filter((post) =>
         post.classtype?.toLowerCase().includes(classTypeLower)
       );
     }
 
-    // Filter by gender
     if (gender.trim() !== "") {
       const genderUpper = gender.toUpperCase();
-      filtered = filtered.filter(post => 
-        post.gender === genderUpper
-      );
+      filtered = filtered.filter((post) => post.gender === genderUpper);
     }
 
     setFilteredPosts(filtered);
@@ -155,13 +193,12 @@ const Posts = () => {
     setSubject("");
     setClassType("");
     setGender("");
-    setFilteredPosts(allPosts); // Reset to show all posts
+    setFilteredPosts(allPosts);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
-      
       <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-16">
         {/* Header */}
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6">
@@ -200,7 +237,7 @@ const Posts = () => {
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
               {search && (
-                <button 
+                <button
                   onClick={() => setSearch("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
@@ -208,7 +245,7 @@ const Posts = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <DollarSign className="w-5 h-5 text-gray-400" />
@@ -221,7 +258,7 @@ const Posts = () => {
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
               {salary && (
-                <button 
+                <button
                   onClick={() => setSalary("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
@@ -229,7 +266,7 @@ const Posts = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <Clock className="w-5 h-5 text-gray-400" />
@@ -242,7 +279,7 @@ const Posts = () => {
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
               {experience && (
-                <button 
+                <button
                   onClick={() => setExperience("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
@@ -250,7 +287,7 @@ const Posts = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <MapPin className="w-5 h-5 text-gray-400" />
@@ -263,7 +300,7 @@ const Posts = () => {
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
               {location && (
-                <button 
+                <button
                   onClick={() => setLocation("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
@@ -271,7 +308,7 @@ const Posts = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <BookOpen className="w-5 h-5 text-gray-400" />
@@ -286,7 +323,7 @@ const Posts = () => {
                 <option value="ENGLISH">English</option>
               </select>
               {medium && (
-                <button 
+                <button
                   onClick={() => setMedium("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
@@ -294,7 +331,7 @@ const Posts = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <Pencil className="w-5 h-5 text-gray-400" />
@@ -307,7 +344,7 @@ const Posts = () => {
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
               {subject && (
-                <button 
+                <button
                   onClick={() => setSubject("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
@@ -315,7 +352,7 @@ const Posts = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <CalendarDays className="w-5 h-5 text-gray-400" />
@@ -328,7 +365,7 @@ const Posts = () => {
                 className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
               />
               {classType && (
-                <button 
+                <button
                   onClick={() => setClassType("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
@@ -336,7 +373,7 @@ const Posts = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <Users className="w-5 h-5 text-gray-400" />
@@ -352,7 +389,7 @@ const Posts = () => {
                 <option value="OTHERS">Others</option>
               </select>
               {gender && (
-                <button 
+                <button
                   onClick={() => setGender("")}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
@@ -368,50 +405,11 @@ const Posts = () => {
           <h2 className="text-2xl font-semibold mb-4">
             {loading ? "Loading tuition posts..." : "Latest Tuition Posts"}
           </h2>
-
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-          ) : filteredPosts.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPosts.map((post) => (
-                <PostCard
-                  key={post._id}
-                  userId={post.userId._id}
-                  title={post.name}
-                  location={post.location}
-                  guardianName={post.userId.name}
-                  medium={post.medium}
-                  salaryRange={`${post.salary}`}
-                  experience={`${post.experience} years`}
-                  subjects={
-                    post.subject && post.subject.length > 0
-                      ? post.subject.map((sub) => sub.name).join(", ")
-                      : "No subjects listed"
-                  }
-                  classType={post.classtype}
-                  days={post.days}
-                  duration={`${post.duration} hour(s)`}
-                  studentNum={post.studentNum}
-                  gender={post.gender}
-                  deadline={post.deadline}
-                  time={post.time}
-                  jobPostId={post._id}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-10 text-gray-500">
-              <p className="text-xl">No tuition postings found matching your criteria.</p>
-              <button
-                onClick={resetFilters}
-                className="mt-4 bg-indigo-500 text-white px-6 py-2 rounded-full hover:bg-indigo-600 transition-all duration-300"
-              >
-                View All Tuitions
-              </button>
-            </div>
-          )}
+          <PostList
+            loading={loading}
+            filteredPosts={filteredPosts}
+            resetFilters={resetFilters}
+          />
         </div>
       </div>
     </div>

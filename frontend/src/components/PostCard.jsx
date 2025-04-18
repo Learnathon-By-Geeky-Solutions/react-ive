@@ -225,7 +225,7 @@ const PostCard = ({
     }
     return "border-indigo-500 hover:border-purple-500";
   };
-
+  console.log(alreadyApplied)
   return (
     <>
       <div
