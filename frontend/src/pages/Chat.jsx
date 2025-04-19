@@ -64,10 +64,10 @@ const Chat = () => {
   }, [localMessages]);
 
   // Message handling functions
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if ((!newMessage || newMessage.trim() === '') && !file) return;
     
-    sendMessage(newMessage, file);
+    await sendMessage(newMessage, file);
     setNewMessage("");
     setFile(null);
     if (inputRef.current) {
@@ -140,6 +140,9 @@ const Chat = () => {
     return name ? name[0].toUpperCase() : '?';
   };
 
+  // Calculate if send button should be disabled
+  const isSendButtonDisabled = sending || (!newMessage.trim() && !file);
+
   // Filter conversations based on search query
   const filteredConversations = conversations.filter(conv => 
     conv.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -173,21 +176,16 @@ const Chat = () => {
         className="relative group"
         ref={openMenuConversationId === conv._id ? menuRef : null}
       >
-        <div
+        <button
           className={`
-            p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center
+            p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center w-full text-left
             ${selectedConversation?._id === conv._id 
               ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-md" 
               : "bg-white text-gray-800 hover:bg-gray-50"}
           `}
           onClick={() => setSelectedConversation(conv)}
-          onKeyDown={(e) => {
-            if(e.key === 'Enter' || e.key === " ") {
-              setSelectedConversation(conv);
-            }
-          }}
-          role="button"
-          tabIndex={0}
+          aria-label={`Select conversation with ${conv.name}`}
+          aria-selected={selectedConversation?._id === conv._id}
         >
           {/* Avatar circle */}
           <div className={`
@@ -202,22 +200,24 @@ const Chat = () => {
           <div className="flex-1 min-w-0">
             <div className="flex justify-between items-center">
               <span className="font-medium truncate">{conv.name}</span>
-              
-              {/* 3-Dot Menu for Conversation - Show only for companies */}
-              {user?.userType === 'Company' && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent selecting conversation
-                    setOpenMenuConversationId(openMenuConversationId === conv._id ? null : conv._id);
-                  }}
-                  className="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <FaEllipsisV size={14} />
-                </button>
-              )}
             </div>
           </div>
-        </div>
+        </button>
+        
+        {/* 3-Dot Menu for Conversation - Show only for companies */}
+        {user?.userType === 'Company' && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent selecting conversation
+              setOpenMenuConversationId(openMenuConversationId === conv._id ? null : conv._id);
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity p-2"
+            aria-label="Open conversation menu"
+            aria-expanded={openMenuConversationId === conv._id}
+          >
+            <FaEllipsisV size={14} />
+          </button>
+        )}
 
         {openMenuConversationId === conv._id && user?.userType === 'Company' && (
           <div className="absolute right-0 top-full mt-1 z-10">
@@ -225,6 +225,7 @@ const Chat = () => {
               <button
                 onClick={() => handleDeleteConversation(conv._id)}
                 className="flex items-center w-full text-left px-4 py-2 text-red-500 hover:bg-red-50"
+                aria-label={`Delete conversation with ${conv.name}`}
               >
                 <FaTrashAlt className="mr-2" size={14} /> 
                 <span>Delete</span>
@@ -250,6 +251,7 @@ const Chat = () => {
               rel="noopener noreferrer"
               className="flex items-center hover:underline"
               onClick={(e) => e.stopPropagation()}
+              aria-label={`Download file: ${fileName}`}
             >
               <span>{fileName}</span>
             </a>
@@ -273,6 +275,7 @@ const Chat = () => {
                 rel="noopener noreferrer"
                 className="text-sm hover:underline"
                 onClick={(e) => e.stopPropagation()}
+                aria-label={`Download file: ${fileName}`}
               >
                 <span>{fileName}</span>
               </a>
@@ -330,7 +333,7 @@ const Chat = () => {
         
       return (
         <div
-          key={msg.senderName}
+          key={msg._id}
           className={`flex w-full flex-col ${isUserMessage ? "items-end" : "items-start"}`}
         >
           {showSenderName && (
@@ -354,21 +357,19 @@ const Chat = () => {
                 `}
               >
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent timestamp toggle
-                    handleDeleteMessage(msg._id);
-                  }}
+                  onClick={() => handleDeleteMessage(msg._id)}
                   className="p-2 text-red-500 hover:text-red-700 bg-white bg-opacity-90 rounded-full shadow-sm"
+                  aria-label={`Delete message`}
                 >
                   <FaTrashAlt size={14} />
                 </button>
               </div>
             )}
             
-            {/* Message content */}
-            <div
+            {/* Message content - Using a proper button element for accessibility */}
+            <button
               className={`
-                py-2 px-4 rounded-2xl max-w-md w-fit break-words cursor-pointer shadow-sm
+                py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left
                 ${isUserMessage
                   ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white" 
                   : "bg-white text-gray-800"}
@@ -376,20 +377,13 @@ const Chat = () => {
               onClick={() => setTimestampMessageId(
                 timestampMessageId === msg._id ? null : msg._id
               )}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setTimestampMessageId(
-                    timestampMessageId === msg._id ? null : msg._id
-                  );
-                }
-              }}
-              tabIndex={0}
-              role="button"
+              aria-pressed={timestampMessageId === msg._id}
+              aria-label={`Toggle timestamp for message ${hasContent ? `: ${msg.content?.substring(0, 20)}...` : ''}`}
             >
               <div className="w-full" ref={index === localMessages.length - 1 ? messagesEndRef : null}>
                 {renderMessageContent(messageType, msg, fileName)}
               </div>
-            </div>
+            </button>
           </div>
           
           {(isLastMessageForSender || timestampMessageId === msg._id) && (
@@ -443,11 +437,12 @@ const Chat = () => {
             ref={inputRef}
             className="hidden"
             onChange={(e) => setFile(e.target.files[0])}
+            aria-label="Attach file"
           />
           <button 
             onClick={() => inputRef.current.click()} 
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200" 
-            title="Attach File"
+            aria-label="Attach File"
           >
             <Paperclip className="size-5 text-gray-700" />
           </button>
@@ -457,7 +452,7 @@ const Chat = () => {
               <button
                 onClick={() => {setFile(null); inputRef.current.value=null}}
                 className="text-gray-500 hover:text-red-500"
-                title="Remove file"
+                aria-label="Remove file"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -470,14 +465,16 @@ const Chat = () => {
             placeholder="Type a message..."
             className="flex-1 py-3 px-4 mx-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             onKeyDown={handleKeySendMessage}
+            aria-label="Message text"
           />
           <button
             onClick={handleSendMessage}
-            disabled={sending || (!newMessage.trim() && !file)}
+            disabled={isSendButtonDisabled}
             className="
               px-5 py-3 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-full 
               hover:shadow-lg transition-all duration-200
               disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            aria-label="Send message"
           >
             <FaPaperPlane className="mr-2" />
             <span>{sending ? "Sending..." : "Send"}</span>
@@ -516,6 +513,7 @@ const Chat = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                aria-label="Search conversations"
               />
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
             </div>
