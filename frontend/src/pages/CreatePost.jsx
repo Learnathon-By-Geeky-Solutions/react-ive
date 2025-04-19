@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types"; // Added for props validation
 import Navbar from "../components/Navbar";
 import { 
   XCircle, 
@@ -18,7 +19,7 @@ import {
   FileText
 } from 'lucide-react';
 
-// Success Modal Component
+// Success Modal Component with PropTypes validation
 const SuccessModal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
 
@@ -52,6 +53,13 @@ const SuccessModal = ({ isOpen, onClose, onConfirm }) => {
   );
 };
 
+// Add PropTypes validation for SuccessModal
+SuccessModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired
+};
+
 // Main CreatePost Component
 const CreatePost = () => {
   const [formData, setFormData] = useState({
@@ -80,6 +88,13 @@ const CreatePost = () => {
   // Updated to match schema enums
   const mediumOptions = ["BANGLA", "ENGLISH"];
   const genderOptions = ["MALE", "FEMALE", "OTHERS"];
+  
+  // Map for readable gender options
+  const genderDisplayMap = {
+    "MALE": "Male",
+    "FEMALE": "Female",
+    "OTHERS": "Other"
+  };
   
   const getClassOptions = (medium) => {
     const baseOptions = ["Pre-School", "KG"];
@@ -300,7 +315,7 @@ const CreatePost = () => {
               </select>
             </div>
             
-            {/* Preferred Tutor Gender - Updated to match enum values */}
+            {/* Preferred Tutor Gender - Refactored from nested ternary */}
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <User className="w-5 h-5 text-gray-400" />
@@ -315,7 +330,7 @@ const CreatePost = () => {
                 <option value="" disabled>Preferred Tutor Gender *</option>
                 {genderOptions.map((option) => (
                   <option key={option} value={option}>
-                    {option === "MALE" ? "Male" : option === "FEMALE" ? "Female" : "Other"}
+                    {genderDisplayMap[option]}
                   </option>
                 ))}
               </select>

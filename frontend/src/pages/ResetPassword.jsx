@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { TextField, Button } from '@mui/material';
-import { useSearchParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 const ResetPassword = () => {
     const navigate = useNavigate();
