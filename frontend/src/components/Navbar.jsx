@@ -36,9 +36,8 @@ const Navbar = () => {
   };
 
   const getInitials = () => {
-    if (!user || !user.name) return <AccountCircleIcon />;
-    return user.name.charAt(0).toUpperCase();
-  };
+    user?.name?.charAt(0)?.toUpperCase() ?? <AccountCircleIcon />;
+  }
 
   return (
     <AppBar
@@ -193,82 +192,7 @@ const Navbar = () => {
               >
                 CHATS
               </Button>
-              {/* {userType === "student" && (
-                <Button
-                  color="inherit"
-                  component={Link}
-                  to="/recommendations"
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 500,
-                    borderRadius: "25px",
-                    padding: "8px 18px",
-                    color: "#fff",
-                    fontSize: "0.95rem",
-                    fontFamily: '"Poppins", sans-serif',
-                    letterSpacing: "0.8px",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.4)",
-                      transform: "translateY(-2px)",
-                      boxShadow: "0 3px 8px rgba(155, 125, 220, 0.2)",
-                    },
-                  }}
-                >
-                  RECOMMENDATIONS
-                </Button>
-              )}
-              {userType === "student" && (
-                <Button
-                  color="inherit"
-                  component={Link}
-                  to="/offer"
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 500,
-                    borderRadius: "25px",
-                    padding: "8px 18px",
-                    color: "#fff",
-                    fontSize: "0.95rem",
-                    fontFamily: '"Poppins", sans-serif',
-                    letterSpacing: "0.8px",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.4)",
-                      transform: "translateY(-2px)",
-                      boxShadow: "0 3px 8px rgba(155, 125, 220, 0.2)",
-                    },
-                  }}
-                >
-                  OFFERS
-                </Button>
-              )}
-              {userType === "guardian" && (
-                <Button
-                  color="inherit"
-                  component={Link}
-                  to="/hires"
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 500,
-                    borderRadius: "25px",
-                    padding: "8px 18px",
-                    color: "#fff",
-                    fontSize: "0.95rem",
-                    fontFamily: '"Poppins", sans-serif',
-                    letterSpacing: "0.8px",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      backgroundColor: "rgba(255, 255, 255, 0.4)",
-                      transform: "translateY(-2px)",
-                      boxShadow: "0 3px 8px rgba(155, 125, 220, 0.2)",
-                    },
-                  }}
-                >
-                  HIRES
-                </Button>
-              )} */}
-            </Box>
+              </Box>
           </Box>
 
           {/* User Profile or Login (Right) */}

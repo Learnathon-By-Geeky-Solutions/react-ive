@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { servicesData } from '../utils/servicesData.js';
 import { motion } from 'framer-motion';
 
@@ -45,9 +45,9 @@ const Services = () => {
         whileInView="visible"  // Animation will trigger when the container comes into the viewport
         viewport={{ once: false, amount: 0.2 }} // Start the animation when 20% of the container is in view
       >
-        {servicesData.map((service, index) => (
+        {servicesData.map((service) => (
           <motion.div
-            key={index}
+            key={service.title}
             className="bg-white p-6 rounded-md shadow-md border border-gray-200 flex flex-col items-center text-center relative group"
             variants={itemVariants}
             onClick={()=>navigate(service.link)}
