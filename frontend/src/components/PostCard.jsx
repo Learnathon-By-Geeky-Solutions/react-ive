@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import PropTypes from "prop-types";
 import {
   DollarSign,
   Briefcase,
@@ -17,7 +18,6 @@ import {
   BookOpen,
   UserCircle,
   Calendar,
-  Users,
   Clock3,
 } from "lucide-react";
 
@@ -142,6 +142,7 @@ const PostCard = ({
       }
     } catch (error) {
       toast.error("An error occurred while applying.");
+      console.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -211,6 +212,7 @@ const PostCard = ({
       const timeObj = new Date(timeString);
       return timeObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } catch (error) {
+      console.error(error.message);
       return timeString;
     }
   };
@@ -324,9 +326,9 @@ const PostCard = ({
           </div>
           <div className="flex flex-wrap gap-2">
             {subjectsList.length > 0 ? (
-              subjectsList.map((subject, index) => (
+              subjectsList.map((subject) => (
                 <span
-                  key={index}
+                  key={subject}
                   className="bg-indigo-100 text-indigo-900 text-xs px-2 py-1 rounded-full"
                 >
                   {subject}
@@ -521,6 +523,26 @@ const PostCard = ({
       )}
     </>
   );
+};
+
+PostCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  location: PropTypes.string.isRequired,
+  guardianName: PropTypes.string.isRequired,
+  medium: PropTypes.string.isRequired,
+  salaryRange: PropTypes.string.isRequired,
+  experience: PropTypes.string.isRequired,
+  classType: PropTypes.string.isRequired,
+  days: PropTypes.number.isRequired,
+  time: PropTypes.string,
+  duration: PropTypes.string.isRequired,
+  studentNum: PropTypes.number.isRequired,
+  subjects: PropTypes.string.isRequired, 
+  gender: PropTypes.string.isRequired,
+  deadline: PropTypes.string.isRequired,
+  jobPostId: PropTypes.string.isRequired,
+  onDelete: PropTypes.func,
+  userId: PropTypes.string.isRequired,
 };
 
 export default PostCard;
