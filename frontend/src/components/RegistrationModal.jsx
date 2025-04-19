@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import Divider from '@mui/material/Divider';
+import PropTypes from 'prop-types';
 
 // You can use this styled button or import your existing ColorButton
 const ColorButton = styled(Button)(() => ({
@@ -100,5 +101,11 @@ const RegistrationSuccessModal = ({
     </Dialog>
   );
 };
+
+RegistrationSuccessModal.propTypes = {
+  open: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  userType: PropTypes.string.isRequired
+}
 
 export default RegistrationSuccessModal;

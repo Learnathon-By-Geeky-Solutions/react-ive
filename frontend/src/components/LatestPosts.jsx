@@ -7,7 +7,7 @@ import { useAuth } from '../context/AuthContext';
 const LatestTuitionPosts = () => {
   const [latestPosts, setLatestPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user, loading: authLoading } = useAuth();
+  const { loading: authLoading } = useAuth();
 
   // Define animation variants
   const containerVariants = {

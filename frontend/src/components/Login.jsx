@@ -37,7 +37,7 @@ const Login = () => {
         const errData = await response.json();
         throw new Error(errData.message || "Failed to login");
       }
-      const { token, user } = await response.json();
+      const { token } = await response.json();
       localStorage.setItem('token', token);
       navigate("/");
     } catch (err) {
