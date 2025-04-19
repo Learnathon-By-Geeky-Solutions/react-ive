@@ -54,7 +54,6 @@ const Chat = () => {
   }, [openMenuConversationId]);
 
   const handleSendMessage = () => {
-    // if (newMessage.trim() === "") return;
     sendMessage(newMessage, file);
     setNewMessage("");
     setFile(null);
@@ -87,8 +86,6 @@ const Chat = () => {
       if (!response.ok) {
         throw new Error('Failed to delete conversation');
       }
-  
-      const data = await response.json();
   
       // If the current conversation was deleted, reset the selected conversation
       if (selectedConversation?._id === conversationId) {
