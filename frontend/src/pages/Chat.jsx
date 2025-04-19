@@ -330,7 +330,7 @@ const Chat = () => {
         
       return (
         <div
-          key={index}
+          key={msg.senderName}
           className={`flex w-full flex-col ${isUserMessage ? "items-end" : "items-start"}`}
         >
           {showSenderName && (
