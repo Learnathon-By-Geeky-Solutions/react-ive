@@ -36,7 +36,7 @@ const Navbar = () => {
   };
 
   const getInitials = () => {
-    user?.name?.charAt(0)?.toUpperCase() ?? <AccountCircleIcon />;
+    return user?.name?.charAt(0)?.toUpperCase() ?? <AccountCircleIcon />;
   }
 
   return (
