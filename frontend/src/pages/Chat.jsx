@@ -170,71 +170,83 @@ const Chat = () => {
       );
     }
 
-    return filteredConversations.map((conv) => (
-      <div 
-        key={conv._id} 
-        className="relative group"
-        ref={openMenuConversationId === conv._id ? menuRef : null}
-      >
-        <button
-          className={`
-            p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center w-full text-left
-            ${selectedConversation?._id === conv._id 
-              ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-md" 
-              : "bg-white text-gray-800 hover:bg-gray-50"}
-          `}
-          onClick={() => setSelectedConversation(conv)}
-          aria-label={`Select conversation with ${conv.name}`}
-          aria-selected={selectedConversation?._id === conv._id}
-        >
-          {/* Avatar circle */}
-          <div className={`
-            w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0
-            ${selectedConversation?._id === conv._id 
-              ? "bg-white/20 text-white" 
-              : "bg-indigo-100 text-indigo-700"}
-          `}>
-            {getUserInitial(conv.name)}
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            <div className="flex justify-between items-center">
-              <span className="font-medium truncate">{conv.name}</span>
-            </div>
-          </div>
-        </button>
-        
-        {/* 3-Dot Menu for Conversation - Show only for companies */}
-        {user?.userType === 'Company' && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent selecting conversation
-              setOpenMenuConversationId(openMenuConversationId === conv._id ? null : conv._id);
-            }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity p-2"
-            aria-label="Open conversation menu"
-            aria-expanded={openMenuConversationId === conv._id}
-          >
-            <FaEllipsisV size={14} />
-          </button>
-        )}
+    return filteredConversations.map((conv) => {
+      const isSelected = selectedConversation?._id === conv._id;
+      const isMenuOpen = openMenuConversationId === conv._id;
+      const isCompanyUser = user?.userType === 'Company';
+      
+      // Conversation button classes - extracted from ternary
+      const buttonClasses = `
+        p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center w-full text-left
+        ${isSelected
+          ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-md" 
+          : "bg-white text-gray-800 hover:bg-gray-50"}
+      `;
 
-        {openMenuConversationId === conv._id && user?.userType === 'Company' && (
-          <div className="absolute right-0 top-full mt-1 z-10">
-            <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-              <button
-                onClick={() => handleDeleteConversation(conv._id)}
-                className="flex items-center w-full text-left px-4 py-2 text-red-500 hover:bg-red-50"
-                aria-label={`Delete conversation with ${conv.name}`}
-              >
-                <FaTrashAlt className="mr-2" size={14} /> 
-                <span>Delete</span>
-              </button>
+      // Avatar circle classes - extracted from ternary
+      const avatarClasses = `
+        w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0
+        ${isSelected
+          ? "bg-white/20 text-white" 
+          : "bg-indigo-100 text-indigo-700"}
+      `;
+
+      return (
+        <div 
+          key={conv._id} 
+          className="relative group"
+          ref={isMenuOpen ? menuRef : null}
+        >
+          <button
+            className={buttonClasses}
+            onClick={() => setSelectedConversation(conv)}
+            aria-label={`Select conversation with ${conv.name}`}
+            aria-selected={isSelected}
+          >
+            {/* Avatar circle */}
+            <div className={avatarClasses}>
+              {getUserInitial(conv.name)}
             </div>
-          </div>
-        )}
-      </div>
-    ));
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between items-center">
+                <span className="font-medium truncate">{conv.name}</span>
+              </div>
+            </div>
+          </button>
+          
+          {/* 3-Dot Menu for Conversation - Show only for companies */}
+          {isCompanyUser && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent selecting conversation
+                setOpenMenuConversationId(isMenuOpen ? null : conv._id);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity p-2"
+              aria-label="Open conversation menu"
+              aria-expanded={isMenuOpen}
+            >
+              <FaEllipsisV size={14} />
+            </button>
+          )}
+
+          {isMenuOpen && isCompanyUser && (
+            <div className="absolute right-0 top-full mt-1 z-10">
+              <div className="bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+                <button
+                  onClick={() => handleDeleteConversation(conv._id)}
+                  className="flex items-center w-full text-left px-4 py-2 text-red-500 hover:bg-red-50"
+                  aria-label={`Delete conversation with ${conv.name}`}
+                >
+                  <FaTrashAlt className="mr-2" size={14} /> 
+                  <span>Delete</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    });
   };
 
   const renderMessageContent = (messageType, msg, fileName) => {
@@ -323,6 +335,9 @@ const Chat = () => {
         localMessages[index + 1].senderId !== msg.senderId;
       
       const isUserMessage = msg.senderId === user.userId;
+      const isTimeVisible = isLastMessageForSender || timestampMessageId === msg._id;
+      const isMessageHovered = hoveredMessageId === msg._id;
+      const isLastMessage = index === localMessages.length - 1;
       
       // Message type determination
       const hasContent = msg.content && msg.content !== "null" && msg.content !== null;
@@ -330,11 +345,27 @@ const Chat = () => {
       const messageType = hasContent && hasFile ? 'combined' : hasFile ? 'file-only' : 'text-only';
       
       const fileName = hasFile ? (msg.fileUrl?.split('/').pop() || 'File') : '';
+      
+      // Message alignment classes
+      const alignmentClasses = isUserMessage ? "items-end" : "items-start";
+      
+      // Message bubble styling
+      const bubbleClasses = `
+        py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left
+        ${isUserMessage
+          ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white" 
+          : "bg-white text-gray-800"}
+      `;
+      
+      // Delete button position classes
+      const deleteButtonPositionClasses = isUserMessage 
+        ? 'left-[-40px] w-[40px] justify-start'
+        : 'right-[-40px] w-[40px] justify-end';
         
       return (
         <div
           key={msg._id}
-          className={`flex w-full flex-col ${isUserMessage ? "items-end" : "items-start"}`}
+          className={`flex w-full flex-col ${alignmentClasses}`}
         >
           {showSenderName && (
             <div className="text-xs text-gray-500 mb-1 px-2">
@@ -349,11 +380,11 @@ const Chat = () => {
             onMouseLeave={() => setHoveredMessageId(null)}
           >
             {/* Trash can button with extended clickable area */}
-            {isUserMessage && hoveredMessageId === msg._id && (
+            {isUserMessage && isMessageHovered && (
               <div 
                 className={`
                   absolute top-0 z-10 h-full flex items-center
-                  ${isUserMessage ? 'left-[-40px] w-[40px] justify-start' : 'right-[-40px] w-[40px] justify-end'}
+                  ${deleteButtonPositionClasses}
                 `}
               >
                 <button
@@ -368,25 +399,20 @@ const Chat = () => {
             
             {/* Message content - Using a proper button element for accessibility */}
             <button
-              className={`
-                py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left
-                ${isUserMessage
-                  ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white" 
-                  : "bg-white text-gray-800"}
-              `}
+              className={bubbleClasses}
               onClick={() => setTimestampMessageId(
                 timestampMessageId === msg._id ? null : msg._id
               )}
               aria-pressed={timestampMessageId === msg._id}
               aria-label={`Toggle timestamp for message ${hasContent ? `: ${msg.content?.substring(0, 20)}...` : ''}`}
             >
-              <div className="w-full" ref={index === localMessages.length - 1 ? messagesEndRef : null}>
+              <div className="w-full" ref={isLastMessage ? messagesEndRef : null}>
                 {renderMessageContent(messageType, msg, fileName)}
               </div>
             </button>
           </div>
           
-          {(isLastMessageForSender || timestampMessageId === msg._id) && (
+          {isTimeVisible && (
             <div className="text-xs text-gray-500 mt-1 px-2">
               {formatTimestamp(msg.createdAt)}
             </div>
