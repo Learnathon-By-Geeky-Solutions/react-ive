@@ -21,25 +21,7 @@ import {
   Clock3,
 } from "lucide-react";
 
-const PostCard = ({ 
-  title, 
-  location, 
-  guardianName,
-  medium, 
-  salaryRange, 
-  experience,
-  classType,
-  days, 
-  time,
-  duration,
-  studentNum,
-  subjects, 
-  gender,
-  deadline, 
-  jobPostId, 
-  onDelete, 
-  userId 
-}) => {
+const PostCard = ({ title, location, guardianName, medium, salaryRange, experience, classType, days, time, duration, studentNum, subjects, gender, deadline, jobPostId, onDelete, userId }) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
