@@ -10,7 +10,6 @@ import {
   Calendar,
   MapPin,
   User,
-  Briefcase
 } from 'lucide-react';
 
 const ApplicationCard = ({ app, onStatusChange }) => {
