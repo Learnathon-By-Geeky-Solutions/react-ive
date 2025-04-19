@@ -512,9 +512,9 @@ const CreatePost = () => {
               </button>
               
               <div className="flex flex-wrap gap-2 mt-2">
-                {formData.subject.map((subject, index) => (
+                {formData.subject.map((subject) => (
                   <div 
-                    key={index} 
+                    key={subject.name} 
                     className="bg-gradient-to-r from-indigo-400 to-purple-500 text-white px-3 py-1 rounded-full flex items-center gap-1"
                   >
                     <span>{subject.name}</span>

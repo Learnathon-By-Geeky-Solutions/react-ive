@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 import { useAuth } from "../context/AuthContext";
 import PostCard from "../components/PostCard";
 import Navbar from "../components/Navbar";
@@ -69,6 +70,59 @@ const PostList = ({ loading, filteredPosts, resetFilters }) => {
       ))}
     </div>
   );
+};
+
+// Adding PropTypes validation for PostList component
+PostList.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  filteredPosts: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      name: PropTypes.string,
+      location: PropTypes.string,
+      userId: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string,
+      }),
+      medium: PropTypes.string,
+      salary: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      experience: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      subject: PropTypes.arrayOf(
+        PropTypes.shape({
+          name: PropTypes.string,
+        })
+      ),
+      classtype: PropTypes.string,
+      days: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+      duration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      studentNum: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      gender: PropTypes.string,
+      deadline: PropTypes.string,
+      time: PropTypes.string,
+    })
+  ).isRequired,
+  resetFilters: PropTypes.func.isRequired,
+};
+
+// PropTypes for PostCard should be defined in the PostCard component file
+// But here's what it should look like:
+PostCard.propTypes = {
+  userId: PropTypes.string,
+  title: PropTypes.string,
+  location: PropTypes.string,
+  guardianName: PropTypes.string,
+  medium: PropTypes.string,
+  salaryRange: PropTypes.string,
+  experience: PropTypes.string,
+  subjects: PropTypes.string,
+  classType: PropTypes.string,
+  days: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  duration: PropTypes.string,
+  studentNum: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  gender: PropTypes.string,
+  deadline: PropTypes.string,
+  time: PropTypes.string,
+  jobPostId: PropTypes.string.isRequired,
 };
 
 const Posts = () => {
