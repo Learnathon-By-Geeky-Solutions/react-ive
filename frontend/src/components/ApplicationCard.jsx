@@ -24,58 +24,49 @@ const ApplicationCard = ({ app, onStatusChange }) => {
   const cvPath = app.cvPath.split("/").pop();
 
   const handleChat = async (receiverId) => {
-
     try {
-
       const senderId = user.userId;
 
       const res = await fetch("http://localhost:3500/conversation/createConversation", {
-
         method: "POST",
-
         body: JSON.stringify({ senderId, receiverId }),
-
         headers: { "Content-Type": "application/json" }
-
       });
 
       if (!res.ok) {
-
         throw new Error(`HTTP error! status: ${res.status}`);
-
       }
 
-
-
-      const res2 = await fetch(`http://localhost:3500/conversation/getCOnversations/${senderId}`);
-
+      const res2 = await fetch(`http://localhost:3500/conversation/getConversations/${senderId}`);
       const data = await res2.json();
+      const selectedConv = data.users.find((conv) => conv.id === receiverId);
 
-      const selectedConv = data.users.find((conv)=> conv.id===receiverId);
-
-      setSelectedConversation(selectedConv);
-
-
-
+      // This line was causing an error - setSelectedConversation is not defined in this component
+      // We need to either pass it as a prop or handle it differently
+      // setSelectedConversation(selectedConv);
+      navigate('/chats', { state: { selectedConversation: selectedConv } });
     } catch (error) {
-
       console.error(error.message);
-
     }
-    navigate('/chats');
-
   };
 
   const handleStatusChange = async (newStatus) => {
     try {
+      // The backend route expects 'applicationId' as param and 'status' in body
       const res = await fetch(`http://localhost:3500/apply/updateStatus/${app._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem('token')}`
+        },
         body: JSON.stringify({ status: newStatus }),
       });
+      
       if (res.ok) {
         setStatus(newStatus);
-        onStatusChange(app.applicationId, newStatus);
+        if (onStatusChange) {
+          onStatusChange(app._id, newStatus);
+        }
         
         // Reset modal state
         setModalState({
@@ -84,10 +75,15 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           selectedStatus: null
         });
 
+        // The backend allows for 'UNDER_REVIEW' but frontend uses 'UNDER-REVIEW'
+        // Need to fix this inconsistency
         if (newStatus === "ACCEPTED") {
           const offerRes = await fetch(`http://localhost:3500/offer/sendOffer`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${localStorage.getItem('token')}`
+            },
             body: JSON.stringify({
               jobSeekerId: app.userId,
               companyId: user.userId,
@@ -109,6 +105,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
   };
 
   const getStatusStyle = (currentStatus) => {
+    // Update to match backend status enum values
     const statusStyles = {
       'PENDING': {
         icon: <Clock className="inline-block mr-2 text-sky-500" />,
@@ -120,7 +117,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
         bgColor: 'bg-emerald-50',
         textColor: 'text-emerald-800'
       },
-      'UNDER-REVIEW': {
+      'UNDER_REVIEW': {  // Changed from UNDER-REVIEW to UNDER_REVIEW to match backend
         icon: <Calendar className="inline-block mr-2 text-amber-500" />,
         bgColor: 'bg-amber-50',
         textColor: 'text-amber-800'
@@ -131,7 +128,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
         textColor: 'text-rose-800'
       }
     };
-    return statusStyles[currentStatus];
+    return statusStyles[currentStatus] || statusStyles['PENDING']; // Fallback to PENDING if status is not found
   };
 
   const statusStyle = getStatusStyle(status);
@@ -150,7 +147,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
           <div className="flex flex-col space-y-4">
             <button 
               onClick={() => {
-                handleStatusChange('UNDER-REVIEW');
+                handleStatusChange('UNDER_REVIEW'); // Changed from UNDER-REVIEW to UNDER_REVIEW
               }}
               className="w-full px-6 py-3 rounded-lg bg-amber-500 text-white hover:bg-amber-600 transition-all duration-300 flex items-center justify-center"
             >
@@ -247,8 +244,8 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               <User className="mr-3 text-indigo-500" size={24} />
               <div>
                 <h4 className="text-xl font-semibold text-gray-800 tracking-wide">
-                  {app.postId.userId.name}
-                  </h4>
+                  {app.userName || (app.postId.userId && app.postId.userId.name)}
+                </h4>
                 <p className="text-sm text-gray-600">{app.postId.position}</p>
               </div>
             </div>
@@ -267,39 +264,54 @@ const ApplicationCard = ({ app, onStatusChange }) => {
             <span className="text-sm">{app.postId.location}</span>
           </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-between space-x-2">
-          <a 
-            href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
-            download 
-            className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
-          >
-            <Download className="mr-2" />
-            View CV
-          </a>
+          {/* Application Date */}
+          <div className="flex items-center mb-4 text-gray-600">
+            <Calendar className="mr-2 text-violet-500" size={20} />
+            <span className="text-sm">Applied: {new Date(app.createdAt).toLocaleDateString()}</span>
+          </div>
 
-          {(status === 'PENDING' || status === 'UNDER-REVIEW') && 
-          app.postId.userId._id === user.userId && (
-            <button
-              onClick={() => setModalState({
-                statusChangeModal: true,
-                confirmationModal: false,
-                selectedStatus: null
-              })}
-              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
-            >
-              Change Status
-            </button>
+          {/* Status Updated Date - only show if status has been updated */}
+          {app.statusUpdatedAt && app.statusUpdatedAt !== app.createdAt && (
+            <div className="flex items-center mb-4 text-gray-600">
+              <Clock className="mr-2 text-violet-500" size={20} />
+              <span className="text-sm">Status updated: {new Date(app.statusUpdatedAt).toLocaleDateString()}</span>
+            </div>
           )}
 
-          <button
-            onClick={() => handleChat(app.userId)}
-            className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
-          >
-            <MessageCircle className="mr-2" />
-            Chat
-          </button>
-        </div>
+          {/* Action Buttons */}
+          <div className="flex justify-between space-x-2">
+            <a 
+              href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
+              download 
+              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+            >
+              <Download className="mr-2" />
+              View CV
+            </a>
+
+            {/* Only show status change button to post owner and only for pending or under review applications */}
+            {(status === 'PENDING' || status === 'UNDER_REVIEW') && 
+            app.postId.userId && app.postId.userId._id === user.userId && (
+              <button
+                onClick={() => setModalState({
+                  statusChangeModal: true,
+                  confirmationModal: false,
+                  selectedStatus: null
+                })}
+                className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+              >
+                Change Status
+              </button>
+            )}
+
+            <button
+              onClick={() => handleChat(app.userId)}
+              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+            >
+              <MessageCircle className="mr-2" />
+              Chat
+            </button>
+          </div>
         </div>
       </div>
     </>
