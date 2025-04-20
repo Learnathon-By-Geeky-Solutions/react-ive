@@ -55,6 +55,12 @@ const StatusChangeModal = ({ isOpen, onClose, onStatusSelect }) => {
   );
 };
 
+StatusChangeModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onStatusSelect: PropTypes.func.isRequired,
+};
+
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, status }) => {
   if (!isOpen) return null;
 
@@ -93,6 +99,13 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, status }) => {
   );
 };
 
+ConfirmationModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onConfirm: PropTypes.func.isRequired,
+  status: PropTypes.oneOf(['ACCEPTED', 'REJECTED', 'UNDER_REVIEW']).isRequired,
+};
+
 const SuccessModal = ({ isOpen, onClose, message }) => {
   if (!isOpen) return null;
 
@@ -116,6 +129,12 @@ const SuccessModal = ({ isOpen, onClose, message }) => {
       </div>
     </div>
   );
+};
+
+SuccessModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  message: PropTypes.string.isRequired,
 };
 
 const ErrorModal = ({ isOpen, onClose, message }) => {
@@ -143,6 +162,12 @@ const ErrorModal = ({ isOpen, onClose, message }) => {
   );
 };
 
+ErrorModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  message: PropTypes.string.isRequired,
+};
+
 const ApplicationCard = ({ app, onStatusChange }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -154,20 +179,20 @@ const ApplicationCard = ({ app, onStatusChange }) => {
     errorModal: false,
     selectedStatus: null,
     errorMessage: '',
-    successMessage: ''
+    successMessage: '',
   });
-  const cvPath = app.cvPath.split("/").pop();
+  const cvPath = app.cvPath.split('/').pop();
 
   const handleChat = async (receiverId) => {
     try {
       const senderId = user.userId;
-      const res = await fetch("http://localhost:3500/conversation/createConversation", {
-        method: "POST",
+      const res = await fetch('http://localhost:3500/conversation/createConversation', {
+        method: 'POST',
         body: JSON.stringify({ senderId, receiverId }),
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
       });
 
-      if (!res.ok) throw new Error(`Failed to create conversation`);
+      if (!res.ok) throw new Error('Failed to create conversation');
 
       const res2 = await fetch(`http://localhost:3500/conversation/getConversations/${senderId}`);
       const data = await res2.json();
@@ -176,10 +201,10 @@ const ApplicationCard = ({ app, onStatusChange }) => {
       navigate('/chats', { state: { selectedConversation: selectedConv } });
     } catch (error) {
       console.error(error.message);
-      setModalState(prev => ({
+      setModalState((prev) => ({
         ...prev,
         errorModal: true,
-        errorMessage: 'Failed to start conversation'
+        errorMessage: 'Failed to start conversation',
       }));
     }
   };
@@ -187,10 +212,10 @@ const ApplicationCard = ({ app, onStatusChange }) => {
   const handleStatusChange = async (newStatus) => {
     try {
       const res = await fetch(`http://localhost:3500/apply/updateStatus/${app._id}`, {
-        method: "PUT",
+        method: 'PUT',
         headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -200,17 +225,17 @@ const ApplicationCard = ({ app, onStatusChange }) => {
       setStatus(newStatus);
       onStatusChange?.(app._id, newStatus);
       
-      if (newStatus === "ACCEPTED") {
+      if (newStatus === 'ACCEPTED') {
         const offerRes = await fetch(`http://localhost:3500/offer/sendOffer`, {
-          method: "POST",
+          method: 'POST',
           headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem('token')}`
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
           },
           body: JSON.stringify({
             jobSeekerId: app.userId,
             companyId: user.userId,
-            status: "PENDING",
+            status: 'PENDING',
             applicationId: app._id,
           }),
         });
@@ -225,42 +250,42 @@ const ApplicationCard = ({ app, onStatusChange }) => {
         errorModal: false,
         selectedStatus: null,
         successMessage: `Application status updated to ${newStatus}`,
-        errorMessage: ''
+        errorMessage: '',
       });
     } catch (error) {
-      setModalState(prev => ({
+      setModalState((prev) => ({
         ...prev,
         confirmationModal: false,
         errorModal: true,
-        errorMessage: error.message
+        errorMessage: error.message,
       }));
     }
   };
 
   const getStatusStyle = (currentStatus) => {
     const statusStyles = {
-      'PENDING': {
+      PENDING: {
         icon: <Clock className="inline-block mr-2 text-sky-500" />,
         bgColor: 'bg-sky-50',
-        textColor: 'text-sky-800'
+        textColor: 'text-sky-800',
       },
-      'ACCEPTED': {
+      ACCEPTED: {
         icon: <CheckCircle className="inline-block mr-2 text-emerald-500" />,
         bgColor: 'bg-emerald-50',
-        textColor: 'text-emerald-800'
+        textColor: 'text-emerald-800',
       },
-      'UNDER_REVIEW': {
+      UNDER_REVIEW: {
         icon: <Calendar className="inline-block mr-2 text-amber-500" />,
         bgColor: 'bg-amber-50',
-        textColor: 'text-amber-800'
+        textColor: 'text-amber-800',
       },
-      'REJECTED': {
+      REJECTED: {
         icon: <XCircle className="inline-block mr-2 text-rose-500" />,
         bgColor: 'bg-rose-50',
-        textColor: 'text-rose-800'
-      }
+        textColor: 'text-rose-800',
+      },
     };
-    return statusStyles[currentStatus] || statusStyles['PENDING'];
+    return statusStyles[currentStatus] || statusStyles.PENDING;
   };
 
   const statusStyle = getStatusStyle(status);
@@ -269,33 +294,33 @@ const ApplicationCard = ({ app, onStatusChange }) => {
     <>
       <StatusChangeModal 
         isOpen={modalState.statusChangeModal}
-        onClose={() => setModalState(prev => ({ ...prev, statusChangeModal: false }))}
-        onStatusSelect={(status) => setModalState(prev => ({
+        onClose={() => setModalState((prev) => ({ ...prev, statusChangeModal: false }))}
+        onStatusSelect={(status) => setModalState((prev) => ({
           ...prev,
           statusChangeModal: false,
           confirmationModal: true,
-          selectedStatus: status
+          selectedStatus: status,
         }))}
       />
       <ConfirmationModal 
         isOpen={modalState.confirmationModal}
-        onClose={() => setModalState(prev => ({
+        onClose={() => setModalState((prev) => ({
           ...prev,
           confirmationModal: false,
           statusChangeModal: true,
-          selectedStatus: null
+          selectedStatus: null,
         }))}
         onConfirm={() => handleStatusChange(modalState.selectedStatus)}
         status={modalState.selectedStatus}
       />
       <SuccessModal 
         isOpen={modalState.successModal}
-        onClose={() => setModalState(prev => ({ ...prev, successModal: false }))}
+        onClose={() => setModalState((prev) => ({ ...prev, successModal: false }))}
         message={modalState.successMessage}
       />
       <ErrorModal 
         isOpen={modalState.errorModal}
-        onClose={() => setModalState(prev => ({ ...prev, errorModal: false }))}
+        onClose={() => setModalState((prev) => ({ ...prev, errorModal: false }))}
         message={modalState.errorMessage}
       />
 
@@ -306,9 +331,9 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               <User className="mr-3 text-indigo-500" size={24} />
               <div>
                 <h4 className="text-xl font-semibold text-gray-800 tracking-wide">
-                  {app.userName || (app.postId?.userId?.name)}
+                  {app.userName || app.postId?.userId?.name || 'Unknown Applicant'}
                 </h4>
-                <p className="text-sm text-gray-600">{app.postId?.position}</p>
+                <p className="text-sm text-gray-600">{app.postId?.position || 'Unknown Position'}</p>
               </div>
             </div>
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle.bgColor} ${statusStyle.textColor}`}>
@@ -321,7 +346,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
         <div className="p-5">
           <div className="flex items-center mb-4 text-gray-600">
             <MapPin className="mr-2 text-violet-500" size={20} />
-            <span className="text-sm">{app.postId?.location}</span>
+            <span className="text-sm">{app.postId?.location || 'Unknown Location'}</span>
           </div>
 
           <div className="flex items-center mb-4 text-gray-600">
@@ -349,24 +374,24 @@ const ApplicationCard = ({ app, onStatusChange }) => {
             {(status === 'PENDING' || status === 'UNDER_REVIEW') && 
             app.postId?.userId?._id === user.userId && (
               <button
-                onClick={() => setModalState(prev => ({
+                onClick={() => setModalState((prev) => ({
                   ...prev,
-                  statusChangeModal: true
+                  statusChangeModal: true,
                 }))}
                 className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
               >
                 Change Status
               </button>
             )}
-            {app.userId !== user?.userId &&
-            <button
-              onClick={() => handleChat(app.userId)}
-              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
-            >
-              <MessageCircle className="mr-2" />
-              Chat
-            </button>
-            }
+            {app.userId !== user?.userId && (
+              <button
+                onClick={() => handleChat(app.userId)}
+                className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+              >
+                <MessageCircle className="mr-2" />
+                Chat
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -389,13 +414,13 @@ ApplicationCard.propTypes = {
       userId: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.shape({
-          _id: PropTypes.string,
-          name: PropTypes.string
-        })
-      ])
-    }).isRequired
+          _id: PropTypes.string.isRequired,
+          name: PropTypes.string,
+        }),
+      ]),
+    }).isRequired,
   }).isRequired,
-  onStatusChange: PropTypes.func
+  onStatusChange: PropTypes.func,
 };
 
 export default ApplicationCard;
