@@ -175,6 +175,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
 
       navigate('/chats', { state: { selectedConversation: selectedConv } });
     } catch (error) {
+      console.error(error.message);
       setModalState(prev => ({
         ...prev,
         errorModal: true,
@@ -357,7 +358,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
                 Change Status
               </button>
             )}
-
+            {app.userId !== user?.userId &&
             <button
               onClick={() => handleChat(app.userId)}
               className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
@@ -365,6 +366,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
               <MessageCircle className="mr-2" />
               Chat
             </button>
+            }
           </div>
         </div>
       </div>
