@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {  Routes, Route } from 'react-router-dom';
 import Login from './components/Login';
 import SignUp from './components/SignUp';
 import Home from './components/Home';
@@ -15,7 +15,7 @@ import CompanyProfile from './pages/GuardianProfile';
 
 const App = () => {
   return (
-    // <Router>
+   
       <div>
         <Routes>
           <Route path='/' element={<Home />}/>
@@ -32,7 +32,7 @@ const App = () => {
           <Route path='/companyprofile' element={<CompanyProfile />}/>
         </Routes>
       </div>
-    // </Router>
+    
   );
 };
 
