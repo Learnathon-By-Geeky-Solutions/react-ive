@@ -17,7 +17,127 @@ import {
   X,
 } from "lucide-react";
 
-// Separate component for rendering posts
+// Subcomponent for filter inputs
+const FilterInputs = ({ filters, setFilters }) => {
+  const handleChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleClear = (key) => {
+    setFilters((prev) => ({ ...prev, [key]: "" }));
+  };
+
+  const filterFields = [
+    {
+      key: "search",
+      placeholder: "Search for tuition title...",
+      icon: <Search className="w-5 h-5 text-gray-400" />,
+      type: "text",
+    },
+    {
+      key: "salary",
+      placeholder: "Minimum Salary",
+      icon: <DollarSign className="w-5 h-5 text-gray-400" />,
+      type: "text",
+    },
+    {
+      key: "experience",
+      placeholder: "Experience (years)",
+      icon: <Clock className="w-5 h-5 text-gray-400" />,
+      type: "number",
+    },
+    {
+      key: "location",
+      placeholder: "Location",
+      icon: <MapPin className="w-5 h-5 text-gray-400" />,
+      type: "text",
+    },
+    {
+      key: "subject",
+      placeholder: "Subject",
+      icon: <Pencil className="w-5 h-5 text-gray-400" />,
+      type: "text",
+    },
+    {
+      key: "classType",
+      placeholder: "Class Type (Online/Offline)",
+      icon: <CalendarDays className="w-5 h-5 text-gray-400" />,
+      type: "text",
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {filterFields.map(({ key, placeholder, icon, type }) => (
+        <div key={key} className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center">{icon}</div>
+          <input
+            type={type}
+            placeholder={placeholder}
+            value={filters[key]}
+            onChange={(e) => handleChange(key, e.target.value)}
+            className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+          />
+          {filters[key] && (
+            <button
+              onClick={() => handleClear(key)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+            </button>
+          )}
+        </div>
+      ))}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+          <BookOpen className="w-5 h-5 text-gray-400" />
+        </div>
+        <select
+          value={filters.medium}
+          onChange={(e) => handleChange("medium", e.target.value)}
+          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+        >
+          <option value="">Select Medium</option>
+          <option value="BANGLA">Bangla</option>
+          <option value="ENGLISH">English</option>
+        </select>
+        {filters.medium && (
+          <button
+            onClick={() => handleClear("medium")}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+          </button>
+        )}
+      </div>
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
+          <Users className="w-5 h-5 text-gray-400" />
+        </div>
+        <select
+          value={filters.gender}
+          onChange={(e) => handleChange("gender", e.target.value)}
+          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+        >
+          <option value="">Select Gender Preference</option>
+          <option value="MALE">Male</option>
+          <option value="FEMALE">Female</option>
+          <option value="OTHERS">Others</option>
+        </select>
+        {filters.gender && (
+          <button
+            onClick={() => handleClear("gender")}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+          >
+            <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Subcomponent for rendering posts
 const PostList = ({ loading, filteredPosts, resetFilters }) => {
   if (loading) {
     return (
@@ -46,33 +166,54 @@ const PostList = ({ loading, filteredPosts, resetFilters }) => {
       {filteredPosts.map((post) => (
         <PostCard
           key={post._id}
-          userId={post.userId._id}
-          title={post.name}
-          location={post.location}
-          guardianName={post.userId.name}
-          medium={post.medium}
-          salaryRange={`${post.salary}`}
-          experience={`${post.experience} years`}
-          subjects={
-            post.subject && post.subject.length > 0
-              ? post.subject.map((sub) => sub.name).join(", ")
-              : "No subjects listed"
-          }
-          classType={post.classtype}
-          days={post.days}
-          duration={`${post.duration} hour(s)`}
-          studentNum={post.studentNum}
-          gender={post.gender}
-          deadline={post.deadline}
-          time={post.time}
-          jobPostId={post._id}
+          jobDetails={{
+            title: post.name,
+            location: post.location,
+            medium: post.medium,
+            salaryRange: `${post.salary}`,
+            experience: `${post.experience} years`,
+            classType: post.classtype,
+            studentNum: post.studentNum,
+            subjects:
+              post.subject && post.subject.length > 0
+                ? post.subject.map((sub) => sub.name).join(", ")
+                : "No subjects listed",
+            gender: post.gender,
+            deadline: post.deadline,
+            jobPostId: post._id,
+          }}
+          schedule={{
+            days: post.days,
+            time: post.time,
+            duration: `${post.duration} hour(s)`,
+          }}
+          userInfo={{
+            guardianName: post.userId.name,
+            userId: post.userId._id,
+          }}
         />
       ))}
     </div>
   );
 };
 
-// Adding PropTypes validation for PostList component
+// PropTypes for FilterInputs
+FilterInputs.propTypes = {
+  filters: PropTypes.shape({
+    search: PropTypes.string,
+    salary: PropTypes.string,
+    location: PropTypes.string,
+    experience: PropTypes.string,
+    medium: PropTypes.string,
+    subject: PropTypes.string,
+    classType: PropTypes.string,
+    gender: PropTypes.string,
+  }).isRequired,
+  setFilters: PropTypes.func.isRequired,
+  resetFilters: PropTypes.func.isRequired,
+};
+
+// PropTypes for PostList
 PostList.propTypes = {
   loading: PropTypes.bool.isRequired,
   filteredPosts: PropTypes.arrayOf(
@@ -93,7 +234,7 @@ PostList.propTypes = {
         })
       ),
       classtype: PropTypes.string,
-      days: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+      days: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
       duration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       studentNum: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       gender: PropTypes.string,
@@ -104,38 +245,19 @@ PostList.propTypes = {
   resetFilters: PropTypes.func.isRequired,
 };
 
-// PropTypes for PostCard should be defined in the PostCard component file
-// But here's what it should look like:
-PostCard.propTypes = {
-  userId: PropTypes.string,
-  title: PropTypes.string,
-  location: PropTypes.string,
-  guardianName: PropTypes.string,
-  medium: PropTypes.string,
-  salaryRange: PropTypes.string,
-  experience: PropTypes.string,
-  subjects: PropTypes.string,
-  classType: PropTypes.string,
-  days: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
-  duration: PropTypes.string,
-  studentNum: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  gender: PropTypes.string,
-  deadline: PropTypes.string,
-  time: PropTypes.string,
-  jobPostId: PropTypes.string.isRequired,
-};
-
 const Posts = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
-  const [search, setSearch] = useState("");
-  const [salary, setSalary] = useState("");
-  const [location, setLocation] = useState("");
-  const [experience, setExperience] = useState("");
-  const [medium, setMedium] = useState("");
-  const [subject, setSubject] = useState("");
-  const [classType, setClassType] = useState("");
-  const [gender, setGender] = useState("");
+  const [filters, setFilters] = useState({
+    search: "",
+    salary: "",
+    location: "",
+    experience: "",
+    medium: "",
+    subject: "",
+    classType: "",
+    gender: "",
+  });
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -156,97 +278,90 @@ const Posts = () => {
   };
 
   useEffect(() => {
-    applyFilters();
-  }, [search, salary, location, experience, medium, subject, classType, gender]);
-
-  useEffect(() => {
     if (user?.userId) {
       fetchAllPosts();
     }
   }, [user]);
 
-  const applyFilters = () => {
-    let filtered = [...allPosts];
+  useEffect(() => {
+    const applyFilters = () => {
+      let filtered = [...allPosts];
 
-    if (search.trim() !== "") {
-      const searchLower = search.toLowerCase();
-      filtered = filtered.filter(
-        (post) =>
-          post.name?.toLowerCase().includes(searchLower) ||
-          post.user?.name?.toLowerCase().includes(searchLower)
-      );
-    }
-
-    if (salary.trim() !== "") {
-      const salaryValue = parseFloat(salary);
-      if (!isNaN(salaryValue)) {
+      if (filters.search.trim()) {
+        const searchLower = filters.search.toLowerCase();
         filtered = filtered.filter(
-          (post) => post.salary && parseFloat(post.salary) >= salaryValue
+          (post) =>
+            post.name?.toLowerCase().includes(searchLower) ||
+            post.userId?.name?.toLowerCase().includes(searchLower)
         );
       }
-    }
 
-    if (location.trim() !== "") {
-      const locationLower = location.toLowerCase();
-      filtered = filtered.filter((post) =>
-        post.location?.toLowerCase().includes(locationLower)
-      );
-    }
+      if (filters.salary.trim()) {
+        const salaryValue = parseFloat(filters.salary);
+        if (!isNaN(salaryValue)) {
+          filtered = filtered.filter(
+            (post) => post.salary && parseFloat(post.salary) >= salaryValue
+          );
+        }
+      }
 
-    if (experience.trim() !== "") {
-      const expValue = parseFloat(experience);
-      if (!isNaN(expValue)) {
-        filtered = filtered.filter(
-          (post) => post.experience && parseFloat(post.experience) <= expValue
+      if (filters.location.trim()) {
+        const locationLower = filters.location.toLowerCase();
+        filtered = filtered.filter((post) =>
+          post.location?.toLowerCase().includes(locationLower)
         );
       }
-    }
 
-    if (medium.trim() !== "") {
-      const mediumUpper = medium.toUpperCase();
-      filtered = filtered.filter((post) => post.medium === mediumUpper);
-    }
+      if (filters.experience.trim()) {
+        const expValue = parseFloat(filters.experience);
+        if (!isNaN(expValue)) {
+          filtered = filtered.filter(
+            (post) => post.experience && parseFloat(post.experience) <= expValue
+          );
+        }
+      }
 
-    if (subject.trim() !== "") {
-      const subjectLower = subject.toLowerCase();
-      filtered = filtered.filter((post) => {
-        if (!post.subject || post.subject.length === 0) return false;
-        return post.subject.some((sub) =>
-          sub.name?.toLowerCase().includes(subjectLower)
+      if (filters.medium.trim()) {
+        const mediumUpper = filters.medium.toUpperCase();
+        filtered = filtered.filter((post) => post.medium === mediumUpper);
+      }
+
+      if (filters.subject.trim()) {
+        const subjectLower = filters.subject.toLowerCase();
+        filtered = filtered.filter((post) =>
+          post.subject?.some((sub) => sub.name?.toLowerCase().includes(subjectLower))
         );
-      });
-    }
+      }
 
-    if (classType.trim() !== "") {
-      const classTypeLower = classType.toLowerCase();
-      filtered = filtered.filter((post) =>
-        post.classtype?.toLowerCase().includes(classTypeLower)
-      );
-    }
+      if (filters.classType.trim()) {
+        const classTypeLower = filters.classType.toLowerCase();
+        filtered = filtered.filter((post) =>
+          post.classtype?.toLowerCase().includes(classTypeLower)
+        );
+      }
 
-    if (gender.trim() !== "") {
-      const genderUpper = gender.toUpperCase();
-      filtered = filtered.filter((post) => post.gender === genderUpper);
-    }
+      if (filters.gender.trim()) {
+        const genderUpper = filters.gender.toUpperCase();
+        filtered = filtered.filter((post) => post.gender === genderUpper);
+      }
 
-    setFilteredPosts(filtered);
-  };
+      setFilteredPosts(filtered);
+    };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      applyFilters();
-    }
-  };
+    applyFilters();
+  }, [filters, allPosts]);
 
   const resetFilters = () => {
-    setSearch("");
-    setSalary("");
-    setExperience("");
-    setLocation("");
-    setMedium("");
-    setSubject("");
-    setClassType("");
-    setGender("");
+    setFilters({
+      search: "",
+      salary: "",
+      location: "",
+      experience: "",
+      medium: "",
+      subject: "",
+      classType: "",
+      gender: "",
+    });
     setFilteredPosts(allPosts);
   };
 
@@ -277,181 +392,7 @@ const Posts = () => {
 
         {/* Search Filters */}
         <div className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <Search className="w-5 h-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search for tuition title..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <DollarSign className="w-5 h-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Minimum Salary"
-                value={salary}
-                onChange={(e) => setSalary(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-              />
-              {salary && (
-                <button
-                  onClick={() => setSalary("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <Clock className="w-5 h-5 text-gray-400" />
-              </div>
-              <input
-                type="number"
-                placeholder="Experience (years)"
-                value={experience}
-                onChange={(e) => setExperience(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-              />
-              {experience && (
-                <button
-                  onClick={() => setExperience("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <MapPin className="w-5 h-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-              />
-              {location && (
-                <button
-                  onClick={() => setLocation("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <BookOpen className="w-5 h-5 text-gray-400" />
-              </div>
-              <select
-                value={medium}
-                onChange={(e) => setMedium(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-              >
-                <option value="">Select Medium</option>
-                <option value="BANGLA">Bangla</option>
-                <option value="ENGLISH">English</option>
-              </select>
-              {medium && (
-                <button
-                  onClick={() => setMedium("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <Pencil className="w-5 h-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-              />
-              {subject && (
-                <button
-                  onClick={() => setSubject("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <CalendarDays className="w-5 h-5 text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Class Type (Online/Offline)"
-                value={classType}
-                onChange={(e) => setClassType(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-              />
-              {classType && (
-                <button
-                  onClick={() => setClassType("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                </button>
-              )}
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                <Users className="w-5 h-5 text-gray-400" />
-              </div>
-              <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
-              >
-                <option value="">Select Gender Preference</option>
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="OTHERS">Others</option>
-              </select>
-              {gender && (
-                <button
-                  onClick={() => setGender("")}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                >
-                  <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                </button>
-              )}
-            </div>
-          </div>
+          <FilterInputs filters={filters} setFilters={setFilters} resetFilters={resetFilters} />
         </div>
 
         {/* Tuition Posts */}
@@ -459,11 +400,7 @@ const Posts = () => {
           <h2 className="text-2xl font-semibold mb-4">
             {loading ? "Loading tuition posts..." : "Latest Tuition Posts"}
           </h2>
-          <PostList
-            loading={loading}
-            filteredPosts={filteredPosts}
-            resetFilters={resetFilters}
-          />
+          <PostList loading={loading} filteredPosts={filteredPosts} resetFilters={resetFilters} />
         </div>
       </div>
     </div>
