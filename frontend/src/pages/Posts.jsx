@@ -210,7 +210,6 @@ FilterInputs.propTypes = {
     gender: PropTypes.string,
   }).isRequired,
   setFilters: PropTypes.func.isRequired,
-  resetFilters: PropTypes.func.isRequired,
 };
 
 // PropTypes for PostList
@@ -283,68 +282,73 @@ const Posts = () => {
     }
   }, [user]);
 
+  const filterBySearch = (posts, search) => {
+    if (!search.trim()) return posts;
+    const searchLower = search.toLowerCase();
+    return posts.filter(
+      (post) =>
+        post.name?.toLowerCase().includes(searchLower) ||
+        post.userId?.name?.toLowerCase().includes(searchLower)
+    );
+  };
+
+  const filterBySalary = (posts, salary) => {
+    if (!salary.trim()) return posts;
+    const salaryValue = parseFloat(salary);
+    if (isNaN(salaryValue)) return posts;
+    return posts.filter((post) => post.salary && parseFloat(post.salary) >= salaryValue);
+  };
+
+  const filterByLocation = (posts, location) => {
+    if (!location.trim()) return posts;
+    const locationLower = location.toLowerCase();
+    return posts.filter((post) => post.location?.toLowerCase().includes(locationLower));
+  };
+
+  const filterByExperience = (posts, experience) => {
+    if (!experience.trim()) return posts;
+    const expValue = parseFloat(experience);
+    if (isNaN(expValue)) return posts;
+    return posts.filter((post) => post.experience && parseFloat(post.experience) <= expValue);
+  };
+
+  const filterByMedium = (posts, medium) => {
+    if (!medium.trim()) return posts;
+    const mediumUpper = medium.toUpperCase();
+    return posts.filter((post) => post.medium === mediumUpper);
+  };
+
+  const filterBySubject = (posts, subject) => {
+    if (!subject.trim()) return posts;
+    const subjectLower = subject.toLowerCase();
+    return posts.filter((post) =>
+      post.subject?.some((sub) => sub.name?.toLowerCase().includes(subjectLower))
+    );
+  };
+
+  const filterByClassType = (posts, classType) => {
+    if (!classType.trim()) return posts;
+    const classTypeLower = classType.toLowerCase();
+    return posts.filter((post) => post.classtype?.toLowerCase().includes(classTypeLower));
+  };
+
+  const filterByGender = (posts, gender) => {
+    if (!gender.trim()) return posts;
+    const genderUpper = gender.toUpperCase();
+    return posts.filter((post) => post.gender === genderUpper);
+  };
+
   useEffect(() => {
     const applyFilters = () => {
       let filtered = [...allPosts];
-
-      if (filters.search.trim()) {
-        const searchLower = filters.search.toLowerCase();
-        filtered = filtered.filter(
-          (post) =>
-            post.name?.toLowerCase().includes(searchLower) ||
-            post.userId?.name?.toLowerCase().includes(searchLower)
-        );
-      }
-
-      if (filters.salary.trim()) {
-        const salaryValue = parseFloat(filters.salary);
-        if (!isNaN(salaryValue)) {
-          filtered = filtered.filter(
-            (post) => post.salary && parseFloat(post.salary) >= salaryValue
-          );
-        }
-      }
-
-      if (filters.location.trim()) {
-        const locationLower = filters.location.toLowerCase();
-        filtered = filtered.filter((post) =>
-          post.location?.toLowerCase().includes(locationLower)
-        );
-      }
-
-      if (filters.experience.trim()) {
-        const expValue = parseFloat(filters.experience);
-        if (!isNaN(expValue)) {
-          filtered = filtered.filter(
-            (post) => post.experience && parseFloat(post.experience) <= expValue
-          );
-        }
-      }
-
-      if (filters.medium.trim()) {
-        const mediumUpper = filters.medium.toUpperCase();
-        filtered = filtered.filter((post) => post.medium === mediumUpper);
-      }
-
-      if (filters.subject.trim()) {
-        const subjectLower = filters.subject.toLowerCase();
-        filtered = filtered.filter((post) =>
-          post.subject?.some((sub) => sub.name?.toLowerCase().includes(subjectLower))
-        );
-      }
-
-      if (filters.classType.trim()) {
-        const classTypeLower = filters.classType.toLowerCase();
-        filtered = filtered.filter((post) =>
-          post.classtype?.toLowerCase().includes(classTypeLower)
-        );
-      }
-
-      if (filters.gender.trim()) {
-        const genderUpper = filters.gender.toUpperCase();
-        filtered = filtered.filter((post) => post.gender === genderUpper);
-      }
-
+      filtered = filterBySearch(filtered, filters.search);
+      filtered = filterBySalary(filtered, filters.salary);
+      filtered = filterByLocation(filtered, filters.location);
+      filtered = filterByExperience(filtered, filters.experience);
+      filtered = filterByMedium(filtered, filters.medium);
+      filtered = filterBySubject(filtered, filters.subject);
+      filtered = filterByClassType(filtered, filters.classType);
+      filtered = filterByGender(filtered, filters.gender);
       setFilteredPosts(filtered);
     };
 
@@ -392,7 +396,7 @@ const Posts = () => {
 
         {/* Search Filters */}
         <div className="p-6">
-          <FilterInputs filters={filters} setFilters={setFilters} resetFilters={resetFilters} />
+          <FilterInputs filters={filters} setFilters={setFilters} />
         </div>
 
         {/* Tuition Posts */}
