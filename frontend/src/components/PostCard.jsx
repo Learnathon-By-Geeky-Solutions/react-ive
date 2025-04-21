@@ -23,9 +23,11 @@ import {
 
 // Subcomponent for rendering subjects
 const SubjectsList = ({ subjects }) => {
-  const subjectsList = typeof subjects === "string" && subjects !== "No subjects listed"
+  const subjectsList = Array.isArray(subjects)
+    ? subjects
+    : typeof subjects === "string" && subjects !== "No subjects listed"
     ? subjects.split(",").map((subject) => subject.trim())
-    : Array.isArray(subjects) ? subjects : [];
+    : [];
 
   return (
     <div className="mb-4">
@@ -52,17 +54,23 @@ const SubjectsList = ({ subjects }) => {
 };
 
 // Subcomponent for deadline status
-const DeadlineStatus = ({ deadline, isDeadlineSoon, isDeadlineExpired, daysRemaining }) => (
-  <div className="mb-4">
-    {isDeadlineExpired ? (
-      <div className="flex items-center text-gray-500 mt-1">
-        <XCircle className="w-4 h-4 mr-1 text-red-500" />
-        <span className="text-xs font-semibold text-red-500">Deadline expired: </span>
-        <span className="text-sm ml-1 text-gray-500">
-          {new Date(deadline).toLocaleDateString()}
-        </span>
+const DeadlineStatus = ({ deadline, isDeadlineSoon, isDeadlineExpired, daysRemaining }) => {
+  if (isDeadlineExpired) {
+    return (
+      <div className="mb-4">
+        <div className="flex items-center text-gray-500 mt-1">
+          <XCircle className="w-4 h-4 mr-1 text-red-500" />
+          <span className="text-xs font-semibold text-red-500">Deadline expired: </span>
+          <span className="text-sm ml-1 text-gray-500">
+            {new Date(deadline).toLocaleDateString()}
+          </span>
+        </div>
       </div>
-    ) : (
+    );
+  }
+
+  return (
+    <div className="mb-4">
       <div className={`flex items-center ${isDeadlineSoon ? "text-red-600" : "text-gray-500"} mt-1`}>
         <Clock className={`w-4 h-4 mr-1 ${isDeadlineSoon ? "text-red-600" : "text-gray-500"}`} />
         <span className="text-xs font-semibold">Deadline: </span>
@@ -73,9 +81,9 @@ const DeadlineStatus = ({ deadline, isDeadlineSoon, isDeadlineExpired, daysRemai
           </span>
         )}
       </div>
-    )}
-  </div>
-);
+    </div>
+  );
+};
 
 const PostCard = ({
   jobDetails: {
@@ -93,7 +101,7 @@ const PostCard = ({
   },
   schedule: { days, time, duration },
   userInfo: { guardianName, userId },
-  onDelete = () => {}, // Default parameter instead of defaultProps
+  onDelete = () => {},
 }) => {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -103,22 +111,25 @@ const PostCard = ({
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
-  const [isDeadlineSoon, setIsDeadlineSoon] = useState(false);
-  const [isDeadlineExpired, setIsDeadlineExpired] = useState(false);
-  const [daysRemaining, setDaysRemaining] = useState(null);
+  const [deadlineStatus, setDeadlineStatus] = useState({
+    isDeadlineSoon: false,
+    isDeadlineExpired: false,
+    daysRemaining: null,
+  });
 
   useEffect(() => {
     const checkDeadline = () => {
-      if (deadline) {
-        const deadlineDate = new Date(deadline);
-        const currentDate = new Date();
-        const diffTime = deadlineDate - currentDate;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (!deadline) return;
+      const deadlineDate = new Date(deadline);
+      const currentDate = new Date();
+      const diffTime = deadlineDate - currentDate;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        setDaysRemaining(diffDays);
-        setIsDeadlineSoon(diffDays <= 3 && diffDays > 0);
-        setIsDeadlineExpired(diffDays <= 0);
-      }
+      setDeadlineStatus({
+        daysRemaining: diffDays,
+        isDeadlineSoon: diffDays <= 3 && diffDays > 0,
+        isDeadlineExpired: diffDays <= 0,
+      });
     };
     checkDeadline();
   }, [deadline]);
@@ -132,9 +143,9 @@ const PostCard = ({
           body: JSON.stringify({ postId: jobPostId, userId: user.userId }),
         });
         const data = await response.json();
-        if (data.message === "exists") setAlreadyApplied(true);
+        setAlreadyApplied(data.message === "exists");
       } catch (error) {
-        console.error(error);
+        console.error("Error checking application status:", error);
       }
     };
     checkApplication();
@@ -142,7 +153,7 @@ const PostCard = ({
 
   const handleApply = async (e) => {
     e.preventDefault();
-    if (isDeadlineExpired) {
+    if (deadlineStatus.isDeadlineExpired) {
       toast.error("Application deadline has expired.");
       setOpen(false);
       return;
@@ -177,13 +188,11 @@ const PostCard = ({
       }
     } catch (error) {
       toast.error("An error occurred while applying.");
-      console.error(error.message);
+      console.error("Apply error:", error.message);
     } finally {
       setLoading(false);
     }
   };
-
-  const handleFileChange = (e) => setCv(e.target.files[0]);
 
   const handleDelete = async () => {
     try {
@@ -201,34 +210,76 @@ const PostCard = ({
       }
     } catch (error) {
       toast.error("An error occurred while deleting the tuition post");
-      console.error(error);
+      console.error("Delete error:", error);
     } finally {
       setDeleteLoading(false);
       setShowDeleteModal(false);
     }
   };
 
-  if (isDeleted) return null;
-
   const formatTime = (timeString) =>
     timeString
       ? new Date(timeString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
       : "Flexible";
 
-  const getBorderClass = () =>
-    isDeadlineExpired
-      ? "border-gray-400"
-      : isDeadlineSoon
-      ? "border-red-500 hover:border-red-600"
-      : "border-indigo-500 hover:border-purple-500";
+  const getBorderClass = () => {
+    if (deadlineStatus.isDeadlineExpired) return "border-gray-400";
+    if (deadlineStatus.isDeadlineSoon) return "border-red-500 hover:border-red-600";
+    return "border-indigo-500 hover:border-purple-500";
+  };
+
+  const renderActionButton = () => {
+    if (!user || user.userId === userId) {
+      return (
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          className="w-full flex items-center justify-center bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors border border-gray-300"
+        >
+          <Trash2 className="mr-2 w-5 h-5 text-gray-600" /> Remove Tuition Post
+        </button>
+      );
+    }
+
+    if (deadlineStatus.isDeadlineExpired) {
+      return (
+        <div className="w-full flex items-center justify-center bg-gray-300 text-gray-600 py-3 rounded-lg">
+          <XCircle className="mr-2 w-5 h-5" /> Deadline Expired
+        </div>
+      );
+    }
+
+    if (alreadyApplied) {
+      return (
+        <button
+          disabled
+          className="w-full flex items-center justify-center bg-green-500 text-white py-3 rounded-lg cursor-not-allowed opacity-75"
+        >
+          <CheckCircle className="mr-2 w-5 h-5" /> Already Applied
+        </button>
+      );
+    }
+
+    return (
+      <button
+        onClick={() => setOpen(true)}
+        className={`w-full flex items-center justify-center ${
+          deadlineStatus.isDeadlineSoon ? "bg-red-600 hover:bg-red-700" : "bg-purple-600 hover:bg-purple-700"
+        } text-white py-3 rounded-lg transition-colors`}
+      >
+        Apply Now <ArrowRight className="ml-2 w-5 h-5" />
+      </button>
+    );
+  };
+
+  if (isDeleted) return null;
 
   return (
     <>
       <div
         className={`flex flex-col h-full transform transition-all duration-300 ${
-          !isDeadlineExpired ? "hover:scale-105" : ""
+          !deadlineStatus.isDeadlineExpired ? "hover:scale-105" : ""
         } hover:shadow-lg bg-white border-2 ${getBorderClass()} rounded-lg p-6 shadow-lg ${
-          isDeadlineExpired ? "opacity-75" : ""
+          deadlineStatus.isDeadlineExpired ? "opacity-75" : ""
         }`}
       >
         <div className="flex justify-between items-center mb-4">
@@ -255,12 +306,12 @@ const PostCard = ({
           </div>
           <div
             className={`${
-              isDeadlineExpired ? "bg-gray-200" : "bg-purple-100"
+              deadlineStatus.isDeadlineExpired ? "bg-gray-200" : "bg-purple-100"
             } rounded-full p-3 ml-2`}
           >
             <Briefcase
               className={`w-6 h-6 ${
-                isDeadlineExpired ? "text-gray-500" : "text-purple-600"
+                deadlineStatus.isDeadlineExpired ? "text-gray-500" : "text-purple-600"
               }`}
             />
           </div>
@@ -305,46 +356,12 @@ const PostCard = ({
         </div>
         <DeadlineStatus
           deadline={deadline}
-          isDeadlineSoon={isDeadlineSoon}
-          isDeadlineExpired={isDeadlineExpired}
-          daysRemaining={daysRemaining}
+          isDeadlineSoon={deadlineStatus.isDeadlineSoon}
+          isDeadlineExpired={deadlineStatus.isDeadlineExpired}
+          daysRemaining={deadlineStatus.daysRemaining}
         />
 
-        <div className="mt-auto">
-          {user && user.userId !== userId && (
-            <>
-              {isDeadlineExpired ? (
-                <div className="w-full flex items-center justify-center bg-gray-300 text-gray-600 py-3 rounded-lg">
-                  <XCircle className="mr-2 w-5 h-5" /> Deadline Expired
-                </div>
-              ) : !alreadyApplied ? (
-                <button
-                  onClick={() => setOpen(true)}
-                  className={`w-full flex items-center justify-center ${
-                    isDeadlineSoon ? "bg-red-600 hover:bg-red-700" : "bg-purple-600 hover:bg-purple-700"
-                  } text-white py-3 rounded-lg transition-colors`}
-                >
-                  Apply Now <ArrowRight className="ml-2 w-5 h-5" />
-                </button>
-              ) : (
-                <button
-                  disabled
-                  className="w-full flex items-center justify-center bg-green-500 text-white py-3 rounded-lg cursor-not-allowed opacity-75"
-                >
-                  <CheckCircle className="mr-2 w-5 h-5" /> Already Applied
-                </button>
-              )}
-            </>
-          )}
-          {user && user.userId === userId && (
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="w-full flex items-center justify-center bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors border border-gray-300"
-            >
-              <Trash2 className="mr-2 w-5 h-5 text-gray-600" /> Remove Tuition Post
-            </button>
-          )}
-        </div>
+        <div className="mt-auto">{renderActionButton()}</div>
       </div>
 
       {/* Apply Modal */}
@@ -372,7 +389,7 @@ const PostCard = ({
                     type="file"
                     id="cv-upload"
                     className="hidden"
-                    onChange={handleFileChange}
+                    onChange={(e) => setCv(e.target.files[0])}
                     accept=".jpg,.jpeg,.png"
                   />
                   <label htmlFor="cv-upload" className="cursor-pointer flex flex-col items-center">
@@ -386,10 +403,10 @@ const PostCard = ({
               </div>
               <button
                 type="submit"
-                disabled={loading || isDeadlineExpired}
+                disabled={loading || deadlineStatus.isDeadlineExpired}
                 className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
               >
-                {loading ? "Submitting..." : isDeadlineExpired ? "Deadline Expired" : "Submit Application"}
+                {loading ? "Submitting..." : deadlineStatus.isDeadlineExpired ? "Deadline Expired" : "Submit Application"}
               </button>
             </form>
           </div>
@@ -442,7 +459,7 @@ PostCard.propTypes = {
     experience: PropTypes.string.isRequired,
     classType: PropTypes.string.isRequired,
     studentNum: PropTypes.number.isRequired,
-    subjects: PropTypes.string.isRequired,
+    subjects: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
     gender: PropTypes.string.isRequired,
     deadline: PropTypes.string.isRequired,
     jobPostId: PropTypes.string.isRequired,
@@ -457,6 +474,17 @@ PostCard.propTypes = {
     userId: PropTypes.string.isRequired,
   }).isRequired,
   onDelete: PropTypes.func,
+};
+
+SubjectsList.propTypes = {
+  subjects: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]).isRequired,
+};
+
+DeadlineStatus.propTypes = {
+  deadline: PropTypes.string.isRequired,
+  isDeadlineSoon: PropTypes.bool.isRequired,
+  isDeadlineExpired: PropTypes.bool.isRequired,
+  daysRemaining: PropTypes.number,
 };
 
 export default PostCard;
