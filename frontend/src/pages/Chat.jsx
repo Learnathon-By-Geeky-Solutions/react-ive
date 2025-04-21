@@ -10,13 +10,12 @@ import Navbar from "../components/Navbar";
 import { Paperclip, X } from 'lucide-react';
 
 const Chat = () => {
-  // Auth and conversation hooks
   const { user } = useAuth();
   const { loading, conversations } = useGetConversations();
   const { selectedConversation, setSelectedConversation, deleteMessage } = useConversation();
   const { messages: fetchedMessages, loading: messagesLoading } = useGetMessages();
   const { sendMessage, loading: sending } = useSendMessage();
-  useListenMessages(); // Real-time message listening
+  useListenMessages();
 
   // Refs
   const inputRef = useRef();
@@ -39,7 +38,7 @@ const Chat = () => {
     }
   }, [fetchedMessages]);
 
-  // Add event listener to handle clicks outside the menu
+  // Handle clicks outside the menu
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -140,15 +139,13 @@ const Chat = () => {
     return name ? name[0].toUpperCase() : '?';
   };
 
-  // Calculate if send button should be disabled
   const isSendButtonDisabled = sending || (!newMessage.trim() && !file);
 
-  // Filter conversations based on search query
   const filteredConversations = conversations.filter(conv => 
     conv.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Render component functions
+  // Render conversation list
   const renderConversationList = () => {
     if (loading) {
       return (
@@ -174,22 +171,22 @@ const Chat = () => {
       const isSelected = selectedConversation?._id === conv._id;
       const isMenuOpen = openMenuConversationId === conv._id;
       const isCompanyUser = user?.userType === 'Company';
-      
-      // Conversation button classes - extracted from ternary
-      const buttonClasses = `
-        p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center w-full text-left
-        ${isSelected
-          ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-md" 
-          : "bg-white text-gray-800 hover:bg-gray-50"}
-      `;
 
-      // Avatar circle classes - extracted from ternary
-      const avatarClasses = `
-        w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0
-        ${isSelected
-          ? "bg-white/20 text-white" 
-          : "bg-indigo-100 text-indigo-700"}
-      `;
+      const getButtonClasses = () => {
+        const baseClasses = "p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center w-full text-left";
+        if (isSelected) {
+          return `${baseClasses} bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-md`;
+        }
+        return `${baseClasses} bg-white text-gray-800 hover:bg-gray-50`;
+      };
+
+      const getAvatarClasses = () => {
+        const baseClasses = "w-10 h-10 rounded-full flex items-center justify-center mr-3 flex-shrink-0";
+        if (isSelected) {
+          return `${baseClasses} bg-white/20 text-white`;
+        }
+        return `${baseClasses} bg-indigo-100 text-indigo-700`;
+      };
 
       return (
         <div 
@@ -198,16 +195,13 @@ const Chat = () => {
           ref={isMenuOpen ? menuRef : null}
         >
           <button
-            className={buttonClasses}
+            className={getButtonClasses()}
             onClick={() => setSelectedConversation(conv)}
             aria-label={`Select conversation with ${conv.name}`}
-            aria-selected={isSelected}
           >
-            {/* Avatar circle */}
-            <div className={avatarClasses}>
+            <div className={getAvatarClasses()}>
               {getUserInitial(conv.name)}
             </div>
-            
             <div className="flex-1 min-w-0">
               <div className="flex justify-between items-center">
                 <span className="font-medium truncate">{conv.name}</span>
@@ -215,11 +209,10 @@ const Chat = () => {
             </div>
           </button>
           
-          {/* 3-Dot Menu for Conversation - Show only for companies */}
           {isCompanyUser && (
             <button
               onClick={(e) => {
-                e.stopPropagation(); // Prevent selecting conversation
+                e.stopPropagation();
                 setOpenMenuConversationId(isMenuOpen ? null : conv._id);
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity p-2"
@@ -325,43 +318,36 @@ const Chat = () => {
     }
     
     return localMessages.map((msg, index) => {
-      // Message display logic
-      const showSenderName = 
-        index === 0 || 
-        localMessages[index - 1].senderId !== msg.senderId;
-        
-      const isLastMessageForSender = 
-        index === localMessages.length - 1 || 
-        localMessages[index + 1].senderId !== msg.senderId;
-      
+      const showSenderName = index === 0 || localMessages[index - 1].senderId !== msg.senderId;
+      const isLastMessageForSender = index === localMessages.length - 1 || localMessages[index + 1].senderId !== msg.senderId;
       const isUserMessage = msg.senderId === user.userId;
       const isTimeVisible = isLastMessageForSender || timestampMessageId === msg._id;
       const isMessageHovered = hoveredMessageId === msg._id;
       const isLastMessage = index === localMessages.length - 1;
-      
-      // Message type determination
+
       const hasContent = msg.content && msg.content !== "null" && msg.content !== null;
       const hasFile = msg.fileUrl || (msg.fileType && msg.fileUrl);
       const messageType = hasContent && hasFile ? 'combined' : hasFile ? 'file-only' : 'text-only';
-      
       const fileName = hasFile ? (msg.fileUrl?.split('/').pop() || 'File') : '';
-      
-      // Message alignment classes
+
       const alignmentClasses = isUserMessage ? "items-end" : "items-start";
-      
-      // Message bubble styling
-      const bubbleClasses = `
-        py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left
-        ${isUserMessage
-          ? "bg-gradient-to-r from-indigo-500 to-violet-600 text-white" 
-          : "bg-white text-gray-800"}
-      `;
-      
-      // Delete button position classes
-      const deleteButtonPositionClasses = isUserMessage 
-        ? 'left-[-40px] w-[40px] justify-start'
-        : 'right-[-40px] w-[40px] justify-end';
-        
+
+      const getBubbleClasses = () => {
+        const baseClasses = "py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left";
+        if (isUserMessage) {
+          return `${baseClasses} bg-gradient-to-r from-indigo-500 to-violet-600 text-white`;
+        }
+        return `${baseClasses} bg-white text-gray-800`;
+      };
+
+      const getDeleteButtonPositionClasses = () => {
+        const baseClasses = "absolute top-0 z-10 h-full flex items-center w-[40px]";
+        if (isUserMessage) {
+          return `${baseClasses} left-[-40px] justify-start`;
+        }
+        return `${baseClasses} right-[-40px] justify-end`;
+      };
+
       return (
         <div
           key={msg._id}
@@ -373,20 +359,13 @@ const Chat = () => {
             </div>
           )}
           
-          {/* Message bubble with extended click area for trash */}
           <div 
             className="relative group"
             onMouseEnter={() => setHoveredMessageId(msg._id)}
             onMouseLeave={() => setHoveredMessageId(null)}
           >
-            {/* Trash can button with extended clickable area */}
             {isUserMessage && isMessageHovered && (
-              <div 
-                className={`
-                  absolute top-0 z-10 h-full flex items-center
-                  ${deleteButtonPositionClasses}
-                `}
-              >
+              <div className={getDeleteButtonPositionClasses()}>
                 <button
                   onClick={() => handleDeleteMessage(msg._id)}
                   className="p-2 text-red-500 hover:text-red-700 bg-white bg-opacity-90 rounded-full shadow-sm"
@@ -397,19 +376,22 @@ const Chat = () => {
               </div>
             )}
             
-            {/* Message content - Using a proper button element for accessibility */}
-            <button
-              className={bubbleClasses}
-              onClick={() => setTimestampMessageId(
-                timestampMessageId === msg._id ? null : msg._id
-              )}
-              aria-pressed={timestampMessageId === msg._id}
+            <div
+              role="button"
+              tabIndex={0}
+              className={getBubbleClasses()}
+              onClick={() => setTimestampMessageId(timestampMessageId === msg._id ? null : msg._id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  setTimestampMessageId(timestampMessageId === msg._id ? null : msg._id);
+                }
+              }}
               aria-label={`Toggle timestamp for message ${hasContent ? `: ${msg.content?.substring(0, 20)}...` : ''}`}
             >
               <div className="w-full" ref={isLastMessage ? messagesEndRef : null}>
                 {renderMessageContent(messageType, msg, fileName)}
               </div>
-            </button>
+            </div>
           </div>
           
           {isTimeVisible && (
@@ -439,7 +421,6 @@ const Chat = () => {
 
     return (
       <>
-        {/* Chat Header */}
         <div className="bg-white border-b border-gray-100 py-3 px-6 flex items-center shadow-sm">
           <div className="flex items-center">
             <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-full flex items-center justify-center text-white mr-3">
@@ -451,12 +432,10 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Messages Container */}
         <div className="flex-1 p-6 overflow-y-auto bg-gray-50 space-y-4">
           {renderMessages()}
         </div>
 
-        {/* Message Input */}
         <div className="p-4 bg-white border-t border-gray-100 flex items-center">
           <input 
             type="file"
@@ -496,10 +475,7 @@ const Chat = () => {
           <button
             onClick={handleSendMessage}
             disabled={isSendButtonDisabled}
-            className="
-              px-5 py-3 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-full 
-              hover:shadow-lg transition-all duration-200
-              disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="px-5 py-3 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-full hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             aria-label="Send message"
           >
             <FaPaperPlane className="mr-2" />
@@ -510,18 +486,13 @@ const Chat = () => {
     );
   };
 
-  // Main render
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      {/* Navbar at the top */}
       <div className="w-full shadow-sm z-10">
         <Navbar />
       </div>
       
-      {/* Main content area */}
       <div className="flex flex-1 overflow-hidden">
-        
-        {/* Sidebar: Conversation List */}
         <div className="w-1/4 bg-white shadow-md flex flex-col border-r border-gray-100">
           <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-indigo-600 to-violet-700 text-white">
             <h2 className="text-xl font-bold flex items-center">
@@ -530,7 +501,6 @@ const Chat = () => {
             </h2>
           </div>
           
-          {/* Search box */}
           <div className="px-4 py-3 border-b border-gray-100">
             <div className="relative">
               <input
@@ -545,12 +515,10 @@ const Chat = () => {
             </div>
           </div>
           
-          {/* Conversation list */}
           <div className="flex-1 overflow-y-auto p-3 space-y-2">
             {renderConversationList()}
           </div>
           
-          {/* User section */}
           <div className="p-4 border-t border-gray-100 bg-gray-50">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white mr-3">
@@ -563,7 +531,6 @@ const Chat = () => {
           </div>
         </div>
 
-        {/* Chat Window */}
         <div className="w-3/4 flex flex-col">
           {renderChatWindow()}
         </div>
