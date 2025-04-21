@@ -23,11 +23,12 @@ import {
 
 // Subcomponent for rendering subjects
 const SubjectsList = ({ subjects }) => {
-  const subjectsList = Array.isArray(subjects)
-    ? subjects
-    : typeof subjects === "string" && subjects !== "No subjects listed"
-    ? subjects.split(",").map((subject) => subject.trim())
-    : [];
+  let subjectsList = [];
+  if (Array.isArray(subjects)) {
+    subjectsList = subjects;
+  } else if (typeof subjects === "string" && subjects !== "No subjects listed") {
+    subjectsList = subjects.split(",").map((subject) => subject.trim());
+  }
 
   return (
     <div className="mb-4">
@@ -228,6 +229,12 @@ const PostCard = ({
     return "border-indigo-500 hover:border-purple-500";
   };
 
+  const getApplyButtonText = () => {
+    if (loading) return "Submitting...";
+    if (deadlineStatus.isDeadlineExpired) return "Deadline Expired";
+    return "Submit Application";
+  };
+
   const renderActionButton = () => {
     if (!user || user.userId === userId) {
       return (
@@ -406,7 +413,7 @@ const PostCard = ({
                 disabled={loading || deadlineStatus.isDeadlineExpired}
                 className="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
               >
-                {loading ? "Submitting..." : deadlineStatus.isDeadlineExpired ? "Deadline Expired" : "Submit Application"}
+                {getApplyButtonText()}
               </button>
             </form>
           </div>
