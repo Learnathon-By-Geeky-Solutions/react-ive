@@ -18,8 +18,25 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["student", "guardian"],
         required: true,
-    }
-}, {timestamps: true});
+    },
+    gender: {
+        type: String,
+        enum: ["MALE", "FEMALE", "OTHERS"],
+    },
+    session: {
+        type: String,
+    },
+    department: {
+        type: String,
+    },
+    studyingSubject: {
+        type: String,
+    },
+    subjects: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subjects",
+    }],
+}, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
 
