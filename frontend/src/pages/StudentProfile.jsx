@@ -517,9 +517,9 @@ const JobSeekerProfile = () => {
                       />
                       {showDropdown && filteredSubjects.length > 0 && (
                         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
-                          {filteredSubjects.map((subject, idx) => (
+                          {filteredSubjects.map((subject) => (
                             <div
-                              key={idx}
+                              key={subject}
                               className="p-2 hover:bg-slate-100 cursor-pointer text-slate-800"
                               onClick={() => handleSelectSubject(subject)}
                             >
@@ -554,9 +554,9 @@ const JobSeekerProfile = () => {
               )}
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-                {profileData.subjects.map((subject, index) => (
+                {profileData.subjects.map((subject,index) => (
                   <div
-                    key={index}
+                    key={subject}
                     className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl hover:-translate-y-2 hover:shadow-md hover:bg-white transition-all"
                   >
                     <div className="w-10 h-10 bg-purple-400 rounded-xl flex items-center justify-center text-white">
