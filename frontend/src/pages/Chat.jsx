@@ -327,13 +327,23 @@ const Chat = () => {
 
       const hasContent = msg.content && msg.content !== "null" && msg.content !== null;
       const hasFile = msg.fileUrl || (msg.fileType && msg.fileUrl);
-      const messageType = hasContent && hasFile ? 'combined' : hasFile ? 'file-only' : 'text-only';
+
+      // Extracted nested ternary into independent statement
+      let messageType;
+      if (hasContent && hasFile) {
+        messageType = 'combined';
+      } else if (hasFile) {
+        messageType = 'file-only';
+      } else {
+        messageType = 'text-only';
+      }
+
       const fileName = hasFile ? (msg.fileUrl?.split('/').pop() || 'File') : '';
 
       const alignmentClasses = isUserMessage ? "items-end" : "items-start";
 
       const getBubbleClasses = () => {
-        const baseClasses = "py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left";
+        const baseClasses = "py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left inline-block";
         if (isUserMessage) {
           return `${baseClasses} bg-gradient-to-r from-indigo-500 to-violet-600 text-white`;
         }
@@ -346,6 +356,14 @@ const Chat = () => {
           return `${baseClasses} left-[-40px] justify-start`;
         }
         return `${baseClasses} right-[-40px] justify-end`;
+      };
+
+      // Compute aria-label without nested template literals
+      const getAriaLabel = () => {
+        if (hasContent) {
+          return `Toggle timestamp for message: ${msg.content.substring(0, 20)}...`;
+        }
+        return 'Toggle timestamp for message';
       };
 
       return (
@@ -361,6 +379,8 @@ const Chat = () => {
           
           <div 
             className="relative group"
+            role="region"
+            aria-live="polite"
             onMouseEnter={() => setHoveredMessageId(msg._id)}
             onMouseLeave={() => setHoveredMessageId(null)}
           >
@@ -376,22 +396,15 @@ const Chat = () => {
               </div>
             )}
             
-            <div
-              role="button"
-              tabIndex={0}
+            <button
               className={getBubbleClasses()}
               onClick={() => setTimestampMessageId(timestampMessageId === msg._id ? null : msg._id)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setTimestampMessageId(timestampMessageId === msg._id ? null : msg._id);
-                }
-              }}
-              aria-label={`Toggle timestamp for message ${hasContent ? `: ${msg.content?.substring(0, 20)}...` : ''}`}
+              aria-label={getAriaLabel()}
             >
               <div className="w-full" ref={isLastMessage ? messagesEndRef : null}>
                 {renderMessageContent(messageType, msg, fileName)}
               </div>
-            </div>
+            </button>
           </div>
           
           {isTimeVisible && (
