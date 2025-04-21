@@ -9,6 +9,7 @@ import {connectDB} from './db/connectDB.js'
 import messageRouter from './routes/message.routes.js';
 import conversationRouter from './routes/conversation.routes.js';
 import subjectRouter from './routes/subjects.routes.js';
+import usersRouter from './routes/users.routes.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use("/apply", applicationRouter);
 app.use("/message", messageRouter);
 app.use("/conversation", conversationRouter);
 app.use("/subjects", subjectRouter);
+app.use("/profile", usersRouter);
 
 server.listen(PORT, () => {
     console.log(`Server listening on PORT ${PORT}`);
