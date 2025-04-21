@@ -324,11 +324,10 @@ const Chat = () => {
       const isTimeVisible = isLastMessageForSender || timestampMessageId === msg._id;
       const isMessageHovered = hoveredMessageId === msg._id;
       const isLastMessage = index === localMessages.length - 1;
-
+  
       const hasContent = msg.content && msg.content !== "null" && msg.content !== null;
       const hasFile = msg.fileUrl || (msg.fileType && msg.fileUrl);
-
-      // Extracted nested ternary into independent statement
+  
       let messageType;
       if (hasContent && hasFile) {
         messageType = 'combined';
@@ -337,11 +336,11 @@ const Chat = () => {
       } else {
         messageType = 'text-only';
       }
-
+  
       const fileName = hasFile ? (msg.fileUrl?.split('/').pop() || 'File') : '';
-
+  
       const alignmentClasses = isUserMessage ? "items-end" : "items-start";
-
+  
       const getBubbleClasses = () => {
         const baseClasses = "py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left inline-block";
         if (isUserMessage) {
@@ -349,7 +348,7 @@ const Chat = () => {
         }
         return `${baseClasses} bg-white text-gray-800`;
       };
-
+  
       const getDeleteButtonPositionClasses = () => {
         const baseClasses = "absolute top-0 z-10 h-full flex items-center w-[40px]";
         if (isUserMessage) {
@@ -357,15 +356,14 @@ const Chat = () => {
         }
         return `${baseClasses} right-[-40px] justify-end`;
       };
-
-      // Compute aria-label without nested template literals
+  
       const getAriaLabel = () => {
         if (hasContent) {
           return `Toggle timestamp for message: ${msg.content.substring(0, 20)}...`;
         }
         return 'Toggle timestamp for message';
       };
-
+  
       return (
         <div
           key={msg._id}
@@ -377,9 +375,9 @@ const Chat = () => {
             </div>
           )}
           
-          <div 
+          <section 
             className="relative group"
-            role="region"
+            aria-label="Message with hover controls"
             aria-live="polite"
             onMouseEnter={() => setHoveredMessageId(msg._id)}
             onMouseLeave={() => setHoveredMessageId(null)}
@@ -405,7 +403,7 @@ const Chat = () => {
                 {renderMessageContent(messageType, msg, fileName)}
               </div>
             </button>
-          </div>
+          </section>
           
           {isTimeVisible && (
             <div className="text-xs text-gray-500 mt-1 px-2">
@@ -416,7 +414,7 @@ const Chat = () => {
       );
     });
   };
-
+  
   const renderChatWindow = () => {
     if (!selectedConversation) {
       return (
