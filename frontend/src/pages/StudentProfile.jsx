@@ -10,6 +10,7 @@ const JobSeekerProfile = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
+  const inputRef = useRef(null);
 
   const [profileData, setProfileData] = useState({
     name: '',
@@ -133,6 +134,7 @@ const JobSeekerProfile = () => {
     }
     setNewSubject('');
     setShowDropdown(false);
+    inputRef.current.focus();
   };
 
   const handleAddSubject = () => {
@@ -143,6 +145,7 @@ const JobSeekerProfile = () => {
       });
       setNewSubject('');
       setShowDropdown(false);
+      inputRef.current.focus();
     }
   };
 
@@ -182,6 +185,13 @@ const JobSeekerProfile = () => {
     } catch (error) {
       console.error('Error updating user data:', error);
       setError('An error occurred while updating user data');
+    }
+  };
+
+  const handleKeyDown = (e, subject) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleSelectSubject(subject);
     }
   };
 
@@ -452,7 +462,10 @@ const JobSeekerProfile = () => {
                 </div>
               </div>
 
-              <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30 focus:ring-2 focus:ring-indigo-400 transition-all">
+              <button
+                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30 focus:ring-2 focus:ring-indigo-400 transition-all"
+                aria-label="Contact me"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -518,41 +531,43 @@ const JobSeekerProfile = () => {
                     <div className="flex-1 relative">
                       <input
                         type="text"
+                        role="combobox"
+                        aria-controls="subjects-list"
+                        aria-autocomplete="list"
+                        aria-expanded={showDropdown}
                         value={newSubject}
                         onChange={handleSubjectInputChange}
+                        onFocus={() => newSubject.trim() !== '' && setShowDropdown(true)}
                         className="w-full p-2 rounded-lg border border-slate-300 text-slate-800 focus:ring-2 focus:ring-indigo-400"
                         placeholder="Enter a new subject"
-                        onFocus={() => newSubject.trim() !== '' && setShowDropdown(true)}
-                        aria-expanded={showDropdown}
+                        ref={inputRef}
                       />
                       {showDropdown && filteredSubjects.length > 0 && (
-                        <div
+                        <ul
+                          id="subjects-list"
                           role="listbox"
                           className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto"
                         >
                           {filteredSubjects.map((subject) => (
-                            <div
+                            <li
                               key={subject}
                               role="option"
+                              aria-selected={false}
                               tabIndex={0}
                               className="p-2 hover:bg-slate-100 cursor-pointer text-slate-800 focus:bg-slate-100 focus:outline-none"
                               onClick={() => handleSelectSubject(subject)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                  e.preventDefault();
-                                  handleSelectSubject(subject);
-                                }
-                              }}
+                              onKeyDown={(e) => handleKeyDown(e, subject)}
                             >
                               {subject}
-                            </div>
+                            </li>
                           ))}
-                        </div>
+                        </ul>
                       )}
                     </div>
                     <button
                       onClick={handleAddSubject}
                       className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 focus:ring-2 focus:ring-purple-400 transition-all flex items-center gap-2"
+                      aria-label="Add subject"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -606,6 +621,13 @@ const JobSeekerProfile = () => {
                         <div className="flex-1 font-medium text-sm">{subject}</div>
                         <button
                           onClick={() => handleRemoveSubject(index)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleRemoveSubject(index);
+                            }
+                          }}
+                          aria-label={`Remove ${subject} subject`}
                           className="text-red-500 hover:text-red-600 focus:ring-2 focus:ring-red-400"
                         >
                           <svg
