@@ -11,7 +11,6 @@ import ApplyPage from './pages/Apply';
 import Applications from './pages/Applications';
 import Profile from './pages/StudentProfile';
 import Chat from './pages/Chat';
-import CompanyProfile from './pages/GuardianProfile';
 
 const App = () => {
   return (
@@ -29,7 +28,6 @@ const App = () => {
           <Route path='/forgot-password' element={<ForgotPassword />}/>
           <Route path='/reset-password' element={<ResetPassword />}/>
           <Route path='/profile' element={<Profile />}/>
-          <Route path='/companyprofile' element={<CompanyProfile />}/>
         </Routes>
       </div>
     
