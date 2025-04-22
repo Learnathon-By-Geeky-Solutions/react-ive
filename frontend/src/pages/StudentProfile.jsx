@@ -108,19 +108,6 @@ const JobSeekerProfile = () => {
     }
   };
 
-  const handleSelectSubject = (subject) => {
-    if (subject && !profileData.subjects.includes(subject)) {
-      setProfileData({
-        ...profileData,
-        subjects: [...profileData.subjects, subject],
-      });
-    }
-    setNewSubject('');
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
   const handleAddSubject = () => {
     if (newSubject.trim() !== '' && !profileData.subjects.includes(newSubject.trim())) {
       setProfileData({
