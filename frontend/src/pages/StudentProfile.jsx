@@ -7,9 +7,7 @@ const JobSeekerProfile = () => {
   const [loading, setLoading] = useState(false);
   const [allSubjects, setAllSubjects] = useState([]);
   const [filteredSubjects, setFilteredSubjects] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [error, setError] = useState(null);
-  const dropdownRef = useRef(null);
   const inputRef = useRef(null);
 
   const [profileData, setProfileData] = useState({
@@ -24,19 +22,6 @@ const JobSeekerProfile = () => {
 
   const { user } = useAuth();
   const userId = user?.userId;
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   // Fetch all subjects
   useEffect(() => {
@@ -118,23 +103,22 @@ const JobSeekerProfile = () => {
         subject.toLowerCase().includes(value.toLowerCase())
       );
       setFilteredSubjects(filtered);
-      setShowDropdown(true);
     } else {
       setFilteredSubjects([]);
-      setShowDropdown(false);
     }
   };
 
   const handleSelectSubject = (subject) => {
-    if (!profileData.subjects.includes(subject)) {
+    if (subject && !profileData.subjects.includes(subject)) {
       setProfileData({
         ...profileData,
         subjects: [...profileData.subjects, subject],
       });
     }
     setNewSubject('');
-    setShowDropdown(false);
-    inputRef.current.focus();
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const handleAddSubject = () => {
@@ -144,8 +128,9 @@ const JobSeekerProfile = () => {
         subjects: [...profileData.subjects, newSubject.trim()],
       });
       setNewSubject('');
-      setShowDropdown(false);
-      inputRef.current.focus();
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
   };
 
@@ -185,13 +170,6 @@ const JobSeekerProfile = () => {
     } catch (error) {
       console.error('Error updating user data:', error);
       setError('An error occurred while updating user data');
-    }
-  };
-
-  const handleKeyDown = (e, subject) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleSelectSubject(subject);
     }
   };
 
@@ -523,46 +501,26 @@ const JobSeekerProfile = () => {
                 </div>
               </div>
 
-              {/* Add Subject Form with Autocomplete (visible only in edit mode) */}
+              {/* Add Subject Form with Datalist (visible only in edit mode) */}
               {isEditing && (
                 <div className="mb-6 bg-slate-50 p-4 rounded-xl">
                   <div className="text-base font-medium mb-2">Add New Subject</div>
-                  <div className="flex gap-2 relative" ref={dropdownRef}>
-                    <div className="flex-1 relative">
+                  <div className="flex gap-2">
+                    <div className="flex-1">
                       <input
                         type="text"
-                        role="combobox"
-                        aria-controls="subjects-list"
-                        aria-autocomplete="list"
-                        aria-expanded={showDropdown}
+                        list="subjects-list"
                         value={newSubject}
                         onChange={handleSubjectInputChange}
-                        onFocus={() => newSubject.trim() !== '' && setShowDropdown(true)}
                         className="w-full p-2 rounded-lg border border-slate-300 text-slate-800 focus:ring-2 focus:ring-indigo-400"
                         placeholder="Enter a new subject"
                         ref={inputRef}
                       />
-                      {showDropdown && filteredSubjects.length > 0 && (
-                        <ul
-                          id="subjects-list"
-                          role="listbox"
-                          className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto"
-                        >
-                          {filteredSubjects.map((subject) => (
-                            <li
-                              key={subject}
-                              role="option"
-                              aria-selected={false}
-                              tabIndex={0}
-                              className="p-2 hover:bg-slate-100 cursor-pointer text-slate-800 focus:bg-slate-100 focus:outline-none"
-                              onClick={() => handleSelectSubject(subject)}
-                              onKeyDown={(e) => handleKeyDown(e, subject)}
-                            >
-                              {subject}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
+                      <datalist id="subjects-list">
+                        {filteredSubjects.map((subject) => (
+                          <option key={subject} value={subject} />
+                        ))}
+                      </datalist>
                     </div>
                     <button
                       onClick={handleAddSubject}
@@ -621,12 +579,6 @@ const JobSeekerProfile = () => {
                         <div className="flex-1 font-medium text-sm">{subject}</div>
                         <button
                           onClick={() => handleRemoveSubject(index)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              handleRemoveSubject(index);
-                            }
-                          }}
                           aria-label={`Remove ${subject} subject`}
                           className="text-red-500 hover:text-red-600 focus:ring-2 focus:ring-red-400"
                         >
