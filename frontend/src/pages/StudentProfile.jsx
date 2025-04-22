@@ -200,7 +200,7 @@ const JobSeekerProfile = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setIsEditing(false)}
-                className="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 transition-all flex items-center gap-2"
+                className="bg-slate-200 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-300 focus:ring-2 focus:ring-slate-400 transition-all flex items-center gap-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -212,6 +212,7 @@ const JobSeekerProfile = () => {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M18 6L6 18M6 6l12 12"></path>
                 </svg>
@@ -219,7 +220,7 @@ const JobSeekerProfile = () => {
               </button>
               <button
                 onClick={handleSave}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all flex items-center gap-2"
+                className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:ring-2 focus:ring-green-400 transition-all flex items-center gap-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -231,6 +232,7 @@ const JobSeekerProfile = () => {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                   <polyline points="17 21 17 13 7 13 7 21"></polyline>
@@ -242,7 +244,7 @@ const JobSeekerProfile = () => {
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-all flex items-center gap-2"
+              className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 focus:ring-2 focus:ring-indigo-400 transition-all flex items-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -254,6 +256,7 @@ const JobSeekerProfile = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                aria-hidden="true"
               >
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -275,7 +278,7 @@ const JobSeekerProfile = () => {
                     name="name"
                     value={profileData.name}
                     onChange={handleInputChange}
-                    className="p-2 rounded-lg text-slate-800 text-center"
+                    className="p-2 rounded-lg text-slate-800 text-center focus:ring-2 focus:ring-indigo-400"
                     placeholder="Your Name"
                   />
                   <input
@@ -283,7 +286,7 @@ const JobSeekerProfile = () => {
                     name="email"
                     value={profileData.email}
                     onChange={handleInputChange}
-                    className="p-2 rounded-lg text-slate-800 text-center"
+                    className="p-2 rounded-lg text-slate-800 text-center focus:ring-2 focus:ring-indigo-400"
                     placeholder="Your Email"
                   />
                 </div>
@@ -316,6 +319,7 @@ const JobSeekerProfile = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    aria-hidden="true"
                   >
                     <circle cx="12" cy="12" r="10"></circle>
                     <path d="M12 8L12 16"></path>
@@ -328,7 +332,7 @@ const JobSeekerProfile = () => {
                     name="gender"
                     value={profileData.gender}
                     onChange={handleInputChange}
-                    className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6"
+                    className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6 focus:ring-2 focus:ring-indigo-400"
                   >
                     <option value="MALE">Male</option>
                     <option value="FEMALE">Female</option>
@@ -354,6 +358,7 @@ const JobSeekerProfile = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    aria-hidden="true"
                   >
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                     <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -368,7 +373,7 @@ const JobSeekerProfile = () => {
                     name="session"
                     value={profileData.session}
                     onChange={handleInputChange}
-                    className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6"
+                    className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full ml-6 focus:ring-2 focus:ring-indigo-400"
                     placeholder="Current Session"
                   />
                 ) : (
@@ -390,6 +395,7 @@ const JobSeekerProfile = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    aria-hidden="true"
                   >
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
                   </svg>
@@ -402,7 +408,7 @@ const JobSeekerProfile = () => {
                       name="department"
                       value={profileData.department}
                       onChange={handleInputChange}
-                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full"
+                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full focus:ring-2 focus:ring-indigo-400"
                       placeholder="Your Department"
                     />
                   ) : (
@@ -423,6 +429,7 @@ const JobSeekerProfile = () => {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    aria-hidden="true"
                   >
                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
@@ -436,7 +443,7 @@ const JobSeekerProfile = () => {
                       name="studyingSubject"
                       value={profileData.studyingSubject}
                       onChange={handleInputChange}
-                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full"
+                      className="p-2 rounded-lg border border-slate-300 text-slate-800 w-full focus:ring-2 focus:ring-indigo-400"
                       placeholder="Current Subject"
                     />
                   ) : (
@@ -445,7 +452,7 @@ const JobSeekerProfile = () => {
                 </div>
               </div>
 
-              <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30 transition-all">
+              <button className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30 focus:ring-2 focus:ring-indigo-400 transition-all">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -456,6 +463,7 @@ const JobSeekerProfile = () => {
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                   <polyline points="22,6 12,13 2,6"></polyline>
@@ -492,6 +500,7 @@ const JobSeekerProfile = () => {
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
+                      aria-hidden="true"
                     >
                       <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                       <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
@@ -511,17 +520,29 @@ const JobSeekerProfile = () => {
                         type="text"
                         value={newSubject}
                         onChange={handleSubjectInputChange}
-                        className="w-full p-2 rounded-lg border border-slate-300 text-slate-800"
+                        className="w-full p-2 rounded-lg border border-slate-300 text-slate-800 focus:ring-2 focus:ring-indigo-400"
                         placeholder="Enter a new subject"
                         onFocus={() => newSubject.trim() !== '' && setShowDropdown(true)}
+                        aria-expanded={showDropdown}
                       />
                       {showDropdown && filteredSubjects.length > 0 && (
-                        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto">
+                        <div
+                          role="listbox"
+                          className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-20 max-h-60 overflow-y-auto"
+                        >
                           {filteredSubjects.map((subject) => (
                             <div
                               key={subject}
-                              className="p-2 hover:bg-slate-100 cursor-pointer text-slate-800"
+                              role="option"
+                              tabIndex={0}
+                              className="p-2 hover:bg-slate-100 cursor-pointer text-slate-800 focus:bg-slate-100 focus:outline-none"
                               onClick={() => handleSelectSubject(subject)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  e.preventDefault();
+                                  handleSelectSubject(subject);
+                                }
+                              }}
                             >
                               {subject}
                             </div>
@@ -531,7 +552,7 @@ const JobSeekerProfile = () => {
                     </div>
                     <button
                       onClick={handleAddSubject}
-                      className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-all flex items-center gap-2"
+                      className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 focus:ring-2 focus:ring-purple-400 transition-all flex items-center gap-2"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -543,6 +564,7 @@ const JobSeekerProfile = () => {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
+                        aria-hidden="true"
                       >
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -554,7 +576,7 @@ const JobSeekerProfile = () => {
               )}
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-                {profileData.subjects.map((subject,index) => (
+                {profileData.subjects.map((subject, index) => (
                   <div
                     key={subject}
                     className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl hover:-translate-y-2 hover:shadow-md hover:bg-white transition-all"
@@ -570,6 +592,7 @@ const JobSeekerProfile = () => {
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
+                        aria-hidden="true"
                       >
                         <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
                         <line x1="12" y1="22" x2="12" y2="15.5"></line>
@@ -583,7 +606,7 @@ const JobSeekerProfile = () => {
                         <div className="flex-1 font-medium text-sm">{subject}</div>
                         <button
                           onClick={() => handleRemoveSubject(index)}
-                          className="text-red-500 hover:text-red-600"
+                          className="text-red-500 hover:text-red-600 focus:ring-2 focus:ring-red-400"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -595,6 +618,7 @@ const JobSeekerProfile = () => {
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
+                            aria-hidden="true"
                           >
                             <path d="M3 6h18"></path>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
