@@ -39,7 +39,7 @@ export const createConversation = async (req, res) => {
     const { senderId, receiverId } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
-      return res.status(400).json({ error: "Invalid user ID(s)" });
+      return res.status(500).json({ error: "Invalid user ID(s)" });
     }
 
     const existingConversation = await Conversation.findOne({
