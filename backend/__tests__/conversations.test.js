@@ -103,7 +103,7 @@ describe('createConversation', () => {
 
     await createConversation(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Invalid user ID(s)' });
   });
 
@@ -114,7 +114,7 @@ describe('createConversation', () => {
 
     await createConversation(req, res);
 
-    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.status).toHaveBeenCalledWith(400);
     expect(res.json).toHaveBeenCalledWith({ error: 'Invalid user ID(s)' });
   });
 });
