@@ -31,11 +31,11 @@ describe('createConversation', () => {
   });
 
   it('should return existing conversation if one exists', async () => {
-    const senderId = new mongoose.Types.ObjectId().toString();
-    const receiverId = new mongoose.Types.ObjectId().toString();
+    const senderId = new mongoose.Types.ObjectId();
+    const receiverId = new mongoose.Types.ObjectId();
     req.body = { senderId, receiverId };
     const mockConversation = {
-      id: new mongoose.Types.ObjectId().toString(),
+      id: new mongoose.Types.ObjectId(),
       user1: senderId,
       user2: receiverId,
     };
@@ -55,11 +55,11 @@ describe('createConversation', () => {
   });
 
   it('should create a new conversation if none exists', async () => {
-    const senderId = new mongoose.Types.ObjectId().toString();
-    const receiverId = new mongoose.Types.ObjectId().toString();
+    const senderId = new mongoose.Types.ObjectId();
+    const receiverId = new mongoose.Types.ObjectId();
     req.body = { senderId, receiverId };
     const mockConversation = {
-      id: new mongoose.Types.ObjectId().toString(),
+      id: new mongoose.Types.ObjectId(),
       user1: senderId,
       user2: receiverId,
     };
@@ -84,8 +84,8 @@ describe('createConversation', () => {
   });
 
   it('should handle database errors', async () => {
-    const senderId = new mongoose.Types.ObjectId().toString();
-    const receiverId = new mongoose.Types.ObjectId().toString();
+    const senderId = new mongoose.Types.ObjectId();
+    const receiverId = new mongoose.Types.ObjectId();
     req.body = { senderId, receiverId };
 
     Conversation.findOne.mockRejectedValue(new Error('Database error'));
@@ -98,23 +98,23 @@ describe('createConversation', () => {
 
   it('should handle invalid senderId', async () => {
     const senderId = 'invalid-id';
-    const receiverId = new mongoose.Types.ObjectId().toString();
+    const receiverId = new mongoose.Types.ObjectId();
     req.body = { senderId, receiverId };
 
     await createConversation(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Invalid user ID(s)' });
   });
 
   it('should handle invalid receiverId', async () => {
-    const senderId = new mongoose.Types.ObjectId().toString();
+    const senderId = new mongoose.Types.ObjectId();
     const receiverId = 'invalid-id';
     req.body = { senderId, receiverId };
 
     await createConversation(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error' });
+    expect(res.json).toHaveBeenCalledWith({ error: 'Invalid user ID(s)' });
   });
 });
