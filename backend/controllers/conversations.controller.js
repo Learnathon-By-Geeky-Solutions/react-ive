@@ -39,13 +39,17 @@ export const createConversation = async (req, res) => {
     const { senderId, receiverId } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
-      return res.status(500).json({ error: "Invalid user ID(s)" });
+      return res.status(400).json({ error: "Invalid user ID(s)" });
     }
 
+    const senderObjectId = new mongoose.Types.ObjectId(senderId);
+    const receiverObjectId = new mongoose.Types.ObjectId(receiverId);
+
+    // Check if a conversation already exists
     const existingConversation = await Conversation.findOne({
       $or: [
-        { user1: senderId, user2: receiverId },
-        { user1:  receiverId, user2: senderId},
+        { user1: senderObjectId, user2: receiverObjectId },
+        { user1: receiverObjectId, user2: senderObjectId },
       ],
     });
 
@@ -55,8 +59,8 @@ export const createConversation = async (req, res) => {
 
     // Create a new conversation
     const conversation = await Conversation.create({
-      user1: senderId,
-      user2:  receiverId,
+      user1: senderObjectId,
+      user2: receiverObjectId,
     });
 
     res.status(201).json(conversation);
