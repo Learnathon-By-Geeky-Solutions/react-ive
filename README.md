@@ -1,5 +1,13 @@
 # react-ive
 
+<p align="center">
+  <a href="#">
+    <img src="https://img.shields.io/badge/Live_Site-Visit_Now-brightgreen?style=for-the-badge&logo=internet-explorer" alt="Live Site" />
+  </a>
+</p>
+
+👉 **[Click here to visit the live site](https://react-ive.netlify.app)**
+
 ## Team Members
 - Tashrif-007 (Team Leader)
 - CodeWithIsmail
