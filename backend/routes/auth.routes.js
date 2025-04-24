@@ -1,6 +1,6 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
-import { login, register, sendMail, resetPassword, getUserById} from "../controllers/auth.controller.js";
+import { login, register, sendMail, resetPassword, getUserById, googleAuth, googleAuthCallback} from "../controllers/auth.controller.js";
 
 const authRouter = express.Router();
 
@@ -33,5 +33,6 @@ authRouter.post("/login", loginLimiter, login);
 authRouter.post("/sendMail", generalLimiter, sendMail);
 authRouter.post("/resetPassword", resetLimiter, resetPassword);
 authRouter.get("/getUserById/:id", generalLimiter, getUserById);
-
+authRouter.get('/google', googleAuth); // Google OAuth start
+authRouter.get('/google/callback', googleAuthCallback);
 export default authRouter;

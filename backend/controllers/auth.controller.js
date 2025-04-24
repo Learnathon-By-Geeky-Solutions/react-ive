@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import validator from 'validator';
+import passport from '../passport.js'; 
 
 const baseUrl = process.env.FRONTEND_URL;
 
@@ -213,3 +214,45 @@ export const getUserById = async (req, res) => {
         res.status(500).json({ message: 'Server error.' });
     }
 };
+
+// Initialize passport
+export const initializePassport = (req, res, next) => {
+    passport.initialize()(req, res, next);
+  };
+  
+  // Google OAuth route
+  export const googleAuth = passport.authenticate('google', {
+    scope: ['profile', 'email'],
+  });
+  
+  // Google OAuth callback
+  export const googleAuthCallback = (req, res, next) => {
+    passport.authenticate('google', { session: false }, (err, user) => {
+      if (err || !user) {
+        return res.redirect(`${baseUrl}/signup?error=Google authentication failed`);
+      }
+  
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          name: user.name,
+          email: user.email,
+          userType: user.userType,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: '3d' }
+      );
+  
+      // Redirect to frontend with token and user data
+      const userData = encodeURIComponent(
+        JSON.stringify({
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          userType: user.userType,
+        })
+      );
+      res.redirect(`${baseUrl}/login?token=${token}&user=${userData}`);
+    })(req, res, next);
+  };

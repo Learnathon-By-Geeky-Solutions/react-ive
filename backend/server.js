@@ -10,6 +10,7 @@ import messageRouter from './routes/message.routes.js';
 import conversationRouter from './routes/conversation.routes.js';
 import subjectRouter from './routes/subjects.routes.js';
 import usersRouter from './routes/users.routes.js';
+import session from 'express-session';
 
 dotenv.config();
 
@@ -19,6 +20,13 @@ app.use(express.json());
 app.use(cors({
     origin: "*",
 }))
+app.use(
+    session({
+      secret: process.env.JWT_SECRET,
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
 
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
