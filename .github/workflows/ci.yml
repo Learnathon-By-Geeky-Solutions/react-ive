@@ -36,6 +36,14 @@ jobs:
         working-directory: ./backend
         run: npm test
 
+      - name: Run frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run frontend tests with coverage
+        working-directory: ./frontend
+        run: npm test
+
       - name: Set up Java 17 for SonarScanner
         uses: actions/setup-java@v3
         with:
