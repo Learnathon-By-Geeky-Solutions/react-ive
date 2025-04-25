@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  const hasProcessedToken = useRef(false);
 
   const decodeToken = (token) => {
     try {
@@ -21,31 +22,33 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // Handle Google OAuth callback
     const query = new URLSearchParams(location.search);
     const token = query.get('token');
-    if (token) {
+
+    if (token && !hasProcessedToken.current) {
+      console.log('Processing OAuth token');
+      hasProcessedToken.current = true;
       localStorage.setItem('token', token);
       const decodedUser = decodeToken(token);
       if (decodedUser) {
         setUser(decodedUser);
-        navigate('/');
+        navigate('/', { replace: true });
       } else {
         localStorage.removeItem('token');
+        navigate('/login', { replace: true });
       }
-    }
-
-    // Check for existing token
-    const storedToken = localStorage.getItem('token');
-    if (storedToken && !token) {
-      const decodedUser = decodeToken(storedToken);
-      if (decodedUser) {
-        setUser(decodedUser);
-      } else {
-        localStorage.removeItem('token');
+    } else if (!token && !hasProcessedToken.current) {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        const decodedUser = decodeToken(storedToken);
+        if (decodedUser) {
+          setUser(decodedUser);
+        } else {
+          localStorage.removeItem('token');
+        }
       }
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, [location, navigate]);
 
   const login = (userData, token) => {
