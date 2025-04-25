@@ -1,17 +1,19 @@
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { createContext, useContext, useState, useEffect, useMemo, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const hasProcessedToken = useRef(false);
 
   const decodeToken = (token) => {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1])); 
+      const payload = JSON.parse(atob(token.split('.')[1]));
       return payload;
     } catch (error) {
       console.error('Invalid token:', error);
@@ -20,36 +22,57 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decodedUser = decodeToken(token); 
+    const query = new URLSearchParams(location.search);
+    const token = query.get('token');
+
+    if (token && !hasProcessedToken.current) {
+      console.log('Processing OAuth token');
+      hasProcessedToken.current = true;
+      localStorage.setItem('token', token);
+      const decodedUser = decodeToken(token);
       if (decodedUser) {
-        setUser(decodedUser); 
+        setUser(decodedUser);
+        navigate('/', { replace: true });
       } else {
         localStorage.removeItem('token');
+        navigate('/login', { replace: true });
       }
+    } else if (!token && !hasProcessedToken.current) {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        const decodedUser = decodeToken(storedToken);
+        if (decodedUser) {
+          setUser(decodedUser);
+        } else {
+          localStorage.removeItem('token');
+        }
+      }
+      setIsLoading(false);
     }
-    setIsLoading(false); 
-  }, [localStorage.getItem("token")]);
+  }, [location, navigate]);
 
   const login = (userData, token) => {
     localStorage.setItem('token', token);
-    setUser(userData); 
+    setUser(userData);
+    navigate('/');
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
-    setIsLoading(false); 
-    navigate('/login'); 
+    setIsLoading(false);
+    navigate('/login');
   };
 
-  const contextValue = useMemo(() => ({
-    user,
-    isLoading,
-    login,
-    logout
-  }), [user, isLoading, login, logout]);
+  const contextValue = useMemo(
+    () => ({
+      user,
+      isLoading,
+      login,
+      logout,
+    }),
+    [user, isLoading]
+  );
 
   return (
     <AuthContext.Provider value={contextValue}>
@@ -59,7 +82,7 @@ export const AuthProvider = ({ children }) => {
 };
 
 AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 export const useAuth = () => useContext(AuthContext);
