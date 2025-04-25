@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const AuthLayout = ({ title, subtitle, children }) => {
   return (
@@ -18,6 +19,12 @@ const AuthLayout = ({ title, subtitle, children }) => {
       </div>
     </div>
   );
+};
+
+AuthLayout.propTypes = {
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired
 };
 
 export default AuthLayout;
