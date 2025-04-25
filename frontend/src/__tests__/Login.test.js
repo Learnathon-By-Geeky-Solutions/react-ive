@@ -1,60 +1,72 @@
-import { render, screen } from '@testing-library/react';
-import Footer from '../components/Footer';
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import Login from '../components/Login';
 
-describe('Footer Component', () => {
-  const currentYear = new Date().getFullYear();
+// Mocks
+jest.mock('../context/AuthContext', () => ({
+  useAuth: () => ({
+    login: jest.fn(),
+  }),
+}));
 
-  beforeEach(() => {
-    render(<Footer />);
+jest.mock('../hooks/useAuthForm', () => () => ({
+  formData: { email: '', password: '' },
+  error: null,
+  isLoading: false,
+  handleChange: jest.fn(),
+  handleSubmit: jest.fn((e) => e.preventDefault()),
+}));
+
+jest.mock('../hooks/useGoogleAuth', () => () => ({
+  googleLoading: false,
+  handleGoogleLogin: jest.fn(),
+}));
+
+const renderWithRouter = (ui) => {
+  return render(<BrowserRouter>{ui}</BrowserRouter>);
+};
+
+describe('Login Component', () => {
+  test('renders email and password fields', () => {
+    renderWithRouter(<Login />);
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
   });
 
-  test('renders company information correctly', () => {
-    expect(screen.getByText('Du Tutors')).toBeInTheDocument();
-    expect(
-      screen.getByText('Your Trusted Platform to Find DU Tutors & Tuitions')
-    ).toBeInTheDocument();
+  test('renders login button and Google login button', () => {
+    renderWithRouter(<Login />);
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /sign in with google/i })).toBeInTheDocument();
   });
 
-  test('renders Quick Links section correctly', () => {
-    expect(screen.getByText('Quick Links')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Home' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Posts' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Applications' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Chat' })).toBeInTheDocument();
+  test('renders "Forgot Password?" link', () => {
+    renderWithRouter(<Login />);
+    const forgotLink = screen.getByText(/forgot password\?/i);
+    expect(forgotLink).toBeInTheDocument();
+    expect(forgotLink.closest('a')).toHaveAttribute('href', '/forgot-password');
   });
 
-  test('renders Resources section correctly', () => {
-    expect(screen.getByText('Resources')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Blog' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Tuition Tips' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Help Center' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Guidelines' })).toBeInTheDocument();
+  test('renders "Register" link for new users', () => {
+    renderWithRouter(<Login />);
+    const registerLink = screen.getByText(/register/i);
+    expect(registerLink.closest('a')).toHaveAttribute('href', '/signup');
   });
 
-  test('renders Contact Us section correctly', () => {
-    expect(screen.getByText('Contact Us')).toBeInTheDocument();
-    expect(screen.getByText('Institute of Information Technology')).toBeInTheDocument();
-    expect(screen.getByText('University of Dhaka')).toBeInTheDocument();
-    expect(screen.getByText('Dhaka-1000, Bangladesh')).toBeInTheDocument();
-    expect(screen.getByText('support@dututors.com')).toHaveAttribute(
-      'href',
-      'mailto:contact@jobnode.com'
-    );
-  });
+//   test('calls handleSubmit when login form is submitted', () => {
+//     const mockHandleSubmit = jest.fn((e) => e.preventDefault());
 
-  test('renders footer bottom section with correct year and links', () => {
-    expect(
-      screen.getByText(`© ${currentYear} DU Tutors. All rights reserved.`)
-    ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Terms of Service' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Privacy Policy' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Cookie Settings' })).toBeInTheDocument();
-  });
+//     jest.mock('../hooks/useAuthForm', () => () => ({
+//       formData: { email: '', password: '' },
+//       error: null,
+//       isLoading: false,
+//       handleChange: jest.fn(),
+//       handleSubmit: mockHandleSubmit,
+//     }));
 
-  test('has correct background gradient style', () => {
-    const footer = screen.getByRole('contentinfo');
-    expect(footer).toHaveStyle({
-      background: 'linear-gradient(135deg, #D0A6FF 0%, #9B6BBF 50%, #7A5FB1 100%)',
-    });
-  });
+//     renderWithRouter(<Login />);
+//     const form = screen.getByRole('form'); // assuming AuthForm uses <form role="form">
+//     fireEvent.submit(form);
+//     expect(mockHandleSubmit).toHaveBeenCalled();
+//   });
 });
