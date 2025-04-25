@@ -4,6 +4,7 @@ export default {
     transform: {
       '^.+\\.[jt]sx?$': 'babel-jest',
     },
+    transformIgnorePatterns: ['/node_modules/(?!lucide-react)/'],
     moduleNameMapper: {
       '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     },
