@@ -333,7 +333,6 @@ const ApplicationCard = ({ app, onStatusChange }) => {
                 <h4 className="text-xl font-semibold text-gray-800 tracking-wide">
                   {app.userName || app.postId?.userId?.name || 'Unknown Applicant'}
                 </h4>
-                <p className="text-sm text-gray-600">{app.postId?.position || 'Unknown Position'}</p>
               </div>
             </div>
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusStyle.bgColor} ${statusStyle.textColor}`}>

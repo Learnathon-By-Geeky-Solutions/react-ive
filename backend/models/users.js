@@ -5,6 +5,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true,
+    },
     email: {
         type: String,
         required: true,
@@ -12,7 +17,6 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
     },
     userType: {
         type: String,
