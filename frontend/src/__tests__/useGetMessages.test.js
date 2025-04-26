@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import useGetMessages from '../hooks/useGetMessages';
 import useConversation from '../zustand/useConversation';
+import { BACKEND_URL } from '../utils/servicesData';
 
 global.fetch = jest.fn();
 
@@ -71,7 +72,7 @@ describe('useGetMessages Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/message/getMessage/conv1', {
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/message/getMessage/conv1`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -96,7 +97,7 @@ describe('useGetMessages Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/message/getMessage/conv1', {
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/message/getMessage/conv1`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +121,7 @@ describe('useGetMessages Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/message/getMessage/conv1', {
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/message/getMessage/conv1`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -159,7 +160,7 @@ describe('useGetMessages Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/message/getMessage/conv1', {
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/message/getMessage/conv1`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -191,7 +192,7 @@ describe('useGetMessages Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/message/getMessage/conv2', {
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/message/getMessage/conv2`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
