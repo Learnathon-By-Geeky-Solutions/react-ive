@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; 
 import { toast } from "react-toastify";
-import { Box, Button, Typography, TextField } from "@mui/material";
+import { Box, Button, Typography, Input } from "@mui/material";
 
 const ApplyPage = () => {
   const { user } = useAuth();
@@ -78,15 +78,17 @@ const ApplyPage = () => {
               <Typography variant="body1" gutterBottom>
                 Upload your DU ID Card image
               </Typography>
-              <TextField
+              <Input
                 type="file"
                 fullWidth
-                inputProps={{ accept: ".jpg,.jpeg,.png" }}
+                inputProps={{
+                  accept: ".jpg,.jpeg,.png"
+                }}
                 onChange={(e) => setCv(e.target.files[0])}
                 required
                 sx={{
                   marginTop: "10px",
-                  "& input": { padding: "8px 10px" },
+                  padding: "8px 0",
                 }}
               />
             </Box>
