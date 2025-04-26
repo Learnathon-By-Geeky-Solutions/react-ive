@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { BACKEND_URL } from "../utils/servicesData";
 
 const useGetUser = (userId) => {
     const [data, setData] = useState(null);
@@ -7,7 +8,7 @@ const useGetUser = (userId) => {
     useEffect(() => {
         const fetchUser = async () => {
             try {
-                const res = await fetch(`http://localhost:3500/auth/getUserById/${userId}`);
+                const res = await fetch(`${BACKEND_URL}/auth/getUserById/${userId}`);
                 if(!res.ok) {
                     throw new Error("Failed to fetch user");
                 }

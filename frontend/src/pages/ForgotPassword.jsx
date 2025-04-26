@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BACKEND_URL } from '../utils/servicesData';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3500/auth/sendResetMail', {
+      const response = await fetch(`${BACKEND_URL}/auth/sendResetMail`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

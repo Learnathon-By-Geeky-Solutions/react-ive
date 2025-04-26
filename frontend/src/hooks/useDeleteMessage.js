@@ -1,6 +1,8 @@
+import { BACKEND_URL } from "../utils/servicesData";
+
 export const deleteMessageApi = async (messageId) => {
     try {
-      const response = await fetch(`http://localhost:3500/messages/delete/${messageId}`, {
+      const response = await fetch(`${BACKEND_URL}/messages/delete/${messageId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

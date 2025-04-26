@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
+import { BACKEND_URL } from "../utils/servicesData";
 
 // Transform post data for PostCard
 export const transformPostData = (post) => ({
@@ -33,7 +34,7 @@ export const transformPostData = (post) => ({
 // Fetch all posts from API
 export const fetchAllPosts = async () => {
   try {
-    const response = await fetch("http://localhost:3500/post/getAllPosts");
+    const response = await fetch(`${BACKEND_URL}/post/getAllPosts`);
     const data = await response.json();
 
     if (!response.ok) {

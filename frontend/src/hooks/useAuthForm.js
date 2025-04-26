@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BACKEND_URL } from '../utils/servicesData';
 
 const useAuthForm = (initialState, apiEndpoint, onSuccess) => {
   const [formData, setFormData] = useState(initialState);
@@ -19,7 +20,7 @@ const useAuthForm = (initialState, apiEndpoint, onSuccess) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:3500/auth/${apiEndpoint}`, {
+      const response = await fetch(`${BACKEND_URL}/auth/${apiEndpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

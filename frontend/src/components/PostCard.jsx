@@ -20,6 +20,7 @@ import {
   Calendar,
   Clock3,
 } from "lucide-react";
+import { BACKEND_URL } from "../utils/servicesData";
 
 // Subcomponent for rendering subjects
 const SubjectsList = ({ subjects }) => {
@@ -138,7 +139,7 @@ const PostCard = ({
   useEffect(() => {
     const checkApplication = async () => {
       try {
-        const response = await fetch("http://localhost:3500/apply/exists", {
+        const response = await fetch(`${BACKEND_URL}/apply/exists`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ postId: jobPostId, userId: user.userId }),
@@ -174,7 +175,7 @@ const PostCard = ({
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3500/apply/applyToPost/${jobPostId}`, {
+      const response = await fetch(`${BACKEND_URL}/apply/applyToPost/${jobPostId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -198,7 +199,7 @@ const PostCard = ({
   const handleDelete = async () => {
     try {
       setDeleteLoading(true);
-      const response = await fetch(`http://localhost:3500/post/deletePost/${jobPostId}`, {
+      const response = await fetch(`${BACKEND_URL}/post/deletePost/${jobPostId}`, {
         method: "DELETE",
       });
       const data = await response.json();
