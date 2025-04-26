@@ -6,7 +6,7 @@
   </a>
 </p>
 
-👉 **[Click here to visit the live site](https://react-ive.netlify.app)**
+👉 **[Click here to visit the live site](https://react-ive-12.onrender.com)**
 
 ## Team Members
 - Tashrif-007 (Team Leader)
