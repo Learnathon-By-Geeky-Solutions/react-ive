@@ -38,7 +38,7 @@ describe('Footer Component', () => {
     expect(screen.getByText('Dhaka-1000, Bangladesh')).toBeInTheDocument();
     expect(screen.getByText('support@dututors.com')).toHaveAttribute(
       'href',
-      'mailto:contact@jobnode.com'
+      'mailto:tashrifpro@gmail.com'
     );
   });
 
