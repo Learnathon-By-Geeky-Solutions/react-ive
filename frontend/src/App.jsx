@@ -6,7 +6,6 @@ import Posts from './pages/Posts';
 import CreatePost from './pages/CreatePost';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-import 'react-toastify/dist/ReactToastify.css';
 import ApplyPage from './pages/Apply';
 import Applications from './pages/Applications';
 import Profile from './pages/StudentProfile';
