@@ -1,5 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import useGetUser from '../hooks/useGetUser';
+import { BACKEND_URL } from '../utils/servicesData';
 
 // Mock fetch
 global.fetch = jest.fn();
@@ -34,7 +35,7 @@ describe('useGetUser Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0)); // Wait for useEffect
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/auth/getUserById/123');
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/auth/getUserById/123`);
     expect(result.current.loading).toBe(false);
     expect(result.current.data).toEqual(mockUser);
   });
@@ -52,7 +53,7 @@ describe('useGetUser Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/auth/getUserById/123');
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/auth/getUserById/123`);
     expect(result.current.loading).toBe(false);
     expect(result.current.data).toBe(null);
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to fetch user');
@@ -81,7 +82,7 @@ describe('useGetUser Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/auth/getUserById/123');
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/auth/getUserById/123`);
     expect(result.current.data).toEqual(mockUser);
 
     const newUser = { _id: '456', name: 'Jane Doe', email: 'jane@example.com' };
@@ -96,7 +97,7 @@ describe('useGetUser Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/auth/getUserById/456');
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/auth/getUserById/456`);
     expect(result.current.loading).toBe(false);
     expect(result.current.data).toEqual(newUser);
   });
@@ -111,7 +112,7 @@ describe('useGetUser Hook', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
 
-    expect(fetch).toHaveBeenCalledWith('http://localhost:3500/auth/getUserById/123');
+    expect(fetch).toHaveBeenCalledWith(`${BACKEND_URL}/auth/getUserById/123`);
     expect(result.current.loading).toBe(false);
     expect(result.current.data).toBe(null);
     expect(consoleErrorSpy).toHaveBeenCalledWith('Network error');

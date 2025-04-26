@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 import ApplicationCard from '../components/ApplicationCard';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { BACKEND_URL } from '../utils/servicesData';
 
 // Mock the imports
 jest.mock('../context/AuthContext');
@@ -171,7 +172,7 @@ describe('ApplicationCard Component', () => {
     
     // Check if fetch was called with correct parameters
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:3500/apply/updateStatus/app123',
+      `${BACKEND_URL}/apply/updateStatus/app123`,
       expect.objectContaining({
         method: 'PUT',
         body: JSON.stringify({ status: 'ACCEPTED' }),
@@ -180,7 +181,7 @@ describe('ApplicationCard Component', () => {
     
     // Check if offer was sent when status is ACCEPTED
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:3500/offer/sendOffer',
+      `${BACKEND_URL}/offer/sendOffer`,
       expect.objectContaining({
         method: 'POST',
         body: expect.any(String),
@@ -240,7 +241,7 @@ describe('ApplicationCard Component', () => {
     
     // Check if fetch was called with correct parameters
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:3500/conversation/createConversation',
+      `${BACKEND_URL}/conversation/createConversation`,
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({ senderId: 'company123', receiverId: 'user123' }),
