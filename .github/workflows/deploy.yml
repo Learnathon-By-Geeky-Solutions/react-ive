@@ -1,9 +1,9 @@
-name: Deploy to Netlify
+name: Deploy Frontend to Netlify
 
 on:
   push:
     branches:
-      - main  
+      - main  # or whichever branch you want
 
 jobs:
   build-and-deploy:
@@ -13,18 +13,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'  # or whichever Node version you use
+
       - name: Install dependencies
+        working-directory: ./frontend
         run: npm install
 
-      - name: Build project
+      - name: Build frontend
+        working-directory: ./frontend
         run: npm run build
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2
         with:
-          publish-dir: ./build
+          publish-dir: ./frontend/dist
           production-branch: main
-          deploy-message: "Deploy from GitHub Actions"
+          deploy-message: "Deploy frontend from GitHub Actions"
           netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           netlify-site-id: ${{ secrets.NETLIFY_SITE_ID }}
         env:
