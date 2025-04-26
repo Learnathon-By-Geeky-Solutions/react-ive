@@ -30,11 +30,13 @@ const RegistrationSuccessModal = ({
     <Dialog 
       open={open} 
       onClose={onClose}
-      PaperProps={{
-        style: {
-          borderRadius: '12px',
-          padding: '16px',
-          maxWidth: '450px'
+      slotProps={{
+        paper: {
+          style: {
+            borderRadius: '12px',
+            padding: '16px',
+            maxWidth: '450px'
+          }
         }
       }}
     >
@@ -105,7 +107,7 @@ const RegistrationSuccessModal = ({
 RegistrationSuccessModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  userType: PropTypes.string.isRequired
-}
+  userType: PropTypes.string
+};
 
 export default RegistrationSuccessModal;

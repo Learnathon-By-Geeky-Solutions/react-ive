@@ -244,29 +244,31 @@ const Navbar = () => {
                     vertical: "top",
                     horizontal: "right",
                   }}
-                  PaperProps={{
-                    elevation: 5,
-                    sx: {
-                      overflow: "visible",
-                      filter:
-                        "drop-shadow(0px 4px 15px rgba(155, 125, 220, 0.25))",
-                      mt: 1.5,
-                      width: 250,
-                      borderRadius: "16px",
-                      border: "1px solid rgba(155, 125, 220, 0.2)",
-                      "&:before": {
-                        content: '""',
-                        display: "block",
-                        position: "absolute",
-                        top: 0,
-                        right: 14,
-                        width: 10,
-                        height: 10,
-                        bgcolor: "background.paper",
-                        transform: "translateY(-50%) rotate(45deg)",
-                        zIndex: 0,
-                        borderTop: "1px solid rgba(155, 125, 220, 0.2)",
-                        borderLeft: "1px solid rgba(155, 125, 220, 0.2)",
+                  slotProps={{
+                    paper: {
+                      elevation: 5,
+                      sx: {
+                        overflow: "visible",
+                        filter:
+                          "drop-shadow(0px 4px 15px rgba(155, 125, 220, 0.25))",
+                        mt: 1.5,
+                        width: 250,
+                        borderRadius: "16px",
+                        border: "1px solid rgba(155, 125, 220, 0.2)",
+                        "&:before": {
+                          content: '""',
+                          display: "block",
+                          position: "absolute",
+                          top: 0,
+                          right: 14,
+                          width: 10,
+                          height: 10,
+                          bgcolor: "background.paper",
+                          transform: "translateY(-50%) rotate(45deg)",
+                          zIndex: 0,
+                          borderTop: "1px solid rgba(155, 125, 220, 0.2)",
+                          borderLeft: "1px solid rgba(155, 125, 220, 0.2)",
+                        },
                       },
                     },
                   }}
@@ -328,10 +330,12 @@ const Navbar = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary="Profile"
-                      primaryTypographyProps={{
-                        fontFamily: '"Poppins", sans-serif',
-                        fontWeight: 600,
-                        color: "#5D4B8E",
+                      sx={{
+                        '& .MuiTypography-root': {
+                          fontFamily: '"Poppins", sans-serif',
+                          fontWeight: 600,
+                          color: "#5D4B8E",
+                        }
                       }}
                     />
                   </MenuItem>
@@ -362,10 +366,12 @@ const Navbar = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary="Logout"
-                      sx={{ color: "#d32f2f" }}
-                      primaryTypographyProps={{
-                        fontFamily: '"Poppins", sans-serif',
-                        fontWeight: 600,
+                      sx={{ 
+                        color: "#d32f2f",
+                        '& .MuiTypography-root': {
+                          fontFamily: '"Poppins", sans-serif',
+                          fontWeight: 600,
+                        }
                       }}
                     />
                   </MenuItem>

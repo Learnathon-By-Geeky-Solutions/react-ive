@@ -1,5 +1,6 @@
 import React from 'react';
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
+import {FaGithub, FaTwitter, FaLinkedin} from 'react-icons/fa';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -14,13 +15,13 @@ const Footer = () => {
             <p className="text-gray-200 mb-4">Your Trusted Platform to Find DU Tutors & Tuitions</p>
             <div className="flex space-x-4">
               <button className="text-gray-200 hover:text-white transition-colors">
-                <Github size={20} />
+                <FaGithub size={20} />
               </button>
               <button className="text-gray-200 hover:text-white transition-colors">
-                <Twitter size={20} />
+                <FaTwitter size={20} />
               </button>
               <button className="text-gray-200 hover:text-white transition-colors">
-                <Linkedin size={20} />
+                <FaLinkedin size={20} />
               </button>
               <button className="text-gray-200 hover:text-white transition-colors">
                 <Mail size={20} />
@@ -59,7 +60,7 @@ const Footer = () => {
               <li>University of Dhaka</li>
               <li>Dhaka-1000, Bangladesh</li>
               <li className="mt-4">
-                <a href="mailto:contact@jobnode.com" className="hover:text-white transition-colors">support@dututors.com</a>
+                <a href="mailto:tashrifpro@gmail.com" className="hover:text-white transition-colors">support@dututors.com</a>
               </li>
             </ul>
           </div>
