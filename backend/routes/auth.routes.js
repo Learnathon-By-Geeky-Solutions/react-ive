@@ -3,7 +3,9 @@ import rateLimit from 'express-rate-limit';
 import { login, register, sendMail, resetPassword, getUserById } from '../controllers/auth.controller.js';
 import passport from 'passport';
 import jwt from 'jsonwebtoken';
-const FRONTEND_URL = process.env.FRONTEND_URL;
+import dotenv from 'dotenv'
+dotenv.config()
+const FRONTEND_URLL = process.env.FRONTEND_URL;
 
 const authRouter = express.Router();
 
@@ -44,7 +46,7 @@ authRouter.get(
 );
 authRouter.get(
   '/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: `${FRONTEND_URL}/login` }),
+  passport.authenticate('google', { session: false, failureRedirect: `${FRONTEND_URLL}/login` }),
   (req, res) => {
     const user = req.user;
     const token = jwt.sign(
@@ -57,7 +59,7 @@ authRouter.get(
       process.env.JWT_SECRET,
       { expiresIn: '3d' }
     );
-    res.redirect(`${FRONTEND_URL}/auth/success?token=${token}`);
+    res.redirect(`${FRONTEND_URLL}/auth/success?token=${token}`);
   }
 );
 
