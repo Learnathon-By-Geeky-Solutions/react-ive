@@ -8,6 +8,7 @@ import useListenMessages from "../hooks/useListenMessages";
 import { FaEllipsisV, FaTrashAlt, FaPaperPlane, FaComment, FaSearch, FaUser } from "react-icons/fa";
 import Navbar from "../components/Navbar";
 import { Paperclip, X } from 'lucide-react';
+import { BACKEND_URL } from "../utils/servicesData";
 
 const Chat = () => {
   const { user } = useAuth();
@@ -88,7 +89,7 @@ const Chat = () => {
     }
     
     try {
-      const response = await fetch(`http://localhost:3500/conversation/delete/${conversationId}`, {
+      const response = await fetch(`${BACKEND_URL}/conversation/delete/${conversationId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +111,7 @@ const Chat = () => {
   
   const handleDeleteMessage = async (messageId) => {
     try {
-      const response = await fetch(`http://localhost:3500/message/deleteMessage/${messageId}`, {
+      const response = await fetch(`${BACKEND_URL}/message/deleteMessage/${messageId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

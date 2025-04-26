@@ -18,6 +18,7 @@ import {
   Calendar as CalendarIcon,
   FileText
 } from 'lucide-react';
+import { BACKEND_URL } from "../utils/servicesData";
 
 // Success Modal Component with PropTypes validation
 const SuccessModal = ({ isOpen, onClose, onConfirm }) => {
@@ -112,7 +113,7 @@ const CreatePost = () => {
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const response = await fetch("http://localhost:3500/post/subjects");
+        const response = await fetch(`${BACKEND_URL}/post/subjects`);
         if (response.ok) {
           const data = await response.json();
           setSubjects(data);
@@ -207,7 +208,7 @@ const CreatePost = () => {
       
       const dataToSubmit = prepareDataForSubmission();
       
-      const response = await fetch("http://localhost:3500/post/createPost", {
+      const response = await fetch(`${BACKEND_URL}/post/createPost`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

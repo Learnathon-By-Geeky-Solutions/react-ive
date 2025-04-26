@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { BACKEND_URL } from '../utils/servicesData';
 
 const JobSeekerProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -27,7 +28,7 @@ const JobSeekerProfile = () => {
   useEffect(() => {
     const fetchAllSubjects = async () => {
       try {
-        const response = await fetch('http://localhost:3500/subjects/getSubjects');
+        const response = await fetch(`${BACKEND_URL}/subjects/getSubjects`);
         if (response.ok) {
           const data = await response.json();
           setAllSubjects(data.map((subject) => subject.name));
@@ -49,7 +50,7 @@ const JobSeekerProfile = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`http://localhost:3500/profile/getUser/${userId}`, {
+        const response = await fetch(`${BACKEND_URL}/profile/getUser/${userId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -134,7 +135,7 @@ const JobSeekerProfile = () => {
     e.preventDefault();
     try {
       setError(null);
-      const response = await fetch(`http://localhost:3500/profile/updateProfile/${userId}`, {
+      const response = await fetch(`${BACKEND_URL}/profile/updateProfile/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext"; 
 import { toast } from "react-toastify";
 import { Box, Button, Typography, Input } from "@mui/material";
+import { BACKEND_URL } from "../utils/servicesData";
 
 const ApplyPage = () => {
   const { user } = useAuth();
@@ -33,7 +34,7 @@ const ApplyPage = () => {
       }
 
       const response = await fetch(
-        `http://localhost:3500/apply/applyToPost/${post.id}`,
+        `${BACKEND_URL}/apply/applyToPost/${post.id}`,
         {
           method: "POST",
           headers: {

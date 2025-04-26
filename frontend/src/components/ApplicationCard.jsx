@@ -2,6 +2,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { BACKEND_URL } from '../utils/servicesData';
+
 import { 
   Download, 
   MessageCircle, 
@@ -186,7 +188,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
   const handleChat = async (receiverId) => {
     try {
       const senderId = user.userId;
-      const res = await fetch('http://localhost:3500/conversation/createConversation', {
+      const res = await fetch(`${BACKEND_URL}/conversation/createConversation`, {
         method: 'POST',
         body: JSON.stringify({ senderId, receiverId }),
         headers: { 'Content-Type': 'application/json' },
@@ -194,7 +196,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
 
       if (!res.ok) throw new Error('Failed to create conversation');
 
-      const res2 = await fetch(`http://localhost:3500/conversation/getConversations/${senderId}`);
+      const res2 = await fetch(`${BACKEND_URL}/conversation/getConversations/${senderId}`);
       const data = await res2.json();
       const selectedConv = data.users.find((conv) => conv.id === receiverId);
 
@@ -211,7 +213,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
 
   const handleStatusChange = async (newStatus) => {
     try {
-      const res = await fetch(`http://localhost:3500/apply/updateStatus/${app._id}`, {
+      const res = await fetch(`${BACKEND_URL}/apply/updateStatus/${app._id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
@@ -226,7 +228,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
       onStatusChange?.(app._id, newStatus);
       
       if (newStatus === 'ACCEPTED') {
-        const offerRes = await fetch(`http://localhost:3500/offer/sendOffer`, {
+        const offerRes = await fetch(`${BACKEND_URL}/offer/sendOffer`, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',

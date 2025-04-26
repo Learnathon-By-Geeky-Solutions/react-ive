@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useConversation from '../zustand/useConversation';
 import toast from 'react-hot-toast';
+import { BACKEND_URL } from '../utils/servicesData';
 
 const useSendMessage = () => {
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,7 @@ const useSendMessage = () => {
         formData.append("file", file);
 
       }
-      const res = await fetch(`http://localhost:3500/message/send/${selectedConversation._id}`, {
+      const res = await fetch(`${BACKEND_URL}/message/send/${selectedConversation._id}`, {
         method: 'POST',
         headers: { 
           Authorization: `Bearer ${token}`

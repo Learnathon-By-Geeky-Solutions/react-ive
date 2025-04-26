@@ -8,6 +8,7 @@ import {
   Filter, 
   X 
 } from 'lucide-react';
+import { BACKEND_URL } from "../utils/servicesData";
 
 
 const JobApplications = () => {
@@ -28,7 +29,7 @@ const JobApplications = () => {
 
         if (!userId) throw new Error("User ID is not available");
 
-        const response = await fetch(`http://localhost:3500/apply/getApplicationsById/${userId}`)
+        const response = await fetch(`${BACKEND_URL}/apply/getApplicationsById/${userId}`)
 
         const data = await response.json();
         const apps = data.applications||[];

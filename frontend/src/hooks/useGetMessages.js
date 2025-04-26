@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useConversation from "../zustand/useConversation";
+import { BACKEND_URL } from "../utils/servicesData";
 
 const useGetMessages = () => {
   const [loading, setLoading] = useState(false);
@@ -10,7 +11,7 @@ const useGetMessages = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`http://localhost:3500/message/getMessage/${selectedConversation._id}`, {
+        const res = await fetch(`${BACKEND_URL}/message/getMessage/${selectedConversation._id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
