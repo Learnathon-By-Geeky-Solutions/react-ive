@@ -13,7 +13,7 @@ export const servicesData = [
     },
     {
       title: "Chats",
-      description: "Connect with employers or candidates instantly via our chat feature.",
+      description: "Connect with employers or candidates instantly via our Chat feature.",
       icon: "💬",
       link: "/chats",
     },
