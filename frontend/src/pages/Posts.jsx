@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useAuth } from "../context/AuthContext";
-import PostCard from "../components/PostCard";
 import Navbar from "../components/Navbar";
+import PostList from "../components/PostList";
+import { fetchAllPosts, postPropType } from "../components/PostUtils";
 import {
   Search,
   RefreshCw,
@@ -137,67 +138,6 @@ const FilterInputs = ({ filters, setFilters }) => {
   );
 };
 
-// Subcomponent for rendering posts
-const PostList = ({ loading, filteredPosts, resetFilters }) => {
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
-  if (filteredPosts.length === 0) {
-    return (
-      <div className="text-center py-10 text-gray-500">
-        <p className="text-xl">No tuition postings found matching your criteria.</p>
-        <button
-          onClick={resetFilters}
-          className="mt-4 bg-indigo-500 text-white px-6 py-2 rounded-full hover:bg-indigo-600 transition-all duration-300"
-        >
-          View All Tuitions
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {filteredPosts.map((post) => (
-        <PostCard
-          key={post._id}
-          jobDetails={{
-            title: post.name,
-            location: post.location,
-            medium: post.medium,
-            salaryRange: `${post.salary}`,
-            experience: `${post.experience} years`,
-            classType: post.classtype,
-            studentNum: post.studentNum,
-            subjects:
-              post.subject && post.subject.length > 0
-                ? post.subject.map((sub) => sub.name).join(", ")
-                : "No subjects listed",
-            gender: post.gender,
-            deadline: post.deadline,
-            jobPostId: post._id,
-          }}
-          schedule={{
-            days: post.days,
-            time: post.time,
-            duration: `${post.duration} hour(s)`,
-          }}
-          userInfo={{
-            guardianName: post.userId.name,
-            userId: post.userId._id,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
-
-// PropTypes for FilterInputs
 FilterInputs.propTypes = {
   filters: PropTypes.shape({
     search: PropTypes.string,
@@ -210,38 +150,6 @@ FilterInputs.propTypes = {
     gender: PropTypes.string,
   }).isRequired,
   setFilters: PropTypes.func.isRequired,
-};
-
-// PropTypes for PostList
-PostList.propTypes = {
-  loading: PropTypes.bool.isRequired,
-  filteredPosts: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      name: PropTypes.string,
-      location: PropTypes.string,
-      userId: PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        name: PropTypes.string,
-      }),
-      medium: PropTypes.string,
-      salary: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      experience: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      subject: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string,
-        })
-      ),
-      classtype: PropTypes.string,
-      days: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-      duration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      studentNum: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      gender: PropTypes.string,
-      deadline: PropTypes.string,
-      time: PropTypes.string,
-    })
-  ).isRequired,
-  resetFilters: PropTypes.func.isRequired,
 };
 
 const Posts = () => {
@@ -262,23 +170,16 @@ const Posts = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const fetchAllPosts = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("http://localhost:3500/post/getAllPosts");
-      const data = await res.json();
-      setAllPosts(data);
-      setFilteredPosts(data);
-    } catch (error) {
-      console.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (user?.userId) {
-      fetchAllPosts();
+      const loadPosts = async () => {
+        setLoading(true);
+        const posts = await fetchAllPosts();
+        setAllPosts(posts);
+        setFilteredPosts(posts);
+        setLoading(false);
+      };
+      loadPosts();
     }
   }, [user]);
 
@@ -373,7 +274,6 @@ const Posts = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
       <Navbar />
       <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-16">
-        {/* Header */}
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold tracking-wide">Tuition Posts</h1>
@@ -393,22 +293,22 @@ const Posts = () => {
             </button>
           </div>
         </div>
-
-        {/* Search Filters */}
         <div className="p-6">
           <FilterInputs filters={filters} setFilters={setFilters} />
         </div>
-
-        {/* Tuition Posts */}
         <div className="p-6 pt-0">
           <h2 className="text-2xl font-semibold mb-4">
             {loading ? "Loading tuition posts..." : "Latest Tuition Posts"}
           </h2>
-          <PostList loading={loading} filteredPosts={filteredPosts} resetFilters={resetFilters} />
+          <PostList loading={loading} posts={filteredPosts} resetFilters={resetFilters} />
         </div>
       </div>
     </div>
   );
+};
+
+Posts.propTypes = {
+  posts: PropTypes.arrayOf(postPropType),
 };
 
 export default Posts;
