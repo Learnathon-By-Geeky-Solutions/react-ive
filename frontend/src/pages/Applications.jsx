@@ -106,7 +106,7 @@ const JobApplications = () => {
       
       <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-16">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6">
+        <div className="bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] text-white p-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold tracking-wide">My Applications</h1>
             <button
@@ -130,7 +130,7 @@ const JobApplications = () => {
                   className={`
                     px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
                     ${filterStatus === status 
-                      ? 'bg-indigo-500 text-white' 
+                      ? 'bg-[#3F7CAD] text-white' 
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
                   `}
                 >

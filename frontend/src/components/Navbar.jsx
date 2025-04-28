@@ -391,23 +391,6 @@ const Navbar = () => {
                     },
                   }}
                 >
-                  {/* <Button
-                    color="inherit"
-                    sx={{
-                      textTransform: "none",
-                      fontWeight: 500,
-                      borderRadius: "20px",
-                      fontSize: "0.9rem",
-                      fontFamily: '"Poppins", sans-serif',
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                        color: "#1A3E59",
-                      },
-                    }}
-                  >
-                    available for projects
-                  </Button> */}
                 </Typography>
                 <motion.div
                   whileHover={{ scale: 1.05 }}

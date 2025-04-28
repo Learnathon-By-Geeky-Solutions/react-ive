@@ -34,7 +34,7 @@ const Services = () => {
         initial={{ width: "0%" }}
         whileInView={{ width: "19%" }} // Set the final width when in view
         transition={{ duration: 1, ease: "easeInOut" }}
-        className="border-t-2 border-purple-600 mx-auto mb-8"
+        className="border-t-2 border-[#3F7CAD] mx-auto mb-8"
         viewport={{ once: true }} // Animation triggers only once when in view
       />
       
@@ -55,13 +55,7 @@ const Services = () => {
             <div className="text-4xl mb-4">{service.icon}</div>
             <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
             <p className="text-gray-600 mb-4">{service.description}</p>
-            {/* <Link
-              to={service.link}
-              className="bg-customm text-white py-2 px-4 rounded-md hover:bg-[rgba(62,7,181,1)]"
-            >
-              Explore
-            </Link> */}
-            <div className="w-[20%] h-1 bg-purple-600 mt-4 transition-all duration-300 ease-in-out group-hover:w-[30%]"></div>
+            <div className="w-[20%] h-1 bg-[#3F7CAD] mt-4 transition-all duration-300 ease-in-out group-hover:w-[30%]"></div>
           </motion.div>
         ))}
       </motion.div>

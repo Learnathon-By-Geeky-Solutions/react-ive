@@ -327,10 +327,10 @@ const ApplicationCard = ({ app, onStatusChange }) => {
       />
 
       <div className="bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-        <div className="bg-gradient-to-r from-indigo-100 to-purple-100 p-5 border-b border-gray-100">
+        <div className="bg-gradient-to-r from-[#A6D8EF] to-[#3F7CAD] p-5 border-b border-gray-100">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <User className="mr-3 text-indigo-500" size={24} />
+              <User className="mr-3 text-[#3F7CAD]" size={24} />
               <div>
                 <h4 className="text-xl font-semibold text-gray-800 tracking-wide">
                   {app.userName || app.postId?.userId?.name || 'Unknown Applicant'}
@@ -346,18 +346,18 @@ const ApplicationCard = ({ app, onStatusChange }) => {
 
         <div className="p-5">
           <div className="flex items-center mb-4 text-gray-600">
-            <MapPin className="mr-2 text-violet-500" size={20} />
+            <MapPin className="mr-2 text-[#3F7CAD]" size={20} />
             <span className="text-sm">{app.postId?.location || 'Unknown Location'}</span>
           </div>
 
           <div className="flex items-center mb-4 text-gray-600">
-            <Calendar className="mr-2 text-violet-500" size={20} />
+            <Calendar className="mr-2 text-[#3F7CAD]" size={20} />
             <span className="text-sm">Applied: {new Date(app.createdAt).toLocaleDateString()}</span>
           </div>
 
           {app.statusUpdatedAt && app.statusUpdatedAt !== app.createdAt && (
             <div className="flex items-center mb-4 text-gray-600">
-              <Clock className="mr-2 text-violet-500" size={20} />
+              <Clock className="mr-2 text-[#3F7CAD]" size={20} />
               <span className="text-sm">Status updated: {new Date(app.statusUpdatedAt).toLocaleDateString()}</span>
             </div>
           )}
@@ -366,7 +366,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
             <a 
               href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
               download 
-              className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+              className="flex items-center justify-center px-4 py-2 rounded-lg bg-[#3F7CAD] text-white hover:opacity-90 transition-all duration-300"
             >
               <Download className="mr-2" />
               View CV
@@ -379,7 +379,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
                   ...prev,
                   statusChangeModal: true,
                 }))}
-                className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+                className="flex items-center justify-center px-4 py-2 rounded-lg bg-[#3F7CAD] text-white hover:opacity-90 transition-all duration-300"
               >
                 Change Status
               </button>
@@ -387,7 +387,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
             {app.userId !== user?.userId && (
               <button
                 onClick={() => handleChat(app.userId)}
-                className="flex items-center justify-center px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-400 to-purple-500 text-white hover:opacity-90 transition-all duration-300"
+                className="flex items-center justify-center px-4 py-2 rounded-lg bg-[#3F7CAD] text-white hover:opacity-90 transition-all duration-300"
               >
                 <MessageCircle className="mr-2" />
                 Chat

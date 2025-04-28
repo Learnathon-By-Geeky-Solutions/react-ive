@@ -34,7 +34,7 @@ const About = () => {
 
           {/* Animated HR divider */}
           <motion.hr
-            className="border-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-600 mx-auto mt-4"
+            className="border-0 h-1 bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] mx-auto mt-4"
             initial={{ width: 0, opacity: 0 }}
             whileInView={{ width: 224, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
@@ -118,15 +118,15 @@ const About = () => {
           viewport={{ once: true }}
         >
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <p className="text-4xl font-bold text-purple-600 mb-2">15K+</p>
+            <p className="text-4xl font-bold text-[#3F7CAD] mb-2">15K+</p>
             <p className="text-gray-600">Active Job Seekers</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <p className="text-4xl font-bold text-purple-600 mb-2">5K+</p>
+            <p className="text-4xl font-bold text-[#3F7CAD] mb-2">5K+</p>
             <p className="text-gray-600">Companies</p>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6 text-center">
-            <p className="text-4xl font-bold text-purple-600 mb-2">98%</p>
+            <p className="text-4xl font-bold text-[#3F7CAD] mb-2">98%</p>
             <p className="text-gray-600">Satisfaction Rate</p>
           </div>
         </motion.div>

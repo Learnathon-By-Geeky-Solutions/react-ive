@@ -56,7 +56,7 @@ const LatestTuitionPosts = () => {
       </motion.h2>
 
       <motion.hr
-        className="border-t-2 border-purple-600 mx-auto mb-8"
+        className="border-t-2 border-[#3F7CAD] mx-auto mb-8"
         {...animationVariants.hr}
       />
 
@@ -70,7 +70,7 @@ const LatestTuitionPosts = () => {
       >
         <Link
           to="/posts"
-          className="bg-[rgb(97,27,248)] text-white py-3 px-6 rounded-lg hover:bg-[rgb(62,7,181)] transition-colors"
+          className="bg-[#3F7CAD] text-white py-3 px-6 rounded-lg hover:bg-[#3F7CAA] transition-colors"
         >
           See More
         </Link>

@@ -176,7 +176,7 @@ const Chat = () => {
       const getButtonClasses = () => {
         const baseClasses = "p-3 rounded-lg cursor-pointer transition-all duration-200 flex items-center w-full text-left";
         if (isSelected) {
-          return `${baseClasses} bg-gradient-to-r from-indigo-500 to-violet-600 text-white shadow-md`;
+          return `${baseClasses} bg-[#3F7CAD] text-white shadow-md`;
         }
         return `${baseClasses} bg-white text-gray-800 hover:bg-gray-50`;
       };
@@ -345,7 +345,7 @@ const Chat = () => {
       const getBubbleClasses = () => {
         const baseClasses = "py-2 px-4 rounded-2xl max-w-md w-fit break-words shadow-sm text-left inline-block";
         if (isUserMessage) {
-          return `${baseClasses} bg-gradient-to-r from-indigo-500 to-violet-600 text-white`;
+          return `${baseClasses} bg-[#3F7CAD] text-white`;
         }
         return `${baseClasses} bg-white text-gray-800`;
       };
@@ -435,7 +435,7 @@ const Chat = () => {
       <>
         <div className="bg-white border-b border-gray-100 py-3 px-6 flex items-center shadow-sm">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-violet-600 rounded-full flex items-center justify-center text-white mr-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] rounded-full flex items-center justify-center text-white mr-3">
               {getUserInitial(selectedConversation.name)}
             </div>
             <div>
@@ -480,14 +480,14 @@ const Chat = () => {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 py-3 px-4 mx-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="flex-1 py-3 px-4 mx-2 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#3F7CAD] focus:border-transparent"
             onKeyDown={handleKeySendMessage}
             aria-label="Message text"
           />
           <button
             onClick={handleSendMessage}
             disabled={isSendButtonDisabled}
-            className="px-5 py-3 bg-gradient-to-r from-indigo-500 to-violet-600 text-white rounded-full hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className="px-5 py-3 bg-[#3F7CAD] text-white rounded-full hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             aria-label="Send message"
           >
             <FaPaperPlane className="mr-2" />
@@ -506,7 +506,7 @@ const Chat = () => {
       
       <div className="flex flex-1 overflow-hidden">
         <div className="w-1/4 bg-white shadow-md flex flex-col border-r border-gray-100">
-          <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-indigo-600 to-violet-700 text-white">
+          <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-[#99d3ff] to-[#3F7CAD] text-white">
             <h2 className="text-xl font-bold flex items-center">
               <FaComment className="mr-2" />
               Conversations
@@ -533,7 +533,7 @@ const Chat = () => {
           
           <div className="p-4 border-t border-gray-100 bg-gray-50">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center text-white mr-3">
+              <div className="w-10 h-10 bg-[#3F7CAD] rounded-full flex items-center justify-center text-white mr-3">
                 <FaUser />
               </div>
               <div className="flex-1 min-w-0">
