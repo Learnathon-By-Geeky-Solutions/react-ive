@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import io from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import PropTypes from "prop-types";
+import { BACKEND_URL } from "../utils/servicesData";
 
 const SocketContext = createContext({ socket: null, onlineUsers: [] });
 
@@ -18,7 +19,7 @@ export const SocketContextProvider = ({ children }) => {
     let newSocket;
 
     if (user) {
-      newSocket = io("http://localhost:3500", {
+      newSocket = io(BACKEND_URL, {
         query: { userId: user.userId },
       });
       setSocket(newSocket);
