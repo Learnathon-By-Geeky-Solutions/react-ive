@@ -10,12 +10,17 @@ import ApplyPage from './pages/Apply';
 import Applications from './pages/Applications';
 import Profile from './pages/StudentProfile';
 import Chat from './pages/Chat';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const App = () => {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={
+          <ProtectedRoute >
+            <Home />  
+          </ProtectedRoute>
+        } />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/posts" element={<Posts />} />
