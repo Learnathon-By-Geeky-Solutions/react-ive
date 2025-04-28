@@ -3,6 +3,7 @@ import { render, act } from '@testing-library/react';
 import { SocketContextProvider, useSocketContext } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import io from 'socket.io-client';
+import { BACKEND_URL } from '../utils/servicesData';
 
 // Mock the modules
 jest.mock('socket.io-client');
@@ -30,7 +31,7 @@ describe('SocketContext', () => {
   test('should create socket connection when user is available', () => {
     render(<SocketContextProvider>Test</SocketContextProvider>);
     
-    expect(io).toHaveBeenCalledWith('http://localhost:3500', {
+    expect(io).toHaveBeenCalledWith(BACKEND_URL, {
       query: { userId: 'test-user-123' },
     });
     expect(mockSocket.on).toHaveBeenCalledWith('getOnlineUsers', expect.any(Function));
@@ -119,7 +120,7 @@ describe('SocketContext', () => {
     // Should disconnect old socket and create new one
     expect(mockSocket.disconnect).toHaveBeenCalledTimes(1);
     expect(io).toHaveBeenCalledTimes(2);
-    expect(io).toHaveBeenLastCalledWith('http://localhost:3500', {
+    expect(io).toHaveBeenLastCalledWith(BACKEND_URL, {
       query: { userId: 'different-user-456' },
     });
   });
