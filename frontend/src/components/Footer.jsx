@@ -6,12 +6,12 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer style={{ background: 'linear-gradient(135deg, #D0A6FF 0%, #9B6BBF 50%, #7A5FB1 100%)' }} className="text-white py-12">
+    <footer style={{ background: 'linear-gradient(135deg, #A6D8FF 0%, #6B9FBF 50%, #3F7CAD 100%)' }} className="text-white py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="mb-6 md:mb-0">
-            <h3 className="font-bold text-xl mb-4">Du Tutors</h3>
+            <h3 className="font-bold text-xl mb-4">DU Tutors</h3>
             <p className="text-gray-200 mb-4">Your Trusted Platform to Find DU Tutors & Tuitions</p>
             <div className="flex space-x-4">
               <button className="text-gray-200 hover:text-white transition-colors">

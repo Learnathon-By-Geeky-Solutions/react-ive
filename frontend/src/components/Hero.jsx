@@ -40,7 +40,7 @@ const Hero = () => {
         animate="visible"
       >
         <img
-          src="./imageHome.jpg"
+          src="./homeImage.png"
           alt="Tuition Post"
           className="rounded-md shadow-md"
         />

@@ -251,7 +251,7 @@ const CreatePost = () => {
       
       <div className="max-w-3xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-16 mb-16">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6">
+        <div className="bg-gradient-to-r from-[#A6D8FF] to-[#6B9FBF] text-white p-6">
           <h1 className="text-3xl font-bold tracking-wide">Create a New Tuition Post</h1>
           <p className="mt-2 text-indigo-100">Fill in the details to find the perfect tutor for your needs</p>
         </div>
@@ -456,7 +456,7 @@ const CreatePost = () => {
 
             {/* Deadline */}
             <div className="relative">
-              <label htmlFor="deadline" className="absolute -top-2 left-3 px-1 text-xs font-medium text-purple-600 bg-white">
+              <label htmlFor="deadline" className="absolute -top-2 left-3 px-1 text-xs font-medium text-[#3F7CAD] bg-white">
                 Application Deadline
               </label>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
@@ -500,14 +500,14 @@ const CreatePost = () => {
                   value={subjectInput}
                   onChange={(e) => setSubjectInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-[#3F7CAD] focus:border-transparent transition-all duration-300"
                 />
               </div>
               
               <button
                 type="button"
                 onClick={handleSubjectAdd}
-                className="bg-indigo-500 text-white rounded-full py-2 px-6 shadow-md hover:bg-indigo-600 transition-all duration-300"
+                className="bg-[#3F7CAD] text-white rounded-full py-2 px-6 shadow-md hover:bg-[#6B9FBF] transition-all duration-300"
               >
                 Add Subject
               </button>
@@ -516,7 +516,7 @@ const CreatePost = () => {
                 {formData.subject.map((subject) => (
                   <div 
                     key={subject.name} 
-                    className="bg-gradient-to-r from-indigo-400 to-purple-500 text-white px-3 py-1 rounded-full flex items-center gap-1"
+                    className="bg-[#3F7CAD] text-white px-3 py-1 rounded-full flex items-center gap-1"
                   >
                     <span>{subject.name}</span>
                     <button
@@ -540,7 +540,7 @@ const CreatePost = () => {
             <button
               type="submit"
               disabled={loading || formData.subject.length === 0}
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full py-3 font-semibold text-lg shadow-md hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 disabled:opacity-70"
+              className="w-full bg-[#6B9FBF] hover:bg-[#3F7CAD] text-white rounded-full py-3 font-semibold text-lg shadow-md hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 disabled:opacity-70"
             >
               {loading ? "Creating..." : "Create Tuition Post"}
             </button>
