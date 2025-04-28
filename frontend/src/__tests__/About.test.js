@@ -48,7 +48,7 @@ describe('About Component', () => {
 
   test('renders gradient divider with correct classes', () => {
     const divider = screen.getByRole('separator');
-    expect(divider).toHaveClass('border-0 h-1 bg-gradient-to-r from-purple-500 to-indigo-600');
+    expect(divider).toHaveClass('border-0 h-1 bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD]');
   });
 
   test('renders highlight box with correct styling', () => {

@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { BACKEND_URL } from '../utils/servicesData';
+import Navbar from '../components/Navbar';
 
 const JobSeekerProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -166,8 +167,9 @@ const JobSeekerProfile = () => {
 
   return (
     <div className="bg-slate-100 text-slate-900 relative min-h-screen">
+      <Navbar />
       {/* Background gradient */}
-      <div className="absolute top-0 left-0 right-0 h-80 bg-gradient-to-r from-indigo-500 to-purple-500 z-0"></div>
+      <div className="absolute top-0 left-0 right-0 h-80 bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] z-0"></div>
 
       <div className="max-w-7xl mx-auto px-8 py-8 relative">
         {/* Edit Mode Toggle Button */}
@@ -220,7 +222,7 @@ const JobSeekerProfile = () => {
           ) : (
             <button
               onClick={() => setIsEditing(true)}
-              className="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 focus:ring-2 focus:ring-indigo-400 transition-all flex items-center gap-2"
+              className="bg-[#3F7CAD] text-white px-4 py-2 rounded-lg hover:bg-[#3F7CAD] focus:ring-2 focus:ring-indigo-400 transition-all flex items-center gap-2"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -246,7 +248,7 @@ const JobSeekerProfile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8 pt-12">
           {/* Sidebar Card */}
           <div className="bg-white rounded-2xl overflow-hidden shadow-md hover:-translate-y-2 hover:shadow-lg transition-all relative">
-            <div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-8 text-white text-center relative">
+            <div className="bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] p-8 text-white text-center relative">
               {isEditing ? (
                 <div className="flex flex-col gap-4 mb-6">
                   <input
@@ -278,7 +280,7 @@ const JobSeekerProfile = () => {
                 {profileData.email}
               </div>
 
-              <div className="absolute -top-5 -right-5 w-20 h-20 bg-purple-400 rounded-md rotate-45 opacity-50 z-0"></div>
+              <div className="absolute -top-5 -right-5 w-20 h-20 bg-[#A6D8FF] rounded-md rotate-45 opacity-50 z-0"></div>
             </div>
 
             <div className="p-8 relative">
@@ -315,7 +317,7 @@ const JobSeekerProfile = () => {
                     <option value="OTHERS">Others</option>
                   </select>
                 ) : (
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-500 text-white px-4 py-2 rounded-full font-medium text-sm mt-2 ml-6">
+                  <div className="inline-flex items-center gap-2 bg-[#3F7CAD] text-white px-4 py-2 rounded-full font-medium text-sm mt-2 ml-6">
                     {profileData.gender}
                   </div>
                 )}
@@ -353,7 +355,7 @@ const JobSeekerProfile = () => {
                     placeholder="Current Session"
                   />
                 ) : (
-                  <div className="inline-flex items-center gap-2 bg-gradient-to-r from-sky-600 to-blue-500 text-white px-4 py-2 rounded-full font-medium text-sm mt-2 ml-6">
+                  <div className="inline-flex items-center gap-2 bg-[#3F7CAD] text-white px-4 py-2 rounded-full font-medium text-sm mt-2 ml-6">
                     {profileData.session || 'Not specified'}
                   </div>
                 )}
@@ -429,7 +431,7 @@ const JobSeekerProfile = () => {
               </div>
 
               <button
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30 focus:ring-2 focus:ring-indigo-400 transition-all"
+                className="w-full bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] text-white font-semibold py-3 px-6 rounded-xl flex items-center justify-center gap-3 mt-8 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30 focus:ring-2 focus:ring-indigo-400 transition-all"
                 aria-label="Contact me"
               >
                 <svg
@@ -450,7 +452,7 @@ const JobSeekerProfile = () => {
                 Contact Me
               </button>
 
-              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-400 rounded-full opacity-30 z-0"></div>
+              <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#A6D8FF] rounded-full opacity-30 z-0"></div>
             </div>
           </div>
 
@@ -459,7 +461,7 @@ const JobSeekerProfile = () => {
             {/* Floating Stats */}
             <div className="bg-white rounded-xl shadow-lg p-6 flex justify-center items-center relative z-10 hover:-translate-y-2 hover:shadow-lg transition-all">
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600 mb-1">{profileData.subjects.length}</div>
+                <div className="text-2xl font-bold text-[#3F7CAD] mb-1">{profileData.subjects.length}</div>
                 <div className="text-sm text-slate-500">Subjects</div>
               </div>
             </div>
@@ -512,7 +514,7 @@ const JobSeekerProfile = () => {
                     </div>
                     <button
                       onClick={handleAddSubject}
-                      className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 focus:ring-2 focus:ring-purple-400 transition-all flex items-center gap-2"
+                      className="bg-[#3F7CAD] text-white px-4 py-2 rounded-lg hover:bg-purple-600 focus:ring-2 focus:ring-purple-400 transition-all flex items-center gap-2"
                       aria-label="Add subject"
                     >
                       <svg
@@ -542,7 +544,7 @@ const JobSeekerProfile = () => {
                     key={subject}
                     className="flex items-center gap-3 bg-slate-50 p-4 rounded-xl hover:-translate-y-2 hover:shadow-md hover:bg-white transition-all"
                   >
-                    <div className="w-10 h-10 bg-purple-400 rounded-xl flex items-center justify-center text-white">
+                    <div className="w-10 h-10 bg-[#3F7CAD] rounded-xl flex items-center justify-center text-white">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="20"

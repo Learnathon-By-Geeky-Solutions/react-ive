@@ -28,7 +28,7 @@ const Hero = () => {
         </p>
         <Link
           to="/posts"
-          className="bg-customm text-white py-3 px-6 rounded-md hover:bg-[rgba(62,7,181,1)]"
+          className="bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] text-white py-3 px-6 rounded-md hover:bg-[rgba(62,7,181,1)]"
         >
           Explore Tuition Posts
         </Link>
