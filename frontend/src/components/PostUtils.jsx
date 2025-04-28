@@ -22,8 +22,8 @@ export const transformPostData = (post) => ({
   },
   schedule: {
     days: post.days,
-    time: post.time,
-    duration: `${post.duration} hour(s)`,
+    time: post.time,  
+    duration: `${post.duration} min(s)`,
   },
   userInfo: {
     guardianName: post.userId.name,
