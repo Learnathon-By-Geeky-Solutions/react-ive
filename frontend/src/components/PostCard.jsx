@@ -19,6 +19,7 @@ import {
   UserCircle,
   Calendar,
   Clock3,
+  Users,
 } from "lucide-react";
 import { BACKEND_URL } from "../utils/servicesData";
 
@@ -227,7 +228,7 @@ const PostCard = ({
   const getBorderClass = () => {
     if (deadlineStatus.isDeadlineExpired) return "border-gray-400";
     if (deadlineStatus.isDeadlineSoon) return "border-red-500 hover:border-red-600";
-    return "border-indigo-500 hover:border-purple-500";
+    return "border-[#6B9FBF] hover:border-[#3F7CAD]";
   };
 
   const getApplyButtonText = () => {
@@ -271,7 +272,9 @@ const PostCard = ({
       <button
         onClick={() => setOpen(true)}
         className={`w-full flex items-center justify-center ${
-          deadlineStatus.isDeadlineSoon ? "bg-red-600 hover:bg-red-700" : "bg-purple-600 hover:bg-purple-700"
+          deadlineStatus.isDeadlineSoon 
+            ? "bg-red-600 hover:bg-red-700" 
+            : "bg-[#6B9FBF] hover:bg-[#3F7CAD]"
         } text-white py-3 rounded-lg transition-colors`}
       >
         Apply Now <ArrowRight className="ml-2 w-5 h-5" />
@@ -290,8 +293,8 @@ const PostCard = ({
           deadlineStatus.isDeadlineExpired ? "opacity-75" : ""
         }`}
       >
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex-grow">
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex-grow pr-4">
             <h3 className="text-2xl font-bold text-gray-800 truncate">{title}</h3>
             <div className="flex flex-col gap-1 mt-1">
               <div className="flex items-center text-gray-600">
@@ -304,22 +307,26 @@ const PostCard = ({
                 <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
                 <span className="text-sm truncate">{location}</span>
               </div>
-              <div className="flex items-center text-gray-500">
-                <UserCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-                <span className="text-sm truncate">
-                  Posted by: {guardianName} • Preferred: {gender}
-                </span>
+              <div className="flex flex-col text-gray-500">
+                <div className="flex items-center">
+                  <UserCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="text-sm truncate">Posted by: {guardianName}</span>
+                </div>
+                <div className="flex items-center mt-1">
+                  <Users className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="text-sm truncate">Preferred: {gender}</span>
+                </div>
               </div>
             </div>
           </div>
           <div
-            className={`${
+            className={`flex-shrink-0 ${
               deadlineStatus.isDeadlineExpired ? "bg-gray-200" : "bg-purple-100"
-            } rounded-full p-3 ml-2`}
+            } rounded-full p-3 w-12 h-12 flex items-center justify-center`}
           >
             <Briefcase
               className={`w-6 h-6 ${
-                deadlineStatus.isDeadlineExpired ? "text-gray-500" : "text-purple-600"
+                deadlineStatus.isDeadlineExpired ? "text-gray-500" : "text-[#6B9FBF]"
               }`}
             />
           </div>
@@ -336,7 +343,7 @@ const PostCard = ({
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="flex items-center mb-1">
               <Calendar className="w-4 h-4 text-blue-600 mr-2" />
-              <span className="text-xs font-semibold text-blue-800">SCHEDULE</span>
+              <span className ="text-xs font-semibold text-blue-800">SCHEDULE</span>
             </div>
             <div className="font-bold text-blue-900 text-sm">
               {days} days/week

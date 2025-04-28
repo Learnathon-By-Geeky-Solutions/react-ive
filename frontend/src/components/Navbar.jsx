@@ -44,8 +44,8 @@ const Navbar = () => {
       position="sticky"
       sx={{
         background:
-          "linear-gradient(135deg, #D0A6FF 0%, #9B6BBF 50%, #7A5FB1 100%)",
-        boxShadow: "0 4px 20px rgba(169, 145, 235, 0.15)",
+          "linear-gradient(135deg, #A6D8FF 0%, #6B9FBF 50%, #3F7CAD 100%)",
+        boxShadow: "0 4px 20px rgba(63, 124, 173, 0.15)",
         borderBottom: "1px solid rgba(255, 255, 255, 0.2)",
         top: 0,
         left: 0,
@@ -84,7 +84,7 @@ const Navbar = () => {
                   width: 38,
                   height: 38,
                   marginRight: 12,
-                  filter: "drop-shadow(0px 3px 6px rgba(155, 125, 220, 0.4))",
+                  filter: "drop-shadow(0px 3px 6px rgba(63, 124, 173, 0.4))",
                 }}
               />
             </motion.div>
@@ -119,7 +119,7 @@ const Navbar = () => {
                 backgroundColor: "rgba(255, 255, 255, 0.25)",
                 borderRadius: "30px",
                 padding: "5px",
-                boxShadow: "0 2px 10px rgba(155, 125, 220, 0.15)",
+                boxShadow: "0 2px 10px rgba(63, 124, 173, 0.15)",
                 backdropFilter: "blur(5px)",
               }}
             >
@@ -140,7 +140,7 @@ const Navbar = () => {
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.4)",
                     transform: "translateY(-2px)",
-                    boxShadow: "0 3px 8px rgba(155, 125, 220, 0.2)",
+                    boxShadow: "0 3px 8px rgba(63, 124, 173, 0.2)",
                   },
                 }}
               >
@@ -163,7 +163,7 @@ const Navbar = () => {
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.4)",
                     transform: "translateY(-2px)",
-                    boxShadow: "0 3px 8px rgba(155, 125, 220, 0.2)",
+                    boxShadow: "0 3px 8px rgba(63, 124, 173, 0.2)",
                   },
                 }}
               >
@@ -186,7 +186,7 @@ const Navbar = () => {
                   "&:hover": {
                     backgroundColor: "rgba(255, 255, 255, 0.4)",
                     transform: "translateY(-2px)",
-                    boxShadow: "0 3px 8px rgba(155, 125, 220, 0.2)",
+                    boxShadow: "0 3px 8px rgba(63, 124, 173, 0.2)",
                   },
                 }}
               >
@@ -212,7 +212,7 @@ const Navbar = () => {
                       padding: "8px",
                       "&:hover": {
                         backgroundColor: "rgba(255, 255, 255, 0.5)",
-                        boxShadow: "0 4px 12px rgba(155, 125, 220, 0.2)",
+                        boxShadow: "0 4px 12px rgba(63, 124, 173, 0.2)",
                       },
                     }}
                   >
@@ -220,7 +220,7 @@ const Navbar = () => {
                       sx={{
                         width: 35,
                         height: 35,
-                        backgroundColor: "#8A74C2",
+                        backgroundColor: "#4C8BBF",
                         color: "white",
                         boxShadow: "0 0 0 2px rgba(255, 255, 255, 0.6)",
                         fontWeight: "bold",
@@ -250,11 +250,11 @@ const Navbar = () => {
                       sx: {
                         overflow: "visible",
                         filter:
-                          "drop-shadow(0px 4px 15px rgba(155, 125, 220, 0.25))",
+                          "drop-shadow(0px 4px 15px rgba(63, 124, 173, 0.25))",
                         mt: 1.5,
                         width: 250,
                         borderRadius: "16px",
-                        border: "1px solid rgba(155, 125, 220, 0.2)",
+                        border: "1px solid rgba(63, 124, 173, 0.2)",
                         "&:before": {
                           content: '""',
                           display: "block",
@@ -266,8 +266,8 @@ const Navbar = () => {
                           bgcolor: "background.paper",
                           transform: "translateY(-50%) rotate(45deg)",
                           zIndex: 0,
-                          borderTop: "1px solid rgba(155, 125, 220, 0.2)",
-                          borderLeft: "1px solid rgba(155, 125, 220, 0.2)",
+                          borderTop: "1px solid rgba(63, 124, 173, 0.2)",
+                          borderLeft: "1px solid rgba(63, 124, 173, 0.2)",
                         },
                       },
                     },
@@ -279,14 +279,14 @@ const Navbar = () => {
                       pb: 1.5,
                       pt: 2,
                       background:
-                        "linear-gradient(135deg, rgba(232, 221, 255, 0.4), rgba(197, 179, 242, 0.2))",
+                        "linear-gradient(135deg, rgba(221, 241, 255, 0.4), rgba(179, 214, 242, 0.2))",
                     }}
                   >
                     <Typography
                       variant="subtitle1"
                       sx={{
                         fontWeight: "bold",
-                        color: "#5D4B8E",
+                        color: "#2B5A83",
                         fontFamily: '"Poppins", sans-serif',
                       }}
                     >
@@ -295,7 +295,7 @@ const Navbar = () => {
                     <Typography
                       variant="body2"
                       sx={{
-                        color: "#8A74C2",
+                        color: "#4C8BBF",
                         fontFamily: '"Poppins", sans-serif',
                         fontSize: "0.85rem",
                       }}
@@ -318,14 +318,14 @@ const Navbar = () => {
                       borderRadius: "10px",
                       fontFamily: '"Poppins", sans-serif',
                       "&:hover": {
-                        backgroundColor: "rgba(232, 221, 255, 0.5)",
+                        backgroundColor: "rgba(221, 241, 255, 0.5)",
                       },
                     }}
                   >
                     <ListItemIcon>
                       <PersonIcon
                         fontSize="small"
-                        style={{ color: "#8A74C2" }}
+                        style={{ color: "#4C8BBF" }}
                       />
                     </ListItemIcon>
                     <ListItemText
@@ -334,7 +334,7 @@ const Navbar = () => {
                         '& .MuiTypography-root': {
                           fontFamily: '"Poppins", sans-serif',
                           fontWeight: 600,
-                          color: "#5D4B8E",
+                          color: "#2B5A83",
                         }
                       }}
                     />
@@ -387,7 +387,7 @@ const Navbar = () => {
                     fontWeight: 500,
                     fontFamily: '"Poppins", sans-serif',
                     "&:hover": {
-                      color: "#4A3A75",
+                      color: "#1A3E59",
                     },
                   }}
                 >
@@ -402,7 +402,7 @@ const Navbar = () => {
                       color: "#fff",
                       "&:hover": {
                         backgroundColor: "transparent",
-                        color: "#4A3A75",
+                        color: "#1A3E59",
                       },
                     }}
                   >
@@ -420,18 +420,18 @@ const Navbar = () => {
                     sx={{
                       textTransform: "none",
                       fontWeight: 700,
-                      backgroundColor: "#8A74C2",
+                      backgroundColor: "#4C8BBF",
                       color: "white",
                       borderRadius: "28px",
                       padding: "8px 24px",
-                      boxShadow: "0 6px 15px rgba(155, 125, 220, 0.25)",
+                      boxShadow: "0 6px 15px rgba(63, 124, 173, 0.25)",
                       fontSize: "0.95rem",
                       fontFamily: '"Poppins", sans-serif',
                       letterSpacing: "0.5px",
                       transition: "all 0.3s ease",
                       "&:hover": {
-                        backgroundColor: "#7966B3",
-                        boxShadow: "0 8px 20px rgba(155, 125, 220, 0.3)",
+                        backgroundColor: "#3A79AD",
+                        boxShadow: "0 8px 20px rgba(63, 124, 173, 0.3)",
                         transform: "translateY(-2px)",
                       },
                     }}

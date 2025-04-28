@@ -77,7 +77,7 @@ const FilterInputs = ({ filters, setFilters }) => {
             placeholder={placeholder}
             value={filters[key]}
             onChange={(e) => handleChange(key, e.target.value)}
-            className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+            className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
           />
           {filters[key] && (
             <button
@@ -96,7 +96,7 @@ const FilterInputs = ({ filters, setFilters }) => {
         <select
           value={filters.medium}
           onChange={(e) => handleChange("medium", e.target.value)}
-          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
         >
           <option value="">Select Medium</option>
           <option value="BANGLA">Bangla</option>
@@ -118,7 +118,7 @@ const FilterInputs = ({ filters, setFilters }) => {
         <select
           value={filters.gender}
           onChange={(e) => handleChange("gender", e.target.value)}
-          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
         >
           <option value="">Select Gender Preference</option>
           <option value="MALE">Male</option>
@@ -271,15 +271,15 @@ const Posts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
+    <div className="min-h-screen" style={{ background: 'white' }}>
       <Navbar />
       <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden mt-16">
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6">
+        <div className="bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] text-white p-6">
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold tracking-wide">Tuition Posts</h1>
             {user && (
               <button
-                className="bg-white text-purple-600 rounded-full px-6 py-3 shadow-md transition-all hover:bg-gray-100"
+                className="bg-white text-blue-600 rounded-full px-6 py-3 shadow-md transition-all hover:bg-gray-100"
                 onClick={() => navigate("/create-post")}
               >
                 Create New Post
