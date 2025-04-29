@@ -120,6 +120,7 @@ const PostCard = ({
     daysRemaining: null,
   });
 
+
   useEffect(() => {
     const checkDeadline = () => {
       if (!deadline) return;
@@ -220,10 +221,33 @@ const PostCard = ({
     }
   };
 
-  const formatTime = (timeString) =>
-    timeString
-      ? new Date(timeString).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-      : "Flexible";
+  // Fix for time zone issue: Update this in PostCard.jsx
+const formatTime = (timeString) => {
+  if (!timeString) return "Flexible";
+  
+  try {
+    // Extract just the time portion from the ISO string
+    const timeMatch = timeString.match(/T(\d{2}:\d{2})/);
+    if (timeMatch && timeMatch[1]) {
+      // Create a date object with today's date and the extracted time
+      const [hours, minutes] = timeMatch[1].split(':').map(Number);
+      
+      // Use Date object just for formatting, not timezone conversion
+      const date = new Date();
+      date.setHours(hours, minutes, 0, 0);
+      
+      return date.toLocaleTimeString([], { 
+        hour: "2-digit", 
+        minute: "2-digit",
+        hour12: true 
+      });
+    }
+    return "Invalid time format";
+  } catch (error) {
+    console.error("Error formatting time:", error);
+    return "Invalid time";
+  }
+};
 
   const getBorderClass = () => {
     if (deadlineStatus.isDeadlineExpired) return "border-gray-400";
@@ -333,12 +357,15 @@ const PostCard = ({
         </div>
 
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="bg-green-50 p-3 rounded-lg">
+        <div className="bg-green-50 p-3 rounded-lg">
             <div className="flex items-center mb-1">
               <DollarSign className="w-4 h-4 text-green-600 mr-2" />
               <span className="text-xs font-semibold text-green-800">SALARY</span>
             </div>
-            <div className="font-bold text-green-900 truncate">{salaryRange} Tk/month</div>
+            <div className="font-bold text-green-900 text-sm break-words">
+              {salaryRange}
+              <span className="inline-block ml-1">Tk/month</span>
+            </div>
           </div>
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="flex items-center mb-1">
