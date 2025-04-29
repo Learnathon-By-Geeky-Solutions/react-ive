@@ -221,33 +221,31 @@ const PostCard = ({
     }
   };
 
-  // Fix for time zone issue: Update this in PostCard.jsx
-const formatTime = (timeString) => {
-  if (!timeString) return "Flexible";
+  const formatTime = (timeString) => {
+    if (!timeString) return "Flexible";
   
-  try {
-    // Extract just the time portion from the ISO string
-    const timeMatch = timeString.match(/T(\d{2}:\d{2})/);
-    if (timeMatch && timeMatch[1]) {
-      // Create a date object with today's date and the extracted time
-      const [hours, minutes] = timeMatch[1].split(':').map(Number);
-      
-      // Use Date object just for formatting, not timezone conversion
-      const date = new Date();
-      date.setHours(hours, minutes, 0, 0);
-      
-      return date.toLocaleTimeString([], { 
-        hour: "2-digit", 
-        minute: "2-digit",
-        hour12: true 
-      });
+    try {
+      const timeMatch = timeString.match(/T(\d{2}:\d{2})/);
+      const time = timeMatch?.[1];
+  
+      if (time) {
+        const [hours, minutes] = time.split(':').map(Number);
+  
+        const date = new Date();
+        date.setHours(hours, minutes, 0, 0);
+  
+        return date.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        });
+      }
+      return "Invalid time format";
+    } catch (error) {
+      console.error("Error formatting time:", error);
+      return "Invalid time";
     }
-    return "Invalid time format";
-  } catch (error) {
-    console.error("Error formatting time:", error);
-    return "Invalid time";
-  }
-};
+  };
 
   const getBorderClass = () => {
     if (deadlineStatus.isDeadlineExpired) return "border-gray-400";
