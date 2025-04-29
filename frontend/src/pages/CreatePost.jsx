@@ -66,7 +66,7 @@ const CreatePost = () => {
   const [formData, setFormData] = useState({
     name: "",           // Matches backend
     salary: "",         // Matches backend
-    experience: "0",    // Added to match backend 
+    experience: "",    // Added to match backend 
     location: "",       // Matches backend
     subject: [],        // Changed from subjects to subject to match backend
     medium: "",         // Matches backend, but enum is BANGLA or ENGLISH
@@ -75,7 +75,7 @@ const CreatePost = () => {
     deadline: "",       // Matches backend
     time: "",           // Time field for backend
     duration: "",       // Duration field for backend
-    studentNum: "1",    // Student number field for backend
+    studentNum: "",    // Student number field for backend
     gender: "",         // Gender field for backend - MALE, FEMALE, OTHERS
     otherRequirements: "", // Not used in backend
   });
@@ -180,7 +180,7 @@ const CreatePost = () => {
     return {
       name: formData.name,
       salary: formData.salary,
-      experience: formData.experience,
+      experience: formData.experience || "0",
       location: formData.location,
       subject: subjectNames, // Send subject names, backend will upsert them
       medium: formData.medium,
@@ -190,7 +190,7 @@ const CreatePost = () => {
       // Format time to match backend expectation
       time: formData.time ? `2000-01-01T${formData.time}:00.000Z` : null,
       duration: formData.duration,
-      studentNum: formData.studentNum,
+      studentNum: formData.studentNum || "1",
       gender: formData.gender,
     };
   };
