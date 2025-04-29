@@ -1,374 +1,82 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import PostCard from '../components/PostCard';
-import { useAuth } from '../context/AuthContext';
+import Hero from '../components/Hero';
 
-// Mock useAuth
-jest.mock('../context/AuthContext', () => ({
-  useAuth: jest.fn(),
-}));
-
-// Mock react-toastify
-jest.mock('react-toastify', () => ({
-  toast: {
-    success: jest.fn(),
-    error: jest.fn(),
+// Mock framer-motion to avoid animation issues in tests
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, className, variants, initial, animate }) => (
+      <div className={className} data-testid="motion-div">
+        {children}
+      </div>
+    ),
   },
 }));
 
-// Mock lucide-react icons
-jest.mock('lucide-react', () => ({
-  DollarSign: () => <span data-testid="dollar-sign" />,
-  Briefcase: () => <span data-testid="briefcase" />,
-  MapPin: () => <span data-testid="map-pin" />,
-  Code: () => <span data-testid="code" />,
-  ArrowRight: () => <span data-testid="arrow-right" />,
-  CheckCircle: () => <span data-testid="check-circle" />,
-  X: () => <span data-testid="x" />,
-  Upload: () => <span data-testid="upload" />,
-  Trash2: () => <span data-testid="trash2" />,
-  AlertTriangle: () => <span data-testid="alert-triangle" />,
-  Clock: () => <span data-testid="clock" />,
-  XCircle: () => <span data-testid="x-circle" />,
-  BookOpen: () => <span data-testid="book-open" />,
-  UserCircle: () => <span data-testid="user-circle" />,
-  Calendar: () => <span data-testid="calendar" />,
-  Clock3: () => <span data-testid="clock3" />,
-  Users: () => <span data-testid="users" />,
+// Mock react-router-dom Link component
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  Link: ({ children, to, className }) => (
+    <a href={to} className={className} data-testid="router-link">
+      {children}
+    </a>
+  ),
+  MemoryRouter: ({ children }) => <div>{children}</div>,
 }));
 
-// Mock fetch
-global.fetch = jest.fn();
-
-// Mock local storage
-global.localStorage = {
-  getItem: jest.fn().mockReturnValue('test-token'),
-};
-
-// Mock auth context value
-const mockUser = {
-  userId: 'user123',
-  name: 'Test User',
-};
-const mockAuthValue = {
-  user: mockUser,
-  isLoading: false,
-  login: jest.fn(),
-  logout: jest.fn(),
-};
-
-// Sample props
-const mockProps = {
-  jobDetails: {
-    title: 'Math Tutor Needed',
-    location: 'Dhaka',
-    medium: 'English',
-    salaryRange: '5000-7000',
-    experience: '1-2 years',
-    classType: 'Grade 10',
-    studentNum: 1,
-    subjects: ['Math', 'Physics'],
-    gender: 'Any',
-    deadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
-    jobPostId: 'post123',
-  },
-  schedule: {
-    days: 3,
-    time: new Date().toISOString(),
-    duration: '2 hours',
-  },
-  userInfo: {
-    guardianName: 'John Doe',
-    userId: 'guardian456',
-  },
-  onDelete: jest.fn(),
-};
-
-describe('PostCard Component', () => {
+describe('Hero Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    global.fetch.mockReset();
+  });
+
+  test('renders component with correct heading', () => {
+    render(<Hero />);
     
-    // Setup default fetch response for application check
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ message: 'not exists' }),
-    });
+    const heading = screen.getByText('Your Trusted Platform to Find DU Tutors & Tuitions');
+    expect(heading).toBeInTheDocument();
+    expect(heading).toHaveClass('text-4xl font-bold mb-4');
+  });
+
+  test('renders descriptive paragraph', () => {
+    render(<Hero />);
     
-    useAuth.mockReturnValue(mockAuthValue);
+    const paragraph = screen.getByText(/DUTutors connects Tutor seekers/);
+    expect(paragraph).toBeInTheDocument();
+    expect(paragraph).toHaveClass('mb-6 text-gray-600');
   });
 
-  test('renders job details correctly', async () => {
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
+  test('renders explore button with correct link', () => {
+    render(<Hero />);
     
-    expect(screen.getByText('Math Tutor Needed')).toHaveClass('text-2xl font-bold text-gray-800 truncate');
-    expect(screen.getByText(/English • Class: Grade 10/)).toBeInTheDocument();
-    expect(screen.getByText('Dhaka')).toBeInTheDocument();
-    expect(screen.getByText('Posted by: John Doe')).toBeInTheDocument();
-    expect(screen.getByText('Preferred: Any')).toBeInTheDocument();
+    const button = screen.getByText('Explore Tuition Posts');
+    expect(button).toBeInTheDocument();
+    expect(button.closest('a')).toHaveAttribute('href', '/posts');
+    expect(button.closest('a')).toHaveClass('bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] text-white py-3 px-6 rounded-md hover:bg-[rgba(62,7,181,1)]');
   });
 
-  test('renders salary, schedule, and details sections', async () => {
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
+  test('renders image with correct attributes', () => {
+    render(<Hero />);
     
-    expect(screen.getByText('5000-7000 Tk/month')).toBeInTheDocument();
-    expect(screen.getByText('3 days/week')).toBeInTheDocument();
-    expect(screen.getByText('2 hours')).toBeInTheDocument();
-    expect(screen.getByText('1 student')).toBeInTheDocument();
+    const image = screen.getByAltText('Tuition Post');
+    expect(image).toBeInTheDocument();
+    expect(image).toHaveAttribute('src', './homeImage.png');
+    expect(image).toHaveClass('rounded-md shadow-md');
   });
 
-  test('renders subjects list correctly', async () => {
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
+  test('renders two motion divs with correct classes', () => {
+    render(<Hero />);
     
-    expect(screen.getByText('SUBJECTS')).toBeInTheDocument();
-    expect(screen.getByText('Math')).toHaveClass('bg-indigo-100 text-indigo-900 text-xs px-2 py-1 rounded-full');
-    expect(screen.getByText('Physics')).toBeInTheDocument();
+    const motionDivs = screen.getAllByTestId('motion-div');
+    expect(motionDivs).toHaveLength(2);
+    expect(motionDivs[0]).toHaveClass('md:w-1/2');
+    expect(motionDivs[1]).toHaveClass('md:w-1/3');
   });
 
-  test('renders experience required', async () => {
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
+  test('renders responsive container with correct classes', () => {
+    render(<Hero />);
     
-    expect(screen.getByText('EXPERIENCE REQUIRED')).toBeInTheDocument();
-    expect(screen.getByText('1-2 years')).toBeInTheDocument();
-  });
-
-  test('renders deadline status for non-expired deadline', async () => {
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
-    
-    expect(screen.getByText('Deadline:')).toBeInTheDocument();
-    expect(screen.getByTestId('clock')).toBeInTheDocument();
-  });
-
-  test('renders Apply Now button when user has not applied', async () => {
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      const button = screen.getByRole('button', { name: /Apply Now/ });
-      expect(button).toBeInTheDocument();
-      expect(button).toHaveClass('bg-[#6B9FBF]');
-      expect(screen.getByTestId('arrow-right')).toBeInTheDocument();
-    });
-  });
-
-  test('renders Already Applied button when user has applied', async () => {
-    // Override the default mock to return "exists"
-    global.fetch.mockReset();
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ message: 'exists' }),
-    });
-
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      const button = screen.getByRole('button', { name: /Already Applied/ });
-      expect(button).toBeInTheDocument();
-      expect(button).toBeDisabled();
-      expect(button).toHaveClass('bg-green-500');
-      expect(screen.getByTestId('check-circle')).toBeInTheDocument();
-    });
-  });
-
-  test('renders Remove Tuition Post button when user is the poster', async () => {
-    useAuth.mockReturnValue({
-      ...mockAuthValue,
-      user: { ...mockUser, userId: mockProps.userInfo.userId },
-    });
-
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      const button = screen.getByRole('button', { name: /Remove Tuition Post/ });
-      expect(button).toBeInTheDocument();
-      expect(button).toHaveClass('bg-gray-200');
-      expect(screen.getByTestId('trash2')).toBeInTheDocument();
-    });
-  });
-
-  test('opens apply modal and handles file upload', async () => {
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      fireEvent.click(screen.getByRole('button', { name: /Apply Now/ }));
-    });
-
-    expect(screen.getByText('Apply for Math Tutor Needed')).toBeInTheDocument();
-    expect(screen.getByText(/English • Grade 10/)).toBeInTheDocument();
-    expect(screen.getByTestId('upload')).toBeInTheDocument();
-
-    const fileInput = screen.getByLabelText(/Upload your ID Card Image/);
-    const file = new File(['id-card'], 'id-card.jpg', { type: 'image/jpeg' });
-    fireEvent.change(fileInput, { target: { files: [file] } });
-
-    expect(screen.getByText(/id-card.jpg/)).toBeInTheDocument();
-  });
-
-  test('shows error toast when submitting without file', async () => {
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      fireEvent.click(screen.getByRole('button', { name: /Apply Now/ }));
-    });
-
-    fireEvent.click(screen.getByRole('button', { name: 'Submit Application' }));
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Please upload your ID card image.');
-    });
-  });
-
-  test('successfully submits application', async () => {
-    // Set up fetch mocks for application check and submission
-    global.fetch.mockReset();
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ message: 'not exists' }),
-    }).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ message: 'Application submitted successfully' }),
-    });
-
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      fireEvent.click(screen.getByRole('button', { name: /Apply Now/ }));
-    });
-
-    const fileInput = screen.getByLabelText(/Upload your ID Card Image/);
-    const file = new File(['id-card'], 'id-card.jpg', { type: 'image/jpeg' });
-    fireEvent.change(fileInput, { target: { files: [file] } });
-
-    fireEvent.click(screen.getByRole('button', { name: 'Submit Application' }));
-
-    await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('Application submitted successfully');
-    });
-  });
-
-  test('shows error toast for expired deadline when applying', async () => {
-    const expiredProps = {
-      ...mockProps,
-      jobDetails: {
-        ...mockProps.jobDetails,
-        deadline: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // Yesterday
-      },
-    };
-  
-    render(
-      <MemoryRouter>
-        <PostCard {...expiredProps} />
-      </MemoryRouter>
-    );
-  
-    await waitFor(() => {
-      expect(screen.getByText('Deadline expired:')).toBeInTheDocument();
-      // Use getAllByTestId instead of getByTestId
-      const xCircleElements = screen.getAllByTestId('x-circle');
-      expect(xCircleElements.length).toBeGreaterThan(0);
-      // Alternatively, you could check for a specific one if needed
-      // expect(xCircleElements[0]).toBeInTheDocument();
-    });
-  });
-
-  test('shows deadline warning when deadline is soon', async () => {
-    const soonDeadlineProps = {
-      ...mockProps,
-      jobDetails: {
-        ...mockProps.jobDetails,
-        deadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
-      },
-    };
-
-    render(
-      <MemoryRouter>
-        <PostCard {...soonDeadlineProps} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('2 days left!')).toBeInTheDocument();
-      expect(screen.getByText('Deadline:')).toHaveClass('text-xs font-semibold');
-    });
-  });
-
-  test('handles delete confirmation and deletion', async () => {
-    useAuth.mockReturnValue({
-      ...mockAuthValue,
-      user: { ...mockUser, userId: mockProps.userInfo.userId },
-    });
-
-    global.fetch.mockReset();
-    global.fetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ message: 'not exists' }),
-    }).mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve({ message: 'Tuition post deleted successfully' }),
-    });
-
-    render(
-      <MemoryRouter>
-        <PostCard {...mockProps} />
-      </MemoryRouter>
-    );
-
-    await waitFor(() => {
-      fireEvent.click(screen.getByRole('button', { name: /Remove Tuition Post/ }));
-    });
-
-    expect(screen.getByText('Delete Tuition Post')).toBeInTheDocument();
-    expect(screen.getByText('Warning: this cannot be undone.')).toBeInTheDocument();
-    
-    fireEvent.click(screen.getByRole('button', { name: /YES, DELETE POST/ }));
-
-    await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('Tuition post deleted successfully');
-      expect(mockProps.onDelete).toHaveBeenCalledWith('post123');
-    });
+    // Find the section container
+    const section = screen.getByText('Your Trusted Platform to Find DU Tutors & Tuitions').closest('section');
+    expect(section).toHaveClass('container mx-auto py-12 flex flex-col md:flex-row items-center justify-between');
   });
 });
