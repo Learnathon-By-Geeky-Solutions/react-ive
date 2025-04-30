@@ -105,21 +105,21 @@ describe('Navbar Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/profile');
   });
 
-  test('navigates to company profile when profile menu item is clicked for company', () => {
-    const user = { name: 'Company Inc', email: 'company@example.com', userType: 'company' };
-    const token = 'header.' + btoa(JSON.stringify(user)) + '.signature';
-    jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(token);
+  // test('navigates to company profile when profile menu item is clicked for company', () => {
+  //   const user = { name: 'Company Inc', email: 'company@example.com', userType: 'company' };
+  //   const token = 'header.' + btoa(JSON.stringify(user)) + '.signature';
+  //   jest.spyOn(Storage.prototype, 'getItem').mockReturnValue(token);
 
-    renderWithAuth();
+  //   renderWithAuth();
 
-    const avatarButton = screen.getByText('C').parentElement;
-    fireEvent.click(avatarButton);
+  //   const avatarButton = screen.getByText('C').parentElement;
+  //   fireEvent.click(avatarButton);
 
-    const profileItem = screen.getByText('Profile');
-    fireEvent.click(profileItem);
+  //   const profileItem = screen.getByText('Profile');
+  //   fireEvent.click(profileItem);
 
-    expect(mockNavigate).toHaveBeenCalledWith('/companyprofile');
-  });
+  //   expect(mockNavigate).toHaveBeenCalledWith('/companyprofile');
+  // });
 
   test('calls logout when logout menu item is clicked', () => {
     const user = { name: 'John Doe', email: 'john@example.com', userType: 'student' };

@@ -106,6 +106,16 @@ const JobApplications = () => {
     );
   };
 
+  const getSearchPlaceholder = () => {
+    if (viewMode === "myApplications") {
+      return "Search by job poster name";
+    } else if (viewMode === "receivedApplications") {
+      return "Search by applicant name";
+    } else {
+      return "Search applications";
+    }
+  };
+
   const resetFilters = () => {
     setSearchQuery("");
     setFilterStatus("All");
@@ -213,11 +223,7 @@ const JobApplications = () => {
                   focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                   transition-all duration-300
                 "
-                placeholder={viewMode === "myApplications" 
-                  ? "Search by job poster name" 
-                  : viewMode === "receivedApplications" 
-                    ? "Search by applicant name" 
-                    : "Search applications"}
+                placeholder={getSearchPlaceholder()}
               />
               {searchQuery && (
                 <button 
