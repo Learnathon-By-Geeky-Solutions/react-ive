@@ -40,8 +40,16 @@ export const applyToPost = async (req, res) => {
       const stream = cloudinary.v2.uploader.upload_stream(
         { resource_type: 'auto', folder: 'cvs' },
         (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
+          if (error) {
+            if (error instanceof Error) {
+              reject(error);
+            } else {
+              const errorMessage = error.message || 'Cloudinary upload failed';
+              reject(new Error(errorMessage));
+            }
+          } else {
+            resolve(result);
+          }
         }
       );
       stream.end(req.file.buffer);
