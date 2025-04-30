@@ -6,10 +6,11 @@ import {
   Search, 
   RefreshCw, 
   Filter, 
-  X 
+  X,
+  UserIcon,
+  Briefcase 
 } from 'lucide-react';
 import { BACKEND_URL } from "../utils/servicesData";
-
 
 const JobApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -18,6 +19,7 @@ const JobApplications = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
+  const [viewMode, setViewMode] = useState("all"); // "all", "myApplications", "receivedApplications"
   const { user } = useAuth();
 
   useEffect(() => {
@@ -29,12 +31,24 @@ const JobApplications = () => {
 
         if (!userId) throw new Error("User ID is not available");
 
-        const response = await fetch(`${BACKEND_URL}/apply/getApplicationsById/${userId}`)
+        // Get all applications related to the user (either as an applicant or job poster)
+        const response = await fetch(`${BACKEND_URL}/apply/getApplicationsById/${userId}`);
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch applications");
+        }
 
         const data = await response.json();
-        const apps = data.applications||[];
-        setApplications(apps);
-        setFilteredApplications(apps);
+        const apps = data.applications || [];
+        
+        // Add a property to distinguish the type of application
+        const processedApps = apps.map(app => ({
+          ...app,
+          applicationType: app.userId === userId ? "myApplication" : "receivedApplication"
+        }));
+        
+        setApplications(processedApps);
+        setFilteredApplications(processedApps);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -51,29 +65,38 @@ const JobApplications = () => {
     const filterApplications = () => {
       let filtered = applications;
   
+      // First apply view mode filter
+      if (viewMode === "myApplications") {
+        filtered = filtered.filter(app => app.applicationType === "myApplication");
+      } else if (viewMode === "receivedApplications") {
+        filtered = filtered.filter(app => app.applicationType === "receivedApplication");
+      }
+      
+      // Then apply status filter
       if (filterStatus !== "All") {
         filtered = filtered.filter((app) => app.status === filterStatus);
       }
   
+      // Then apply search filter
       if (searchQuery.trim() !== "") {
-        if (user.userType === "guardian") {
-          // Companies search by job seeker name
-          filtered = filtered.filter((app) =>
-            app.userName.toLowerCase().includes(searchQuery.toLowerCase())
-          );
-        } else if (user.userType === "student") {
-          // Job seekers search by company name
-          filtered = filtered.filter((app) =>
-            app.jobPost?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase())
-          );
-        }
+        filtered = filtered.filter((app) => {
+          // If it's my application, search in job poster name
+          if (app.applicationType === "myApplication") {
+            return app.jobPost?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+          } 
+          // If someone applied to my post, search in applicant name
+          else if (app.applicationType === "receivedApplication") {
+            return app.userName?.toLowerCase().includes(searchQuery.toLowerCase());
+          }
+          return false;
+        });
       }
   
       setFilteredApplications(filtered);
     };
   
     filterApplications();
-  }, [filterStatus, searchQuery, applications, user?.userType]);
+  }, [filterStatus, searchQuery, applications, viewMode]);
 
   const updateApplicationStatus = (applicationId, newStatus) => {
     setApplications((prevApps) =>
@@ -86,6 +109,7 @@ const JobApplications = () => {
   const resetFilters = () => {
     setSearchQuery("");
     setFilterStatus("All");
+    setViewMode("all");
   };
 
   if (loading) return (
@@ -108,12 +132,48 @@ const JobApplications = () => {
         {/* Header */}
         <div className="bg-gradient-to-r from-[#A6D8FF] to-[#3F7CAD] text-white p-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold tracking-wide">My Applications</h1>
+            <h1 className="text-3xl font-bold tracking-wide">Applications</h1>
             <button
               onClick={resetFilters}
               className="p-3 bg-white/20 hover:bg-white/30 rounded-full transition-all duration-300"
             >
               <RefreshCw className="w-6 h-6 text-white" />
+            </button>
+          </div>
+        </div>
+
+        {/* View Mode Selector */}
+        <div className="p-6 pb-0">
+          <div className="flex space-x-4 mb-4">
+            <button
+              onClick={() => setViewMode("all")}
+              className={`
+                flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
+                ${viewMode === "all" ? 'bg-[#3F7CAD] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+              `}
+            >
+              <Filter className="w-4 h-4 mr-2" />
+              All Applications
+            </button>
+            <button
+              onClick={() => setViewMode("myApplications")}
+              className={`
+                flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
+                ${viewMode === "myApplications" ? 'bg-[#3F7CAD] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+              `}
+            >
+              <UserIcon className="w-4 h-4 mr-2" />
+              My Applications
+            </button>
+            <button
+              onClick={() => setViewMode("receivedApplications")}
+              className={`
+                flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300
+                ${viewMode === "receivedApplications" ? 'bg-[#3F7CAD] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+              `}
+            >
+              <Briefcase className="w-4 h-4 mr-2" />
+              Received Applications
             </button>
           </div>
         </div>
@@ -153,7 +213,11 @@ const JobApplications = () => {
                   focus:ring-2 focus:ring-indigo-500 focus:border-transparent
                   transition-all duration-300
                 "
-                placeholder="Search applications"
+                placeholder={viewMode === "myApplications" 
+                  ? "Search by job poster name" 
+                  : viewMode === "receivedApplications" 
+                    ? "Search by applicant name" 
+                    : "Search applications"}
               />
               {searchQuery && (
                 <button 
@@ -175,6 +239,7 @@ const JobApplications = () => {
                 <ApplicationCard
                   key={app._id}
                   app={app}
+                  applicationType={app.applicationType}
                   onStatusChange={updateApplicationStatus}
                 />
               ))
@@ -182,6 +247,11 @@ const JobApplications = () => {
               <div className="col-span-full text-center py-10 text-gray-500">
                 <Filter className="w-16 h-16 mx-auto mb-4 text-gray-300" />
                 <p className="text-xl">No applications found</p>
+                {viewMode !== "all" && (
+                  <p className="mt-2 text-gray-400">
+                    Try changing your view mode or removing filters
+                  </p>
+                )}
               </div>
             )}
           </div>
