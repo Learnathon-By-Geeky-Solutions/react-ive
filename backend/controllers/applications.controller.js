@@ -1,19 +1,20 @@
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
-import Application from '../models/applications.js'; // Import Mongoose model
+import Application from '../models/applications.js'; 
 import Post from '../models/posts.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import cloudinary from 'cloudinary';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-// Apply to a post
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 export const applyToPost = async (req, res) => {
   try {
     const { userId, status, name } = req.body;
     const { id: postId } = req.params;
-    const cvPath = req.file?.filename;
 
     if (!req.headers.authorization) {
       return res.status(401).json({ error: 'Authorization token required' });
@@ -22,23 +23,35 @@ export const applyToPost = async (req, res) => {
     const token = req.headers.authorization.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if(!decoded) {
-      return res.status(401).json({error: "No token found"});
+    if (!decoded) {
+      return res.status(401).json({ error: 'No token found' });
     }
 
     if (!mongoose.Types.ObjectId.isValid(userId) || !mongoose.Types.ObjectId.isValid(postId)) {
-      return res.status(400).json({ error: "Invalid user ID(s)" });
+      return res.status(400).json({ error: 'Invalid user ID(s)' });
     }
 
-    if (!cvPath) {
+    if (!req.file) {
       return res.status(400).json({ error: 'CV file is required' });
     }
+
+    // Upload file to Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.v2.uploader.upload_stream(
+        { resource_type: 'auto', folder: 'cvs' },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(req.file.buffer);
+    });
 
     const application = new Application({
       userName: name,
       userId,
       postId,
-      cvPath,
+      cvPath: result.secure_url, // Store Cloudinary URL
       status,
     });
 
@@ -50,20 +63,36 @@ export const applyToPost = async (req, res) => {
   }
 };
 
-// Get applications for a user
+export const downloadCV = async (req, res) => {
+  try {
+    const { filename } = req.params;
+    // Assuming filename is the Cloudinary URL or public_id
+    // If cvPath in DB is the full URL, you can redirect to it
+    const application = await Application.findOne({ cvPath: { $regex: filename } });
+    
+    if (!application) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    // Redirect to the Cloudinary URL
+    res.redirect(application.cvPath);
+  } catch (error) {
+    console.error(`❌ Error: ${error.message}`);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 export const getApplicationsById = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    // First, find all posts created by this user
     const userPosts = await Post.find({ userId });
     const userPostIds = userPosts.map(post => post._id);
     
-    // Find applications where userId matches OR the application is for a post created by the user
     const applications = await Application.find({
       $or: [
-        { userId },                   // Applications made by the user
-        { postId: { $in: userPostIds } } // Applications to posts created by the user
+        { userId },                   
+        { postId: { $in: userPostIds } } 
       ]
     }).populate({
       path: 'postId',
@@ -141,20 +170,7 @@ export const updateApplicationStatus = async (req, res) => {
   }
 };
 
-// Download CV file
-export const downloadCV = async (req, res) => {
-  const { filename } = req.params;
-  const filePath = path.join(__dirname, "..", "middleware/uploads", filename);
 
-  res.download(filePath, filename, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-  });
-};
-
-// Get all applications for a guardian's posts
 export const getApplicationsForGuardian = async (req, res) => {
   const { userId } = req.params;
 
