@@ -79,17 +79,6 @@ Du Tutors is ideal for academic communities like Dhaka University, helping stude
 
 Feel free to contribute, report issues, or suggest new features!
 
-## Getting Started
-1. Clone the repository
-2. Install dependencies
-3. Start development
-
-## Development Guidelines
-1. Create feature branches
-2. Make small, focused commits
-3. Write descriptive commit messages
-4. Create pull requests for review
-
 ## Resources
 - [Project Documentation](docs/)
 - [Development Setup](docs/setup.md)
