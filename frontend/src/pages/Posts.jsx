@@ -61,7 +61,7 @@ const FilterInputs = ({ filters, setFilters }) => {
     },
     {
       key: "classType",
-      placeholder: "Class Type (Online/Offline)",
+      placeholder: "Class Type (1/2/O/A)",
       icon: <CalendarDays className="w-5 h-5 text-gray-400" />,
       type: "text",
     },
