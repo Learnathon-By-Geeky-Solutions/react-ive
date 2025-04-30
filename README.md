@@ -6,7 +6,7 @@
   </a>
 </p>
 
-👉 **[Click here to visit the live site](https://react-ive-12.onrender.com)**
+👉 **[Click here to visit the live site](https://dututors.onrender.com)**
 
 ## Team Members
 - Tashrif-007 (Team Leader)
