@@ -364,7 +364,7 @@ const ApplicationCard = ({ app, onStatusChange }) => {
 
           <div className="flex justify-between space-x-2">
             <a 
-              href={`http://localhost:3500/apply/downloadCV/${cvPath}`} 
+              href={`${BACKEND_URL}/apply/downloadCV/${cvPath}`} 
               download 
               className="flex items-center justify-center px-4 py-2 rounded-lg bg-[#3F7CAD] text-white hover:opacity-90 transition-all duration-300"
             >
