@@ -1,7 +1,6 @@
 # react-ive
-
 <p align="center">
-  <a href="#">
+  <a href="https://dututors.onrender.com">
     <img src="https://img.shields.io/badge/Live_Site-Visit_Now-brightgreen?style=for-the-badge&logo=internet-explorer" alt="Live Site" />
   </a>
 </p>
@@ -14,7 +13,6 @@
 - Nandan1436
 
 ## Status and Quality Metrics
-
 <div align="center">
   <table>
     <tr>
@@ -39,11 +37,9 @@
 
 ## Project Description
 # Du Tutors
-
 **Du Tutors** is a web platform that helps students and tutors connect easily. Users can create profiles, apply to posts, get accepted, and chat — all in one place.
 
 ## 🚀 Features
-
 ### 🔐 Google Authentication
 - Sign up and log in securely with your Google account.
 
@@ -75,11 +71,37 @@ Du Tutors is ideal for academic communities like Dhaka University, helping stude
 - Database: MongoDB
 - Auth: Google OAuth 2.0
 - Styling: Tailwind CSS
----
 
-Feel free to contribute, report issues, or suggest new features!
+## 📷 Project Screenshots
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><img src="docs/Project%20Images/1.png" alt="Screenshot 1" width="400px"></td>
+      <td align="center"><img src="docs/Project%20Images/2.png" alt="Screenshot 2" width="400px"></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="docs/Project%20Images/3.png" alt="Screenshot 3" width="400px"></td>
+      <td align="center"><img src="docs/Project%20Images/4.png" alt="Screenshot 4" width="400px"></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="docs/Project%20Images/5.png" alt="Screenshot 5" width="400px"></td>
+      <td align="center"><img src="docs/Project%20Images/6.png" alt="Screenshot 6" width="400px"></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="docs/Project%20Images/7.png" alt="Screenshot 7" width="400px"></td>
+      <td align="center"><img src="docs/Project%20Images/8.png" alt="Screenshot 8" width="400px"></td>
+    </tr>
+    <tr>
+      <td align="center"><img src="docs/Project%20Images/9.png" alt="Screenshot 9" width="400px"></td>
+      <td align="center"><img src="docs/Project%20Images/10.png" alt="Screenshot 10" width="400px"></td>
+    </tr>
+  </table>
+</div>
 
 ## Resources
 - [Project Documentation](docs/)
 - [Development Setup](docs/setup.md)
 - [Contributing Guidelines](CONTRIBUTING.md)
+
+---
+Feel free to contribute, report issues, or suggest new features!
