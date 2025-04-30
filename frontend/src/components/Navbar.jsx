@@ -23,7 +23,6 @@ import { motion } from "framer-motion";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-  const userType = user?.userType;
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
 
