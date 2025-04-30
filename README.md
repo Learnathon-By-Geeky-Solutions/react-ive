@@ -38,7 +38,46 @@
 - naimjeem
 
 ## Project Description
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Learnathon-By-Geeky-Solutions_react-ive&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Learnathon-By-Geeky-Solutions_react-ive)
+# Du Tutors
+
+**Du Tutors** is a web platform that helps students and tutors connect easily. Users can create profiles, apply to posts, get accepted, and chat — all in one place.
+
+## 🚀 Features
+
+### 🔐 Google Authentication
+- Sign up and log in securely with your Google account.
+
+### 👤 Profile Creation
+- Both students and tutors can create detailed profiles.
+- Profiles include subjects, department, session, studying subject and gender.
+
+### 📌 Post & Apply
+- Tutors can create tutoring posts.
+- Students can apply to relevant posts — and vice versa.
+
+### ✅ Application Management
+- Tutors or students can review and accept applications.
+- Accepted applications create a connection between users.
+
+### 💬 Chat System
+- Built-in chat allows accepted users to communicate directly.
+- Schedule sessions, ask questions, and stay connected.
+
+### 🎯 Simple & Clean Interface
+- Easy-to-use layout for users with any level of tech experience.
+
+## 📚 Use Case
+Du Tutors is ideal for academic communities like Dhaka University, helping students find the right tutors and tutors find motivated learners.
+
+## 🛠️ Tech Stack
+- Frontend: Reactjs
+- Backend: Node.js+Express
+- Database: MongoDB
+- Auth: Google OAuth 2.0
+- Styling: Tailwind CSS
+---
+
+Feel free to contribute, report issues, or suggest new features!
 
 ## Getting Started
 1. Clone the repository
