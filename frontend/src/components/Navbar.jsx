@@ -308,8 +308,7 @@ const Navbar = () => {
 
                   <MenuItem
                     onClick={() => {
-                      if (userType === "student") navigate("/profile");
-                      else navigate("/companyprofile");
+                      navigate("/profile");
                       handleMenuClose();
                     }}
                     sx={{
